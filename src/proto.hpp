@@ -59,7 +59,6 @@ struct Ticker {
         if (--_tick <= 0) {
             console::log (std::to_string (++_count), _message);
             _tick = _throttleTime;
-            ++_count;
         }
     }
 
