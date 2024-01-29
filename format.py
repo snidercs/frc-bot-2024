@@ -13,8 +13,9 @@ def code_files():
 def main():
     print ("Formatting Code:")
     for f in code_files():
-        print (" - %s", f)
+        print ("  %s" % f)
         # run clang-format on 'f' here
+    print ("done!")
 
 # This part, the  "__name__ == '__main__'" is telling Python this is where
 # code execution should start.  This is the proper way to to begin
