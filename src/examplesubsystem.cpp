@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "examplesubsystem.hpp"
-#include "proto.hpp"
+#include "snider/messageticker.hpp"
 
 ExampleSubsystem::ExampleSubsystem() {
     // Implementation of subsystem constructor goes here.
