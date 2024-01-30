@@ -55,11 +55,27 @@ void RobotMain::RobotPeriodic() {
         } else if (_gamepad->GetYButtonReleased()) {
             std::clog << "[frc] Y released\n";
         }
+
+        // copy axis values into the context.  Looping backwards isn't all that
+        // necessary, but by doing so the "GetAxisCount()" function is called
+        // only once and in turn a reduction in overhead (i.e. faster.). It can
+        // matter though for rendering audio and things like that.  The periodic
+        // functions from FRC are at 20ms intervals.  If our code can't execute
+        // that fast... well, then the bot drivers start getting more and more
+        // lag between controller moves and what the bot is physically doing.
+        //
+        // Using 'std::min' garauntees that the 'Robot::Context::axis' array doesn't
+        // overflow...  if it did... the firmware would crash in a very bad way.
+        for (int i = std::min (_gamepad->GetAxisCount(), (int) Robot::MaxAxes); --i >= 0;)
+            ctx.axis[i] = _gamepad->GetRawAxis (i);
     }
 
-    // then at the end process it here by adding a parameter, or something else
-    // not exactly sure yet... but this is my plan -MRF
-    _robot.process();
+    // Now that the context is ready, pass it on over to our pure C++ robot
+    // processor.
+    _robot.process (ctx);
+
+    // now that the bot has processed and updated itself, send out whatever is
+    // needed to the motor controllers etc etc...
 }
 
 /**

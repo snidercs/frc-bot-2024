@@ -36,16 +36,56 @@ public:
     /** Default joystick port, not currently used. */
     static constexpr int DefaultJoystickPort = 1;
 
+    enum : int { MaxAxes = 32 };
+
     /** A context in which the bot runs. */
-    struct Context {
+    class Context {
+    public:
+        Context() { reset(); }
+        ~Context() = default;
+
+        /** Copy ctor and operator.  I can explain what these are, ask me -MRF. */
+        Context (const Context& o) { *this = o; }
+        Context& operator= (const Context& o) noexcept {
+            // This literally means memory copy, and that's exactly what it
+            // does... copy raw memory from one address to another and how many
+            // bytes.
+            memcpy (axis, o.axis, MaxAxes * sizeof (double));
+            return *this;
+        }
+
+        /** Storage for axis data (the thumb sticks).
+            
+            This is a plain C-style array with a fixed size.  It is a direct
+            allocation in RAM on the stack.  Java cannot do this that I know of,
+            which is to have raw, direct access to memory... lighthing fast to 
+            get/set values from these types of arrays.
+        */
+        double axis[MaxAxes] = { 0 };
+
+        /** Reset to default values */
+        void reset() noexcept {
+            memset (axis, MaxAxes, sizeof (double));
+        }
     };
 
-    void process() noexcept {
+    void process (const Context& context) noexcept {
         _procTicker.tick();
+
+        // without saying to much;  this loops through the axes and prints
+        // if the value has changed;
+        for (int i = 0; i < 6; ++i)
+            if (_lastContext.axis[i] != context.axis[i])
+                std::clog << "[bot] axis #" << i << "=" << context.axis[i] << std::endl;
+
+        // Save the context in the previous one for change detection and future
+        // interpolations...
+        _lastContext = context;
     }
 
 protected:
     snider::MessageTicker _procTicker { "[bot] process()" };
+    Context _lastContext;
     void modeChanged() override {
         // clang-format off
         // Utilize that "Mode" alias as shown below.
