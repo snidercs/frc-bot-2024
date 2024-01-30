@@ -35,9 +35,9 @@ inline static void log (Str&&... msgs) {
 
 } // namespace console
 
-
-struct Ticker {
-    Ticker() = delete;
+class MessageTicker {
+public:
+    MessageTicker() = delete;
     /** A new ticker.  Instantiate one and call tick() to print a message,
         every period of @delaySeconds
 
@@ -46,7 +46,7 @@ struct Ticker {
         @param intervalMs The interval in milliseconds of the realtime calling 
                           function.
     */
-    Ticker (std::string_view str, int delaySeconds = 2, int intervalMs = 20)
+    MessageTicker (std::string_view str, int delaySeconds = 2, int intervalMs = 20)
         : _message (str),
           _throttleTime (delaySeconds * 1000 / std::max (1, intervalMs)),
           _tick (_throttleTime) {
@@ -55,18 +55,28 @@ struct Ticker {
     /** Call this inside the realtime function cycling at `intervalMs`
         per second.
     */
-    void tick() {
+    void tick() noexcept {
         if (--_tick <= 0) {
-            console::log (std::to_string (++_count), _message);
+            if (enabled())
+                console::log (std::to_string (++_count), _message);
             _tick = _throttleTime;
         }
     }
+
+    void enable (bool yn = true) noexcept {
+        if (_enabled == yn)
+            return;
+        _enabled = yn;
+    }
+
+    constexpr bool enabled() const noexcept { return _enabled; }
 
 private:
     std::string _message;
     int _throttleTime = 0;
     int _count        = 0;   
     int _tick { 0 };
+    bool _enabled { false };
 };
 
 } // namespace snider

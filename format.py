@@ -11,10 +11,11 @@ def code_files():
 # This can actually be called anything, not just main.  But function names
 # should to some extent indicate what they actually do.
 def main():
+    import subprocess
     print ("Formatting Code:")
     for f in code_files():
         print ("  %s" % f)
-        # run clang-format on 'f' here
+        subprocess.call (['clang-format', f])
     print ("done!")
 
 # This part, the  "__name__ == '__main__'" is telling Python this is where

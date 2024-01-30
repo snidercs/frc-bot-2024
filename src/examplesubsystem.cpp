@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "proto.hpp"
 #include "examplesubsystem.hpp"
 
 ExampleSubsystem::ExampleSubsystem() {
@@ -13,7 +14,9 @@ ExampleSubsystem::ExampleSubsystem() {
 frc2::CommandPtr ExampleSubsystem::ExampleMethodCommand() {
   // Inline construction of command goes here.
   // Subsystem::RunOnce implicitly requires `this` subsystem.
-  return RunOnce([/* this */] { /* one-time action goes here */ });
+  return RunOnce([/* this */] {
+    std::clog << "example command called\n";  
+  });
 }
 
 bool ExampleSubsystem::ExampleCondition() {
@@ -22,11 +25,8 @@ bool ExampleSubsystem::ExampleCondition() {
 }
 
 void ExampleSubsystem::Periodic() {
-  static bool hasrun = false;
-  if (! hasrun) {
-    std::clog << "has run = true\n";
-    hasrun = true;
-  }
+  static snider::MessageTicker subsysPeriodic ("ExampleSubsystem::Periodic()");
+  subsysPeriodic.tick();
 }
 
 void ExampleSubsystem::SimulationPeriodic() {
