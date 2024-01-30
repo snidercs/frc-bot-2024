@@ -3,38 +3,9 @@
 #include <iostream>
 #include <string>
 
-#include <boost/algorithm/string/trim.hpp>
-
-// Prototype functions and classes to be moved to botlib.
-
 namespace snider {
 
-/** Logging helpers. */
-namespace console {
-
-/** Log a message or messages to the console. This version can only take string
-    type arguments at the moment.  So int and float types should be converted
-    before passing in here with `std::to_string` or some other way.
-
-    Not passing string types only will result in insane template errors.
- */
-template <typename... Str>
-inline static void log (Str&&... msgs) {
-    std::string out;
-    // loop through messages and var args and store in a string buffer.
-    ([&, &out = out] {
-        out += msgs + std::string ("   ");
-    }(),
-     ...);
-
-    // trim the last tab
-    boost::trim (out);
-    // render to console
-    std::clog << out << std::endl;
-}
-
-} // namespace console
-
+/** A type of logger that will print a string message every so many seconds. */
 class MessageTicker {
 public:
     MessageTicker() = delete;
@@ -45,38 +16,51 @@ public:
         @param delaySeconds How long between readouts.
         @param intervalMs The interval in milliseconds of the realtime calling 
                           function.
-    */
+     */
     MessageTicker (std::string_view str, int delaySeconds = 2, int intervalMs = 20)
         : _message (str),
+          // Using std::max (1, ...) because dividing by zero will result in a nasty crash
           _throttleTime (delaySeconds * 1000 / std::max (1, intervalMs)),
           _tick (_throttleTime) {
     }
 
-    /** Call this inside the realtime function cycling at `intervalMs`
-        per second.
-    */
+    /** Call this inside the realtime function cycling at `intervalMs` per 
+        second.
+     */
     void tick() noexcept {
+        // the tick counter
         if (--_tick <= 0) {
             if (enabled())
-                console::log (std::to_string (++_count), _message);
+                std::clog << std::to_string (++_count) << ": " << _message << std::endl;
             _tick = _throttleTime;
         }
     }
 
+    /** Enable or disable. 
+        
+        @param yn Set false to disable printing.
+    */
     void enable (bool yn = true) noexcept {
         if (_enabled == yn)
             return;
         _enabled = yn;
     }
 
+    /** Returns true if enabled and printing. */
     constexpr bool enabled() const noexcept { return _enabled; }
 
 private:
+    // message to print.
     std::string _message;
+    // How many ticks it takes to equal the delay time in seconds based on the
+    // millisecond interval.
     int _throttleTime = 0;
-    int _count        = 0;
+    // Total times the message has printed.
+    int _count = 0;
+    // The tick we're currently on.
     int _tick { 0 };
-    bool _enabled { false };
+    // self explanatory.
+    bool _enabled { true };
 };
 
 } // namespace snider

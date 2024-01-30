@@ -3,10 +3,18 @@
 
 #include "robot.hpp"
 
-void Robot::RobotInit() {
+using snider::BasicRobot;
+using snider::BotMode;
+
+void RobotMain::RobotInit() {
     m_chooser.SetDefaultOption (kAutoNameDefault, kAutoNameDefault);
     m_chooser.AddOption (kAutoNameCustom, kAutoNameCustom);
     frc::SmartDashboard::PutData ("Auto Modes", &m_chooser);
+
+    // A safe assumption I guess....
+    _robot.setMode (BotMode::Disconnected);
+
+    _gamepad = std::make_unique<frc::XboxController> (Robot::DefaultControllerPort);
 }
 
 /**
@@ -14,10 +22,84 @@ void Robot::RobotInit() {
  * this for items like diagnostics that you want ran during disabled,
  * autonomous, teleoperated and test.
  *
- * <p> This runs after the mode specific periodic functions, but before
+ * This runs after the mode specific periodic functions, but before
  * LiveWindow and SmartDashboard integrated updating.
  */
-void Robot::RobotPeriodic() {}
+void RobotMain::RobotPeriodic() {
+    Robot::Context ctx;
+
+    // all these if elses and what not will eventually update properties on the
+    // Context struct...
+
+    if (_gamepad->IsConnected()) {
+        // the buttons
+        if (_gamepad->GetAButtonPressed()) {
+            std::clog << "[frc] A pressed\n";
+        } else if (_gamepad->GetAButtonReleased()) {
+            std::clog << "[frc] A released\n";
+        }
+
+        if (_gamepad->GetBButtonPressed()) {
+            std::clog << "[frc] B pressed\n";
+        } else if (_gamepad->GetBButtonReleased()) {
+            std::clog << "[frc] B released\n";
+        }
+
+        if (_gamepad->GetXButtonPressed()) {
+            std::clog << "[frc] X pressed\n";
+        } else if (_gamepad->GetXButtonReleased()) {
+            std::clog << "[frc] X released\n";
+        }
+
+        if (_gamepad->GetYButtonPressed()) {
+            std::clog << "[frc] Y pressed\n";
+        } else if (_gamepad->GetYButtonReleased()) {
+            std::clog << "[frc] Y released\n";
+        }
+
+        // the bumpers
+        if (_gamepad->GetLeftBumperPressed()) {
+            std::clog << "[frc] left bumper pressed\n";
+        } else if (_gamepad->GetLeftBumperReleased()) {
+            std::clog << "[frc] left bumper released\n";
+        }
+
+        if (_gamepad->GetRightBumperPressed()) {
+            std::clog << "[frc] right bumper pressed\n";
+        } else if (_gamepad->GetRightBumperReleased()) {
+            std::clog << "[frc] right bumper released\n";
+        }
+
+        // copy axis values into the context.  Looping backwards isn't all that
+        // necessary, but by doing so the "GetAxisCount()" function is called
+        // only once and in turn a reduction in overhead (i.e. faster.). It can
+        // matter though for rendering audio and things like that.  The periodic
+        // functions from FRC are at 20ms intervals.  If our code can't execute
+        // that fast... well, then the bot drivers start getting more and more
+        // lag between controller moves and what the bot is physically doing.
+        //
+        // Using 'std::min' garauntees that the 'Robot::Context::axis' array doesn't
+        // overflow...  if it did... the firmware would crash in a very bad way.
+        for (int i = std::min (_gamepad->GetAxisCount(), (int) Robot::MaxAxes); --i >= 0;) {
+            ctx.axis[i] = _gamepad->GetRawAxis (i);
+            // needed? _gamepad->GetAxisType()
+        }
+
+        ctx.povs[0] = _gamepad->GetPOVCount() <= 0 ? 0 : _gamepad->GetPOV (0);
+
+        // button indexing in FRC starts at 1 for some reason.
+        for (int i = std::min (_gamepad->GetButtonCount(), (int) Robot::MaxButtons); --i >= 0;) {
+            ctx.buttons[i] = _gamepad->GetRawButton (i + 1);
+        }
+    }
+
+    // Now that the context is ready, pass it on over to our pure C++ robot
+    // processor.
+    _robot.process (ctx);
+
+    // now that the bot has processed and updated itself, send out whatever is
+    // needed to the motor controllers etc etc...
+}
 
 /**
  * This autonomous (along with the chooser code above) shows how to select
@@ -30,7 +112,7 @@ void Robot::RobotPeriodic() {}
  * if-else structure below with additional strings. If using the SendableChooser
  * make sure to add them to the chooser code above as well.
  */
-void Robot::AutonomousInit() {
+void RobotMain::AutonomousInit() {
     m_autoSelected = m_chooser.GetSelected();
     m_autoSelected = frc::SmartDashboard::GetString ("Auto Selector", kAutoNameDefault);
     fmt::print ("Auto selected: {}\n", m_autoSelected);
@@ -40,9 +122,11 @@ void Robot::AutonomousInit() {
     } else {
         // Default Auto goes here
     }
+
+    _robot.setMode (BotMode::Autonomous);
 }
 
-void Robot::AutonomousPeriodic() {
+void RobotMain::AutonomousPeriodic() {
     if (m_autoSelected == kAutoNameCustom) {
         // Custom Auto goes here
     } else {
@@ -50,25 +134,32 @@ void Robot::AutonomousPeriodic() {
     }
 }
 
-void Robot::TeleopInit() {}
-
-void Robot::TeleopPeriodic() {
+void RobotMain::TeleopInit() {
+    _robot.setMode (BotMode::Teleop);
 }
 
-void Robot::DisabledInit() {}
+void RobotMain::TeleopPeriodic() {}
 
-void Robot::DisabledPeriodic() {}
+void RobotMain::DisabledInit() {
+    _robot.setMode (BotMode::Disabled);
+}
 
-void Robot::TestInit() {}
+void RobotMain::DisabledPeriodic() {}
 
-void Robot::TestPeriodic() {}
+void RobotMain::TestInit() {
+    _robot.setMode (BotMode::Test);
+}
 
-void Robot::SimulationInit() {}
+void RobotMain::TestPeriodic() {}
 
-void Robot::SimulationPeriodic() {}
+void RobotMain::SimulationInit() {
+    _robot.setMode (BotMode::Simulation);
+}
+
+void RobotMain::SimulationPeriodic() {}
 
 #ifndef RUNNING_FRC_TESTS
 int main() {
-    return frc::StartRobot<Robot>();
+    return frc::StartRobot<RobotMain>();
 }
 #endif
