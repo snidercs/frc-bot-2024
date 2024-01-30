@@ -15,7 +15,7 @@ def main():
     print ("Formatting Code:")
     for f in code_files():
         print ("  %s" % f)
-        subprocess.call (['clang-format', f])
+        subprocess.call (['clang-format', '-i', f])
     print ("done!")
 
 # This part, the  "__name__ == '__main__'" is telling Python this is where

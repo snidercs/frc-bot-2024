@@ -4,31 +4,31 @@
 
 #include <iostream>
 
-#include "proto.hpp"
 #include "examplesubsystem.hpp"
+#include "proto.hpp"
 
 ExampleSubsystem::ExampleSubsystem() {
-  // Implementation of subsystem constructor goes here.
+    // Implementation of subsystem constructor goes here.
 }
 
 frc2::CommandPtr ExampleSubsystem::ExampleMethodCommand() {
-  // Inline construction of command goes here.
-  // Subsystem::RunOnce implicitly requires `this` subsystem.
-  return RunOnce([/* this */] {
-    std::clog << "example command called\n";  
-  });
+    // Inline construction of command goes here.
+    // Subsystem::RunOnce implicitly requires `this` subsystem.
+    return RunOnce ([/* this */] {
+        std::clog << "example command called\n";
+    });
 }
 
 bool ExampleSubsystem::ExampleCondition() {
-  // Query some boolean state, such as a digital sensor.
-  return false;
+    // Query some boolean state, such as a digital sensor.
+    return false;
 }
 
 void ExampleSubsystem::Periodic() {
-  static snider::MessageTicker subsysPeriodic ("ExampleSubsystem::Periodic()");
-  subsysPeriodic.tick();
+    static snider::MessageTicker subsysPeriodic ("ExampleSubsystem::Periodic()");
+    subsysPeriodic.tick();
 }
 
 void ExampleSubsystem::SimulationPeriodic() {
-  // Implementation of subsystem simulation periodic method goes here.
+    // Implementation of subsystem simulation periodic method goes here.
 }

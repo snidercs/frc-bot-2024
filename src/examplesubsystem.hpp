@@ -11,9 +11,9 @@ class JoystickState final {
 public:
     JoystickState()  = default;
     ~JoystickState() = default;
+
 private:
 };
-
 
 class ExampleSubsystem : public frc2::SubsystemBase {
 public:

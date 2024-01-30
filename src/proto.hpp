@@ -74,7 +74,7 @@ public:
 private:
     std::string _message;
     int _throttleTime = 0;
-    int _count        = 0;   
+    int _count        = 0;
     int _tick { 0 };
     bool _enabled { false };
 };
