@@ -36,7 +36,11 @@ public:
     /** Default joystick port, not currently used. */
     static constexpr int DefaultJoystickPort = 1;
 
-    enum : int { MaxAxes = 32 };
+    enum : int {
+        MaxAxes    = 32,
+        MaxPOVs    = 1,
+        MaxButtons = 16
+    };
 
     /** A context in which the bot runs. */
     class Context {
@@ -51,10 +55,11 @@ public:
             // does... copy raw memory from one address to another and how many
             // bytes.
             memcpy (axis, o.axis, MaxAxes * sizeof (double));
+            memcpy (povs, o.povs, MaxPOVs * sizeof (int));
             return *this;
         }
 
-        /** Storage for axis data (the thumb sticks).
+        /** Storage for axis data (the thumb sticks)
             
             This is a plain C-style array with a fixed size.  It is a direct
             allocation in RAM on the stack.  Java cannot do this that I know of,
@@ -63,20 +68,37 @@ public:
         */
         double axis[MaxAxes] = { 0 };
 
+        /** POVs storage */
+        int povs[MaxPOVs] = { 0 };
+
+        /** Buttons storage */
+        bool buttons[MaxButtons] = { 0 };
+
         /** Reset to default values */
         void reset() noexcept {
+            memset (buttons, MaxButtons, sizeof (bool));
             memset (axis, MaxAxes, sizeof (double));
+            memset (povs, MaxPOVs, sizeof (int));
         }
     };
 
+    /** Process the context, update values, prepare for replies to bot.
+        
+        @param context Prepared by main, called from the realtime function.
+     */
     void process (const Context& context) noexcept {
         _procTicker.tick();
 
         // without saying to much;  this loops through the axes and prints
-        // if the value has changed;
+        // if the value has changed.
         for (int i = 0; i < 6; ++i)
             if (_lastContext.axis[i] != context.axis[i])
-                std::clog << "[bot] axis #" << i << "=" << context.axis[i] << std::endl;
+                std::clog << "[bot] axis #" << i << " = " << context.axis[i] << std::endl;
+
+        // same for dpad
+        for (int i = 0; i < 1; ++i)
+            if (_lastContext.povs[i] != context.povs[i])
+                std::clog << "[bot] dpad #" << i << " = " << context.povs[i] << std::endl;
 
         // Save the context in the previous one for change detection and future
         // interpolations...

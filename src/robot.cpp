@@ -32,6 +32,7 @@ void RobotMain::RobotPeriodic() {
     // Context struct...
 
     if (_gamepad->IsConnected()) {
+        // the buttons
         if (_gamepad->GetAButtonPressed()) {
             std::clog << "[frc] A pressed\n";
         } else if (_gamepad->GetAButtonReleased()) {
@@ -56,6 +57,19 @@ void RobotMain::RobotPeriodic() {
             std::clog << "[frc] Y released\n";
         }
 
+        // the bumpers
+        if (_gamepad->GetLeftBumperPressed()) {
+            std::clog << "[frc] left bumper pressed\n";
+        } else if (_gamepad->GetLeftBumperReleased()) {
+            std::clog << "[frc] left bumper released\n";
+        }
+
+        if (_gamepad->GetRightBumperPressed()) {
+            std::clog << "[frc] right bumper pressed\n";
+        } else if (_gamepad->GetRightBumperReleased()) {
+            std::clog << "[frc] right bumper released\n";
+        }
+
         // copy axis values into the context.  Looping backwards isn't all that
         // necessary, but by doing so the "GetAxisCount()" function is called
         // only once and in turn a reduction in overhead (i.e. faster.). It can
@@ -66,8 +80,17 @@ void RobotMain::RobotPeriodic() {
         //
         // Using 'std::min' garauntees that the 'Robot::Context::axis' array doesn't
         // overflow...  if it did... the firmware would crash in a very bad way.
-        for (int i = std::min (_gamepad->GetAxisCount(), (int) Robot::MaxAxes); --i >= 0;)
+        for (int i = std::min (_gamepad->GetAxisCount(), (int) Robot::MaxAxes); --i >= 0;) {
             ctx.axis[i] = _gamepad->GetRawAxis (i);
+            // needed? _gamepad->GetAxisType()
+        }
+
+        ctx.povs[0] = _gamepad->GetPOVCount() <= 0 ? 0 : _gamepad->GetPOV (0);
+
+        // button indexing in FRC starts at 1 for some reason.
+        for (int i = std::min (_gamepad->GetButtonCount(), (int) Robot::MaxButtons); --i >= 0;) {
+            ctx.buttons[i] = _gamepad->GetRawButton (i + 1);
+        }
     }
 
     // Now that the context is ready, pass it on over to our pure C++ robot
