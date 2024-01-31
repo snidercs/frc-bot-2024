@@ -83,6 +83,10 @@ public:
      */
     void process (const Context& context) noexcept;
 
+    double rightStickY() const {
+        return _lastContext.axis[5];
+    }
+
 protected:
     snider::MessageTicker _procTicker { "[bot] process()" };
     Context _lastContext;

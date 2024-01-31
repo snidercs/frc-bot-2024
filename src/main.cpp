@@ -44,7 +44,7 @@ public:
 
         // check gamepad connection status.
         const bool wasConnected = gamepadConnected;
-        gamepadConnected = gamepad != nullptr ? gamepad->IsConnected() : false;
+        gamepadConnected        = gamepad != nullptr ? gamepad->IsConnected() : false;
         if (gamepadConnected != wasConnected) {
             // connection state changed. noop.
         }
@@ -109,16 +109,15 @@ public:
 
         // positioning.
         // field2d.SetRobotPose (odometry.GetPose());
-        if (robot.isTeleop() || robot.isAuto()) {
-            auto speed    = 0.0; // acquire from context
+        if (true) { // (robot.isTeleop() || robot.isAuto()) {
+            auto speed    = 1.0 * robot.rightStickY();
             auto rotation = 0.0; // acquire from context
-            drivetrain.drive (speed, rotation);
+            // std::clog << "speed=" << speed << std::endl;
+            drivetrain.drive (Drivetrain::MaxSpeed, Drivetrain::MaxAngularSpeed);
+            drivetrain.updateOdometry();
+            field2d.SetRobotPose (drivetrain.pose2d());
         } else {
             drivetrain.drive (0.0, 0.0);
-        }
-
-        if (robot.mode() == BotMode::Simulation) {            
-            //field2d.SetRobotPose (drivetrain.pose2d());
         }
     }
 
@@ -174,7 +173,7 @@ public:
     void TestPeriodic() override {}
 
     void SimulationInit() override {
-        robot.setMode (BotMode::Simulation);
+        // robot.setMode (BotMode::Simulation);
     }
 
     void SimulationPeriodic() override {}

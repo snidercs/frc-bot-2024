@@ -36,11 +36,12 @@ public:
     /** Returns the current 2d position. */
     const frc::Pose2d pose2d() const { return m_odometry.GetPose(); }
 
-private:
-    // 3 meters per second
+// 3 meters per second
     static constexpr speed_type MaxSpeed = 3.0_mps;
     // 1/2 rotation per second
     static constexpr rot_type MaxAngularSpeed { std::numbers::pi };
+private:
+    
     static constexpr units::meter_t TrackWidth = 0.381_m * 2;
     static constexpr double WheelRadius        = 0.0508; // meters
     static constexpr int EncoderResolution     = 4096;
