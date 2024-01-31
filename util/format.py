@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+## Make sure all code files are saved before running this script.  It does zero
+# checking of saved status.
+
 # Returns a list of filenames that need formatted.
 def code_files():
     import glob
