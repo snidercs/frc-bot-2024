@@ -1,13 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <memory>
-#include <string>
-
-#include <frc/TimedRobot.h>
-#include <frc/XboxController.h>
-#include <frc/smartdashboard/SendableChooser.h>
-
 #include "snider/basicrobot.hpp"
 #include "snider/messageticker.hpp"
 
@@ -31,6 +23,9 @@
 */
 class Robot : public snider::BasicRobot {
 public:
+    Robot()  = default;
+    ~Robot() = default;
+
     /** The default controller port to use. */
     static constexpr int DefaultControllerPort = 0;
     /** Default joystick port, not currently used. */
@@ -92,30 +87,4 @@ protected:
     snider::MessageTicker _procTicker { "[bot] process()" };
     Context _lastContext;
     void modeChanged() override;
-};
-
-//==============================================================================
-class RobotMain : public frc::TimedRobot {
-public:
-    void RobotInit() override;
-    void RobotPeriodic() override;
-    void AutonomousInit() override;
-    void AutonomousPeriodic() override;
-    void TeleopInit() override;
-    void TeleopPeriodic() override;
-    void DisabledInit() override;
-    void DisabledPeriodic() override;
-    void TestInit() override;
-    void TestPeriodic() override;
-    void SimulationInit() override;
-    void SimulationPeriodic() override;
-
-private:
-    Robot _robot;
-    std::string m_autoSelected;
-    frc::SendableChooser<std::string> m_chooser;
-    const std::string kAutoNameDefault = "Default";
-    const std::string kAutoNameCustom  = "My Auto";
-
-    std::unique_ptr<frc::XboxController> _gamepad;
 };

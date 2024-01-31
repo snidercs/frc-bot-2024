@@ -26,7 +26,12 @@ public:
         modeChanged();
     }
 
-    auto mode() const noexcept { return _mode; }
+    /** Returns the current mode in which the bot is running. */
+    constexpr auto mode() const noexcept { return _mode; }
+    /** Returns true if in teleop mode. */
+    bool isTeleop() const noexcept { return _mode == BotMode::Teleop; }
+    /** Returns true if in autonomous mode. */
+    bool isAuto() const noexcept { return _mode == BotMode::Autonomous; }
 
 protected:
     /** Override this to handle when the bot mode changes. */
