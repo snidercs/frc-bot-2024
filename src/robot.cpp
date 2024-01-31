@@ -6,6 +6,35 @@
 using snider::BasicRobot;
 using snider::BotMode;
 
+//==============================================================================
+void Robot::process (const Context& context) noexcept {
+    _procTicker.tick();
+
+    // without saying to much;  this loops through the axes and prints
+    // if the value has changed.
+    for (int i = 0; i < 6; ++i)
+        if (_lastContext.axis[i] != context.axis[i])
+            std::clog << "[bot] axis #" << i << " = " << context.axis[i] << std::endl;
+
+    // same for dpad
+    for (int i = 0; i < 1; ++i)
+        if (_lastContext.povs[i] != context.povs[i])
+            std::clog << "[bot] dpad #" << i << " = " << context.povs[i] << std::endl;
+
+    // Save the context in the previous one for change detection and future
+    // interpolations...
+    _lastContext = context;
+}
+
+void Robot::modeChanged() {
+    // clang-format off
+    _procTicker.enable (mode() == BotMode::Autonomous || 
+                        mode() == BotMode::Teleop);
+    std::clog << "[bot] mode changed: " << std::to_string (mode()) << std::endl;
+    // clang-format on
+}
+
+//==============================================================================
 void RobotMain::RobotInit() {
     m_chooser.SetDefaultOption (kAutoNameDefault, kAutoNameDefault);
     m_chooser.AddOption (kAutoNameCustom, kAutoNameCustom);
@@ -70,14 +99,6 @@ void RobotMain::RobotPeriodic() {
             std::clog << "[frc] right bumper released\n";
         }
 
-        // copy axis values into the context.  Looping backwards isn't all that
-        // necessary, but by doing so the "GetAxisCount()" function is called
-        // only once and in turn a reduction in overhead (i.e. faster.). It can
-        // matter though for rendering audio and things like that.  The periodic
-        // functions from FRC are at 20ms intervals.  If our code can't execute
-        // that fast... well, then the bot drivers start getting more and more
-        // lag between controller moves and what the bot is physically doing.
-        //
         // Using 'std::min' garauntees that the 'Robot::Context::axis' array doesn't
         // overflow...  if it did... the firmware would crash in a very bad way.
         for (int i = std::min (_gamepad->GetAxisCount(), (int) Robot::MaxAxes); --i >= 0;) {

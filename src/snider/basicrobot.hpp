@@ -39,7 +39,7 @@ private:
 } // namespace snider
 
 namespace std {
-/** add string conversion via `std::to_string()` for our bod mode enum.  This
+/** Add string conversion via `std::to_string()` for our bod mode enum.  This
     isn't something that necessarily always needs done... but it will come in
     handy in print debugging, and this would be the "official" way to do it
     according to c++ (I think) -MRF

@@ -75,7 +75,7 @@ public:
         bool buttons[MaxButtons] = { 0 };
 
         /** Reset to default values */
-        void reset() noexcept {
+        inline void reset() noexcept {
             memset (buttons, MaxButtons, sizeof (bool));
             memset (axis, MaxAxes, sizeof (double));
             memset (povs, MaxPOVs, sizeof (int));
@@ -86,43 +86,12 @@ public:
         
         @param context Prepared by main, called from the realtime function.
      */
-    void process (const Context& context) noexcept {
-        _procTicker.tick();
-
-        // without saying to much;  this loops through the axes and prints
-        // if the value has changed.
-        for (int i = 0; i < 6; ++i)
-            if (_lastContext.axis[i] != context.axis[i])
-                std::clog << "[bot] axis #" << i << " = " << context.axis[i] << std::endl;
-
-        // same for dpad
-        for (int i = 0; i < 1; ++i)
-            if (_lastContext.povs[i] != context.povs[i])
-                std::clog << "[bot] dpad #" << i << " = " << context.povs[i] << std::endl;
-
-        // Save the context in the previous one for change detection and future
-        // interpolations...
-        _lastContext = context;
-    }
+    void process (const Context& context) noexcept;
 
 protected:
     snider::MessageTicker _procTicker { "[bot] process()" };
     Context _lastContext;
-    void modeChanged() override {
-        // clang-format off
-        // Utilize that "Mode" alias as shown below.
-        _procTicker.enable (mode() == Mode::Autonomous || 
-                            mode() == Mode::Teleop);
-        std::clog << "[bot] mode changed: " << std::to_string (mode()) << std::endl;
-        // clang-format on
-    }
-
-private:
-    // This kind of thing is common to do in the private: section in c++.  The
-    // verbosity of the language is unavoidable.  It's a way of aliasing a long
-    // typename with all the namespaces and what not but not affect all of the
-    // other code that might use this class.
-    using Mode = snider::BotMode;
+    void modeChanged() override;
 };
 
 //==============================================================================
