@@ -2,53 +2,61 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-#include <iostream>
+#include <frc/RobotController.h>
 
 #include "drivetrain.hpp"
 
-Drivetrain::Drivetrain() {
-    leftLeader.AddFollower (leftFollower);
-    rightLeader.AddFollower (rightFollower);
+void Drivetrain::SetSpeeds (const frc::DifferentialDriveWheelSpeeds& speeds) {
+    auto leftFeedforward  = m_feedforward.Calculate (speeds.left);
+    auto rightFeedforward = m_feedforward.Calculate (speeds.right);
+    double leftOutput     = m_leftPIDController.Calculate (m_leftEncoder.GetRate(),
+                                                       speeds.left.value());
+    double rightOutput    = m_rightPIDController.Calculate (m_rightEncoder.GetRate(),
+                                                         speeds.right.value());
 
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
-    rightLeader.SetInverted (true);
-
-    gyro.Reset();
-    // Set the distance per pulse for the drive encoders. We can simply use the
-    // distance traveled for one rotation of the wheel divided by the encoder
-    // resolution.
-    leftEncoder.SetDistancePerPulse (2 * std::numbers::pi * WheelRadius / EncoderResolution);
-    rightEncoder.SetDistancePerPulse (2 * std::numbers::pi * WheelRadius / EncoderResolution);
-
-    leftEncoder.Reset();
-    rightEncoder.Reset();
+    m_leftLeader.SetVoltage (units::volt_t { leftOutput } + leftFeedforward);
+    m_rightLeader.SetVoltage (units::volt_t { rightOutput } + rightFeedforward);
 }
 
-void Drivetrain::drive (double xSpeed, double rot) {
-    drive (speed_type (xSpeed), rot_type (rot));
+void Drivetrain::Drive (units::meters_per_second_t xSpeed,
+                        units::radians_per_second_t rot) {
+    SetSpeeds (m_kinematics.ToWheelSpeeds ({ xSpeed, 0_mps, rot }));
 }
 
-void Drivetrain::drive (speed_type xSpeed, rot_type rot) {
-    m_kinematics.ToWheelSpeeds ({ xSpeed, 0_mps, rot });
-    setSpeeds (m_kinematics.ToWheelSpeeds ({ 0_mps, xSpeed, rot }));
+void Drivetrain::UpdateOdometry() {
+    m_odometry.Update (m_gyro.GetRotation2d(),
+                       units::meter_t { m_leftEncoder.GetDistance() },
+                       units::meter_t { m_rightEncoder.GetDistance() });
 }
 
-void Drivetrain::updateOdometry() {
-    m_odometry.Update (gyro.GetRotation2d(),
-                       units::meter_t { leftEncoder.GetDistance() },
-                       units::meter_t { rightEncoder.GetDistance() });
+void Drivetrain::ResetOdometry (const frc::Pose2d& pose) {
+    m_leftEncoder.Reset();
+    m_rightEncoder.Reset();
+    m_drivetrainSimulator.SetPose (pose);
+    m_odometry.ResetPosition (m_gyro.GetRotation2d(),
+                              units::meter_t { m_leftEncoder.GetDistance() },
+                              units::meter_t { m_rightEncoder.GetDistance() },
+                              pose);
 }
 
-void Drivetrain::setSpeeds (const frc::DifferentialDriveWheelSpeeds& speeds) {
-    const auto leftFeedforward  = feedforward.Calculate (speeds.left);
-    const auto rightFeedforward = feedforward.Calculate (speeds.right);
-    const double leftOutput     = leftPIDController.Calculate (
-        leftEncoder.GetRate(), speeds.left.value());
-    const double rightOutput = rightPIDController.Calculate (
-        rightEncoder.GetRate(), speeds.right.value());
+void Drivetrain::SimulationPeriodic() {
+    // To update our simulation, we set motor voltage inputs, update the
+    // simulation, and write the simulated positions and velocities to our
+    // simulated encoder and gyro. We negate the right side so that positive
+    // voltages make the right side move forward.
+    m_drivetrainSimulator.SetInputs (units::volt_t { m_leftLeader.Get() } * frc::RobotController::GetInputVoltage(),
+                                     units::volt_t { m_rightLeader.Get() } * frc::RobotController::GetInputVoltage());
+    m_drivetrainSimulator.Update (20_ms);
 
-    leftLeader.SetVoltage (units::volt_t { leftOutput } + leftFeedforward);
-    rightLeader.SetVoltage (units::volt_t { rightOutput } + rightFeedforward);
+    m_leftEncoderSim.SetDistance (m_drivetrainSimulator.GetLeftPosition().value());
+    m_leftEncoderSim.SetRate (m_drivetrainSimulator.GetLeftVelocity().value());
+    m_rightEncoderSim.SetDistance (
+        m_drivetrainSimulator.GetRightPosition().value());
+    m_rightEncoderSim.SetRate (m_drivetrainSimulator.GetRightVelocity().value());
+    m_gyroSim.SetAngle (-m_drivetrainSimulator.GetHeading().Degrees().value());
+}
+
+void Drivetrain::Periodic() {
+    UpdateOdometry();
+    m_fieldSim.SetRobotPose (m_odometry.GetPose());
 }
