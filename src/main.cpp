@@ -103,9 +103,13 @@ public:
     //==========================================================================
     void DisabledInit() override {
         params.setMode (BotMode::Disabled);
+        std::cout << "disabled init\n";
+        
     }
-
-    void DisabledPeriodic() override {}
+    void DisabledPeriodic() override {
+        //drivetrain.drive (units::velocity::meters_per_second_t(0), units::angular_velocity::radians_per_second_t(0));
+        disableBotMovement();
+    }
 
     //==========================================================================
     void TestInit() override {
@@ -143,6 +147,11 @@ private:
 
     // keep track of controller connection state.
     bool gamepadConnected = false;
+
+    void disableBotMovement() {
+        drivetrain.drive (units::velocity::meters_per_second_t (0),
+                          units::angular_velocity::radians_per_second_t (0));
+    }
 
     // updates controller connection status, returns true if currently connected
     bool checkControllerConnection() {
