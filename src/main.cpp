@@ -40,11 +40,11 @@ public:
      * this for items like diagnostics that you want ran during disabled,
      * autonomous, teleoperated and test.
      *
-     * This runs after the mode specific periodic functions, but before
+     * This RUNS AFTER the mode specific periodic functions, but before
      * LiveWindow and SmartDashboard integrated updating.
      */
     void RobotPeriodic() override {
-        drivetrain.Periodic();
+        drivetrain.postProcess();
     }
 
     void AutonomousInit() override {
@@ -59,7 +59,7 @@ public:
         }
 
         timer.Restart();
-        drivetrain.ResetOdometry (trajectory.InitialPose());
+        drivetrain.resetOdometry (trajectory.InitialPose());
 
         params.setMode (BotMode::Autonomous);
     }
@@ -73,8 +73,8 @@ public:
 
         auto elapsed   = timer.Get();
         auto reference = trajectory.Sample (elapsed);
-        auto speeds    = ramsete.Calculate (drivetrain.GetPose(), reference);
-        drivetrain.Drive (speeds.vx, speeds.omega);
+        auto speeds    = ramsete.Calculate (drivetrain.position2d(), reference);
+        drivetrain.drive (speeds.vx, speeds.omega);
     }
 
     //==========================================================================
@@ -83,7 +83,7 @@ public:
     }
 
     void TeleopPeriodic() {
-        if (! updateControllerStatus())
+        if (! checkControllerConnection())
             return;
 
         processParameters();
@@ -97,7 +97,7 @@ public:
         // mathematics). Xbox controllers return positive values when you pull to
         // the right by default.
         auto rot = -rotLimiter.Calculate (params.rightStickX()) * Drivetrain::MaxAngularSpeed;
-        drivetrain.Drive (xSpeed, rot);
+        drivetrain.drive (xSpeed, rot);
     }
 
     //==========================================================================
@@ -118,7 +118,7 @@ public:
     void SimulationInit() override {}
 
     void SimulationPeriodic() override {
-        drivetrain.SimulationPeriodic();
+        drivetrain.updateSimulation();
     }
 
 private:
@@ -141,10 +141,11 @@ private:
     frc::RamseteController ramsete;
     frc::Timer timer;
 
+    // keep track of controller connection state.
     bool gamepadConnected = false;
 
     // updates controller connection status, returns true if currently connected
-    bool updateControllerStatus() {
+    bool checkControllerConnection() {
         const bool wasConnected = gamepadConnected;
         gamepadConnected        = gamepad.IsConnected();
         if (gamepadConnected != wasConnected) {
@@ -153,6 +154,7 @@ private:
         return gamepadConnected;
     }
 
+    // Filter parameter values before driving the bot.
     void processParameters() {
         Parameters::Context ctx;
 
