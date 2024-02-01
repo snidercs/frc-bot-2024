@@ -1,22 +1,10 @@
 #pragma once
 
-#include <iostream>
-#include <memory>
-#include <string>
+#include <cstring> // for memcpy, memset
 
-#include <frc/TimedRobot.h>
-#include <frc/XboxController.h>
-#include <frc/smartdashboard/SendableChooser.h>
-
-#include "snider/basicrobot.hpp"
+#include "snider/botmode.hpp"
 #include "snider/messageticker.hpp"
 
-// In case you are tempted... doing things like   "using namespace xyz;"   in
-// a header can and will cause many compiler errors when other headers try to
-// include it and names start clashing. Best to keep all the "using" stuff inside
-// a class or in *.cpp files.... because cpp files don't get included elsewhere.
-
-//==============================================================================
 /** The main robot class.  It is this object's job to process data coming from
     the FRC system.  Think of it as a realtime state of all the data points
     needed to control the bot.  e.g. it contains all the information needed to
@@ -29,8 +17,14 @@
     By keeping FRC code out of this class, will be much much easier to port this
     base system we're building to another non-FRC system later if we want to.
 */
-class Robot : public snider::BasicRobot {
+class Parameters final {
 public:
+    Parameters() {
+        procTicker.enable (false);
+    }
+
+    ~Parameters() = default;
+
     /** The default controller port to use. */
     static constexpr int DefaultControllerPort = 0;
     /** Default joystick port, not currently used. */
@@ -82,40 +76,39 @@ public:
         }
     };
 
+    /** Returns the current mode in which the bot is running. */
+    constexpr auto mode() const noexcept { return _mode; }
+
+    /** Set the mode of the bot. */
+    void setMode (snider::BotMode newMode) noexcept {
+        if (newMode == _mode)
+            return;
+        _mode = newMode;
+        modeChanged();
+    }
+
+    /** Returns true if in teleop mode. */
+    bool isTeleop() const noexcept { return _mode == snider::BotMode::Teleop; }
+    /** Returns true if in autonomous mode. */
+    bool isAuto() const noexcept { return _mode == snider::BotMode::Autonomous; }
+
     /** Process the context, update values, prepare for replies to bot.
         
         @param context Prepared by main, called from the realtime function.
      */
     void process (const Context& context) noexcept;
 
-protected:
-    snider::MessageTicker _procTicker { "[bot] process()" };
-    Context _lastContext;
-    void modeChanged() override;
-};
+    double leftStickX() const noexcept { return _lastContext.axis[0]; }
+    double leftStickY() const noexcept { return _lastContext.axis[1]; }
 
-//==============================================================================
-class RobotMain : public frc::TimedRobot {
-public:
-    void RobotInit() override;
-    void RobotPeriodic() override;
-    void AutonomousInit() override;
-    void AutonomousPeriodic() override;
-    void TeleopInit() override;
-    void TeleopPeriodic() override;
-    void DisabledInit() override;
-    void DisabledPeriodic() override;
-    void TestInit() override;
-    void TestPeriodic() override;
-    void SimulationInit() override;
-    void SimulationPeriodic() override;
+    double rightStickX() const noexcept { return _lastContext.axis[4]; }
+    double rightStickY() const noexcept { return _lastContext.axis[5]; }
+
+protected:
+    void modeChanged();
 
 private:
-    Robot _robot;
-    std::string m_autoSelected;
-    frc::SendableChooser<std::string> m_chooser;
-    const std::string kAutoNameDefault = "Default";
-    const std::string kAutoNameCustom  = "My Auto";
-
-    std::unique_ptr<frc::XboxController> _gamepad;
+    snider::MessageTicker procTicker { "[bot] process()" };
+    Context _lastContext;
+    snider::BotMode _mode { snider::BotMode::Disconnected };
 };

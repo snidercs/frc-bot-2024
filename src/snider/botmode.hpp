@@ -1,6 +1,7 @@
 #pragma once
 
-/** a namespace is just a grouping mechanism.... this is ours for Snider. */
+#include <string>
+
 namespace snider {
 
 /** The running mode of a bot. */
@@ -9,31 +10,7 @@ enum class BotMode : int {
     Autonomous,
     Teleop,
     Disabled,
-    Test,
-    Simulation
-};
-
-/** Base class for all robots. */
-class BasicRobot {
-public:
-    BasicRobot()  = default;
-    ~BasicRobot() = default;
-
-    void setMode (BotMode newMode) noexcept {
-        if (newMode == _mode)
-            return;
-        _mode = newMode;
-        modeChanged();
-    }
-
-    auto mode() const noexcept { return _mode; }
-
-protected:
-    /** Override this to handle when the bot mode changes. */
-    virtual void modeChanged() {}
-
-private:
-    BotMode _mode { BotMode::Disconnected };
+    Test
 };
 
 } // namespace snider
@@ -56,7 +33,6 @@ inline static std::string to_string (snider::BotMode mode) noexcept {
         case BotMode::Teleop:       res = "Teleop";  break;
         case BotMode::Disabled:     res = "Disabled"; break;
         case BotMode::Test:         res = "Test";  break;
-        case BotMode::Simulation:   res = "Simulation"; break; 
     }
     // clang-format on
 
