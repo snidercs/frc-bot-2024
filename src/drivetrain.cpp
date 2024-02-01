@@ -2,6 +2,8 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+#include <iostream>
+
 #include "drivetrain.hpp"
 
 Drivetrain::Drivetrain() {
@@ -29,7 +31,8 @@ void Drivetrain::drive (double xSpeed, double rot) {
 }
 
 void Drivetrain::drive (speed_type xSpeed, rot_type rot) {
-    setSpeeds (m_kinematics.ToWheelSpeeds ({ xSpeed, 0_mps, rot }));
+    m_kinematics.ToWheelSpeeds ({ xSpeed, 0_mps, rot });
+    setSpeeds (m_kinematics.ToWheelSpeeds ({ 0_mps, xSpeed, rot }));
 }
 
 void Drivetrain::updateOdometry() {

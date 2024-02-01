@@ -23,7 +23,10 @@
 */
 class Robot : public snider::BasicRobot {
 public:
-    Robot()  = default;
+    Robot() {
+        procTicker.enable (false);
+    }
+
     ~Robot() = default;
 
     /** The default controller port to use. */
@@ -83,12 +86,14 @@ public:
      */
     void process (const Context& context) noexcept;
 
-    double rightStickY() const {
-        return _lastContext.axis[5];
-    }
+    double leftStickX() const noexcept { return _lastContext.axis[0]; }
+    double leftStickY() const noexcept { return _lastContext.axis[1]; }
+
+    double rightStickX() const noexcept { return _lastContext.axis[4]; }
+    double rightStickY() const noexcept { return _lastContext.axis[5]; }
 
 protected:
-    snider::MessageTicker _procTicker { "[bot] process()" };
+    snider::MessageTicker procTicker { "[bot] process()" };
     Context _lastContext;
     void modeChanged() override;
 };

@@ -6,7 +6,7 @@ using snider::BasicRobot;
 using snider::BotMode;
 
 void Robot::process (const Context& context) noexcept {
-    _procTicker.tick();
+    procTicker.tick();
 
     // without saying to much;  this loops through the axes and prints
     // if the value has changed.
@@ -25,9 +25,5 @@ void Robot::process (const Context& context) noexcept {
 }
 
 void Robot::modeChanged() {
-    // clang-format off
-    _procTicker.enable (mode() == BotMode::Autonomous || 
-                        mode() == BotMode::Teleop);
     std::clog << "[bot] mode changed: " << std::to_string (mode()) << std::endl;
-    // clang-format on
 }

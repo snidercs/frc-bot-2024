@@ -108,12 +108,11 @@ public:
         robot.process (ctx);
 
         // positioning.
-        // field2d.SetRobotPose (odometry.GetPose());
         if (true) { // (robot.isTeleop() || robot.isAuto()) {
-            auto speed    = 1.0 * robot.rightStickY();
+            auto speed    = 1.0 * robot.rightStickX();
             auto rotation = 0.0; // acquire from context
             // std::clog << "speed=" << speed << std::endl;
-            drivetrain.drive (Drivetrain::MaxSpeed, Drivetrain::MaxAngularSpeed);
+            drivetrain.drive (speed, rotation);
             drivetrain.updateOdometry();
             field2d.SetRobotPose (drivetrain.pose2d());
         } else {
