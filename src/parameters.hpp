@@ -36,6 +36,15 @@ public:
         MaxButtons = 16
     };
 
+    enum Indexes : int {
+        LeftStickX   = 0,
+        LeftStickY   = 1,
+        TriggerLeft  = 2,
+        TriggerRight = 3,
+        RightStickX  = 4,
+        RightStickY  = 5
+    };
+
     /** A context in which the bot runs. */
     class Context {
     public:
@@ -98,17 +107,18 @@ public:
      */
     void process (const Context& context) noexcept;
 
-    double leftStickX() const noexcept { return _lastContext.axis[0]; }
-    double leftStickY() const noexcept { return _lastContext.axis[1]; }
+    double leftStickX() const noexcept { return values.axis[LeftStickX]; }
+    double leftStickY() const noexcept { return values.axis[LeftStickY]; }
 
-    double rightStickX() const noexcept { return _lastContext.axis[4]; }
-    double rightStickY() const noexcept { return _lastContext.axis[5]; }
+    double rightStickX() const noexcept { return values.axis[RightStickX]; }
+    double rightStickY() const noexcept { return values.axis[RightStickY]; }
 
 protected:
     void modeChanged();
 
 private:
     snider::MessageTicker procTicker { "[bot] process()" };
-    Context _lastContext;
+    Context values;
+    Context lastContext;
     snider::BotMode _mode { snider::BotMode::Disconnected };
 };
