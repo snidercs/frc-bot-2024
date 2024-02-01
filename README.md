@@ -6,6 +6,9 @@ FRC provides [several examples](https://github.com/wpilibsuite/allwpilib/tree/ma
 
 https://github.com/wpilibsuite/allwpilib/tree/main/wpilibcExamples/src/main/cpp/examples
 
+## Differential Drive Help
+
+https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html
 
 ## Simulation
 
