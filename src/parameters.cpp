@@ -1,5 +1,6 @@
 
 #include "parameters.hpp"
+#include <cmath>
 
 #ifndef BOT_LOG_AXES
 #    define BOT_LOG_AXES 0
@@ -9,6 +10,20 @@ using snider::BotMode;
 
 void Parameters::process (const Context& context) noexcept {
     values = context;
+    
+    if (std::abs(values.axis[LeftStickX]) <= .0001){
+        values.axis[LeftStickX] = 0;
+    }
+    if (std::abs(values.axis[LeftStickY]) <= .0001){
+        values.axis[LeftStickY] = 0;
+    }
+    if (std::abs(values.axis[RightStickX]) <= .0001){
+        values.axis[RightStickX] = 0;
+    }
+    if (std::abs(values.axis[RightStickY]) <= .0001){
+        values.axis[RightStickY] = 0;
+    }
+
 
 #if BOT_LOG_AXES
     for (int i = 0; i < 6; ++i)

@@ -103,7 +103,7 @@ public:
     //==========================================================================
     void DisabledInit() override {
         params.setMode (BotMode::Disabled);
-        std::cout << "disabled init\n";
+        //std::cout << "disabled init\n";
         
     }
     void DisabledPeriodic() override {
