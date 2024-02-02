@@ -104,7 +104,6 @@ public:
     void DisabledInit() override {
         params.setMode (BotMode::Disabled);
         //std::cout << "disabled init\n";
-        
     }
     void DisabledPeriodic() override {
         //drivetrain.drive (units::velocity::meters_per_second_t(0), units::angular_velocity::radians_per_second_t(0));

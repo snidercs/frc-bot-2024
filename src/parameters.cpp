@@ -1,6 +1,8 @@
 
-#include "parameters.hpp"
 #include <cmath>
+#include <vector>
+
+#include "parameters.hpp"
 
 #ifndef BOT_LOG_AXES
 #    define BOT_LOG_AXES 0
@@ -10,20 +12,16 @@ using snider::BotMode;
 
 void Parameters::process (const Context& context) noexcept {
     values = context;
-    
-    if (std::abs(values.axis[LeftStickX]) <= .0001){
-        values.axis[LeftStickX] = 0;
-    }
-    if (std::abs(values.axis[LeftStickY]) <= .0001){
-        values.axis[LeftStickY] = 0;
-    }
-    if (std::abs(values.axis[RightStickX]) <= .0001){
-        values.axis[RightStickX] = 0;
-    }
-    if (std::abs(values.axis[RightStickY]) <= .0001){
-        values.axis[RightStickY] = 0;
-    }
 
+    // A vector is a list of things.  In this case, integer indexes.
+    std::vector<int> indexes = { LeftStickX, LeftStickY, RightStickX, RightStickY };
+    // This is another type of for loop: called a 'foreach' loop.
+    // more on loops: https://www.w3schools.com/cpp/cpp_for_loop.asp
+    for (auto i : indexes) {
+        if (std::abs (values.axis[i]) <= .0001) {
+            values.axis[i] = 0;
+        }
+    }
 
 #if BOT_LOG_AXES
     for (int i = 0; i < 6; ++i)
