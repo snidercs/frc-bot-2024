@@ -4,8 +4,8 @@
 The table below is a general outline of what the gamepad controls do.
 |  Button/Stick |             Action                   |
 |---------------|:------------------------------------:|
-| Left Axis     | Controls in-place rotation           |
-| Right Axis    | Controls forward and backward motion |
+| Left Axis     | Controls forward and backward motion |
+| Right Axis    | Controls in-place rotation           |
 | Left Bumper   | Controls note intake                 |
 | Right Bumper  | Controls note shooting               |
 | Left Trigger  | - |
