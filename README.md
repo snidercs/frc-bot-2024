@@ -1,7 +1,8 @@
 # Bot 2024
 
-## Driver Station Tuning
-
+## Driver Station Tuning & Deployment
+* [Flashing the OS](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-3/imaging-your-roborio.html)
+* [Deployment Info](https://docs.wpilib.org/en/stable/docs/software/vscode-overview/deploying-robot-code.html#building-and-deploying-robot-code)
 * [Driver Station Best Practices](https://frcdocs.wpi.edu/en/2022/docs/software/driverstation/driver-station-best-practices.html)
 
 ## Example Code
