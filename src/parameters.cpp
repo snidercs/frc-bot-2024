@@ -18,7 +18,7 @@ void Parameters::process (const Context& context) noexcept {
     // This is another type of for loop: called a 'foreach' loop.
     // more on loops: https://www.w3schools.com/cpp/cpp_for_loop.asp
     for (auto i : indexes) {
-        if (std::abs (values.axis[i]) <= .0001) {
+        if (std::abs (values.axis[i]) <= .005) {
             values.axis[i] = 0;
         }
     }
