@@ -87,27 +87,17 @@ public:
             return;
 
         processParameters();
-
-        // Get the x speed. We are inverting this because Xbox controllers return
-        // negative values when we push forward.
-        const auto xSpeed = -speedLimiter.Calculate (params.leftStickY()) * Drivetrain::MaxSpeed;
-
-        // Get the rate of angular rotation. We are inverting this because we want a
-        // positive value when we pull to the left (remember, CCW is positive in
-        // mathematics). Xbox controllers return positive values when you pull to
-        // the right by default.
-        auto rot = -rotLimiter.Calculate (params.rightStickX()) * Drivetrain::MaxAngularSpeed;
-        drivetrain.drive (xSpeed, rot);
+        drivetrain.drive (calculateSpeed (params.leftStickY()),
+                          calculateAngularSpeed (params.rightStickX()));
     }
 
     //==========================================================================
     void DisabledInit() override {
         params.setMode (BotMode::Disabled);
-        //std::cout << "disabled init\n";
     }
+
     void DisabledPeriodic() override {
-        //drivetrain.drive (units::velocity::meters_per_second_t(0), units::angular_velocity::radians_per_second_t(0));
-        disableBotMovement();
+        driveDisabled();
     }
 
     //==========================================================================
@@ -115,7 +105,9 @@ public:
         params.setMode (BotMode::Test);
     }
 
-    void TestPeriodic() override {}
+    void TestPeriodic() override {
+        driveDisabled();
+    }
 
     //==========================================================================
     void SimulationInit() override {}
@@ -147,7 +139,21 @@ private:
     // keep track of controller connection state.
     bool gamepadConnected = false;
 
-    void disableBotMovement() {
+    const units::meters_per_second_t calculateSpeed (double value) noexcept {
+        // Get the x speed. We are inverting this because Xbox controllers return
+        // negative values when we push forward.
+        return -speedLimiter.Calculate (params.leftStickY()) * Drivetrain::MaxSpeed;
+    }
+
+    const units::radians_per_second_t calculateAngularSpeed (double value) noexcept {
+        // Get the rate of angular rotation. We are inverting this because we want a
+        // positive value when we pull to the left (remember, CCW is positive in
+        // mathematics). Xbox controllers return positive values when you pull to
+        // the right by default.
+        return -rotLimiter.Calculate (params.rightStickX()) * Drivetrain::MaxAngularSpeed;
+    }
+
+    void driveDisabled() {
         drivetrain.drive (units::velocity::meters_per_second_t (0),
                           units::angular_velocity::radians_per_second_t (0));
     }
@@ -207,6 +213,7 @@ private:
             std::clog << "[frc] right bumper released\n";
         }
 
+        // Copy axis values.
         // Using 'std::min' garauntees that the 'Parameters::Context::axis' array doesn't
         // overflow...  if it did... the firmware would crash in a very bad way.
         for (int i = std::min (gamepad.GetAxisCount(), (int) Parameters::MaxAxes); --i >= 0;) {
@@ -214,8 +221,10 @@ private:
             // needed? gamepad.GetAxisType()
         }
 
+        // Copy dpad info.
         ctx.povs[0] = gamepad.GetPOVCount() <= 0 ? 0 : gamepad.GetPOV (0);
 
+        // copy button values.
         // button indexing in FRC starts at 1 for some reason.
         for (int i = std::min (gamepad.GetButtonCount(), (int) Parameters::MaxButtons); --i >= 0;) {
             ctx.buttons[i] = gamepad.GetRawButton (i + 1);
