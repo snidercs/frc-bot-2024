@@ -7,9 +7,7 @@ plugins {
 // Simulation configuration (e.g. environment variables).
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
-
-//Sets the XRP Client Host
-wpi.sim.envVar("HALSIMXRP_HOST", "192.168.42.1")
+wpi.sim.envVar("HALSIMXRP_HOST", "192.168.42.1") // Sets the XRP Client Host
 wpi.sim.addXRPClient().defaultEnabled = true
 
 model {
