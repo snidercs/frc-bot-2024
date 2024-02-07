@@ -14,23 +14,33 @@
     vise versa, the FRC classes call functions on this class to retrieve info 
     when calculating voltages etc etc etc.
 
-    Welcome to the wonderful world of signal processing!
-
-    By keeping FRC code out of this class, will be much much easier to port this
-    base system we're building to another non-FRC system later if we want to.
+    General Usage: Stick a Parameters object in your main class.  Then inside the
+    periodic functions instantiate a Parameters::Context, copy raw joystick and
+    button values, then pass to Parameters::process().
 */
 class Parameters final {
 public:
-    Parameters() {
-        procTicker.enable (false);
-    }
-
+    Parameters() = default;
     ~Parameters() = default;
 
     /** The default controller port to use. */
     static constexpr int DefaultControllerPort = 0;
     /** Default joystick port, not currently used. */
     static constexpr int DefaultJoystickPort = 1;
+
+    Parameters (const Parameters& o) { operator= (o); }
+    Parameters& operator= (const Parameters& o) {
+        values = o.values;
+        lastContext = o.lastContext;
+        return *this;
+    }
+
+    Parameters (Parameters&& o) { operator= (std::forward<Parameters>(o)); }
+    Parameters& operator= (Parameters&& o) {
+        values = std::move (o.values);
+        lastContext = std::move(o.lastContext);
+        return *this;
+    }
 
     enum : int {
         MaxAxes    = 32,    ///> Max number of axes supported.
@@ -133,7 +143,6 @@ protected:
     void modeChanged();
 
 private:
-    snider::MessageTicker procTicker { "[bot] process()" };
     Context values;
     Context lastContext;
     snider::BotMode _mode { snider::BotMode::Disconnected };
