@@ -27,3 +27,15 @@ This is the data-based simulator panel.
 # run this from the command line to start the basic simulator
 ./gradlew simulateNative
 ```
+
+## Deployment
+Run the following command to deploy code to the roboRIO
+```bash
+./gradlew deploy
+```
+
+If it gives problems, cleaning the project could help. The `--info` option could give more information too.
+```bash
+./gradlew clean
+./gradle deploy --info
+```
