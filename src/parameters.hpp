@@ -5,12 +5,14 @@
 #include "snider/botmode.hpp"
 #include "snider/messageticker.hpp"
 
-/** The main robot class.  It is this object's job to process data coming from
-    the FRC system.  Think of it as a realtime state of all the data points
-    needed to control the bot.  e.g. it contains all the information needed to
-    send messages to, change voltages of, etc etc.  And it gets updated in real-
-    time in the frc callbacks.  And vise versa, the FRC classes call functions
-    on this class to retrieve info when computing voltages etc etc etc.
+/** Parameter state. e.g. Raw controller value storage and filtering.
+ 
+    It is this object's job to process data coming from the FRC system.  Think 
+    of it  as a realtime state of all the data points needed to control the bot.  
+    e.g. it contains all the information needed to send messages to, change 
+    voltages of, etc etc. It gets updated in real-time in the frc callbacks. And 
+    vise versa, the FRC classes call functions on this class to retrieve info 
+    when calculating voltages etc etc etc.
 
     Welcome to the wonderful world of signal processing!
 
