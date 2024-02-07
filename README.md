@@ -16,16 +16,10 @@ FRC provides [several examples](https://github.com/wpilibsuite/allwpilib/tree/ma
 * [PWM Controllers](https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/pwm-controllers.html)
 * [Drive classes](https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html)
 
-## Simulation
-Bot simulation is available in a few ways...
-
-### Basic Simulator
-This is the data-based simulator panel.
-
-![](doc/images/basic-simulator.png)
+## Building
+Build all targets, and run the simulator.
 ```bash
-# run this from the command line to start the basic simulator
-./gradlew simulateNative
+./gradlew build
 ```
 
 ## Deployment
@@ -37,5 +31,20 @@ Run the following command to deploy code to the roboRIO
 If it gives problems, cleaning the project could help. The `--info` option could give more information too.
 ```bash
 ./gradlew clean
-./gradle deploy --info
+./gradlew deploy --info
+
 ```
+
+## Simulation
+Bot simulation is available in a few ways...
+
+### Basic Simulator
+This is the data-based simulator panel.
+
+```bash
+# run this from the command line to start the basic simulator
+./gradlew simulateNative
+```
+
+![](doc/images/basic-simulator.png)
+
