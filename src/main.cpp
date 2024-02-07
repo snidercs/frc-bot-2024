@@ -83,8 +83,10 @@ public:
     }
 
     void TeleopPeriodic() {
-        if (! checkControllerConnection())
+        if (! checkControllerConnection()) {
+            driveDisabled();
             return;
+        }
 
         processParameters();
         drivetrain.drive (calculateSpeed (params.leftStickY()),
@@ -214,8 +216,6 @@ private:
         }
 
         // Copy axis values.
-        // Using 'std::min' garauntees that the 'Parameters::Context::axis' array doesn't
-        // overflow...  if it did... the firmware would crash in a very bad way.
         for (int i = std::min (gamepad.GetAxisCount(), (int) Parameters::MaxAxes); --i >= 0;) {
             ctx.axis[i] = gamepad.GetRawAxis (i);
             // needed? gamepad.GetAxisType()
@@ -224,8 +224,7 @@ private:
         // Copy dpad info.
         ctx.povs[0] = gamepad.GetPOVCount() <= 0 ? 0 : gamepad.GetPOV (0);
 
-        // copy button values.
-        // button indexing in FRC starts at 1 for some reason.
+        // copy button values. button indexing in FRC starts at 1 for some reason.
         for (int i = std::min (gamepad.GetButtonCount(), (int) Parameters::MaxButtons); --i >= 0;) {
             ctx.buttons[i] = gamepad.GetRawButton (i + 1);
         }

@@ -31,21 +31,23 @@ public:
     static constexpr int DefaultJoystickPort = 1;
 
     enum : int {
-        MaxAxes    = 32,
-        MaxPOVs    = 1,
-        MaxButtons = 16
+        MaxAxes    = 32,    ///> Max number of axes supported.
+        MaxPOVs    = 1,     ///> Max number of dpads supported.
+        MaxButtons = 16     ///> Max number of buttons supported.
     };
 
     enum Indexes : int {
-        LeftStickX   = 0,
-        LeftStickY   = 1,
-        TriggerLeft  = 2,
-        TriggerRight = 3,
-        RightStickX  = 4,
-        RightStickY  = 5
+        LeftStickX   = 0, ///> Index of Left stick X
+        LeftStickY   = 1, ///> Index of Left stick Y
+        TriggerLeft  = 2, ///> Index of Trigger left
+        TriggerRight = 3, ///> Index of Trigger right
+        RightStickX  = 4, ///> Index of Right stick X
+        RightStickY  = 5  ///> Index of Right stick Y
     };
 
-    /** A context in which the bot runs. */
+    /** A context in which controller values get processed runs. The context 
+        holds a cache of raw values read from the Xbox, or other, controller.
+     */
     class Context {
     public:
         Context() { reset(); }
@@ -62,7 +64,7 @@ public:
             return *this;
         }
 
-        /** Storage for axis data (the thumb sticks)
+        /** Storage for axis data (the thumb sticks and triggers)
             
             This is a plain C-style array with a fixed size.  It is a direct
             allocation in RAM on the stack.  Java cannot do this that I know of,
@@ -71,10 +73,10 @@ public:
         */
         double axis[MaxAxes] = { 0 };
 
-        /** POVs storage */
+        /** POVs storage. */
         int povs[MaxPOVs] = { 0 };
 
-        /** Buttons storage */
+        /** Buttons storage. */
         bool buttons[MaxButtons] = { 0 };
 
         /** Reset to default values */
@@ -107,11 +109,23 @@ public:
      */
     void process (const Context& context) noexcept;
 
+    /** Returns the processed left stick X value. */
     double leftStickX() const noexcept { return values.axis[LeftStickX]; }
+
+    /** Returns the processed left stick Y value. */
     double leftStickY() const noexcept { return values.axis[LeftStickY]; }
 
+    /** Returns the processed right stick X value. */
     double rightStickX() const noexcept { return values.axis[RightStickX]; }
+
+    /** Returns the processed right stick Y value. */
     double rightStickY() const noexcept { return values.axis[RightStickY]; }
+
+    /** Returns the processed left trigger value. */
+    double triggerLeft() const noexcept { return values.axis[TriggerLeft]; }
+
+    /** Returns the processed right trigger value. */
+    double triggerRight() const noexcept { return values.axis[TriggerRight]; }
 
 protected:
     void modeChanged();
