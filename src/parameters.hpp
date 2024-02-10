@@ -20,32 +20,27 @@
 */
 class Parameters final {
 public:
-    Parameters() = default;
+    Parameters()  = default;
     ~Parameters() = default;
-
-    /** The default controller port to use. */
-    static constexpr int DefaultControllerPort = 0;
-    /** Default joystick port, not currently used. */
-    static constexpr int DefaultJoystickPort = 1;
 
     Parameters (const Parameters& o) { operator= (o); }
     Parameters& operator= (const Parameters& o) {
-        values = o.values;
+        values      = o.values;
         lastContext = o.lastContext;
         return *this;
     }
 
-    Parameters (Parameters&& o) { operator= (std::forward<Parameters>(o)); }
+    Parameters (Parameters&& o) { operator= (std::forward<Parameters> (o)); }
     Parameters& operator= (Parameters&& o) {
-        values = std::move (o.values);
-        lastContext = std::move(o.lastContext);
+        values      = std::move (o.values);
+        lastContext = std::move (o.lastContext);
         return *this;
     }
 
     enum : int {
-        MaxAxes    = 32,    ///> Max number of axes supported.
-        MaxPOVs    = 1,     ///> Max number of dpads supported.
-        MaxButtons = 16     ///> Max number of buttons supported.
+        MaxAxes    = 32, ///> Max number of axes supported.
+        MaxPOVs    = 1,  ///> Max number of dpads supported.
+        MaxButtons = 16  ///> Max number of buttons supported.
     };
 
     enum Indexes : int {

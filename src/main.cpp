@@ -13,6 +13,7 @@
 
 #include "drivetrain.hpp"
 #include "parameters.hpp"
+#include "ports.hpp"
 
 using BotMode = snider::BotMode;
 
@@ -126,7 +127,7 @@ private:
     const std::string autoNameDefault = "Default";
     const std::string autoNameCustom  = "My Auto";
 
-    frc::XboxController gamepad { Parameters::DefaultControllerPort };
+    frc::XboxController gamepad { Port::DefaultGamepad };
 
     // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0  to 1.
     // This is also called parameter smoothing.

@@ -24,6 +24,9 @@
 #include <units/length.h>
 #include <units/velocity.h>
 
+#include "ports.hpp"
+
+// Enable this when using 4 PWM's. e.g. 2x for left and 2x for right.
 #define BOT_USE_4_PWM 0
 
 /**
@@ -57,10 +60,13 @@ private:
     frc::PWMSparkMax rightLeader { 3 };
     frc::PWMSparkMax rightFollower { 4 };
 #else
-    frc::PWMSparkMax leftLeader { 1 };
-    frc::PWMSparkMax rightLeader { 3 };
+    frc::PWMSparkMax leftLeader { Port::DriveLeftLeader };
+    frc::PWMSparkMax rightLeader { Port::DriveRightLeader };
 #endif
 
+    //==========================================================================
+    // This section of class members came from the examples.  Some of it may not
+    // be needed except for simulation. -MRF
     frc::Encoder leftEncoder { 0, 1 };
     frc::Encoder rightEncoder { 2, 3 };
 
@@ -80,6 +86,7 @@ private:
     // robot!
     frc::SimpleMotorFeedforward<units::meters> feedforward { 1_V, 3_V / 1_mps };
 
+    //==========================================================================
     // Simulation classes help us simulate our robot
     frc::sim::AnalogGyroSim gyroSim { gyro };
     frc::sim::EncoderSim leftEncoderSim { leftEncoder };
