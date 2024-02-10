@@ -20,11 +20,13 @@ The table below is a general outline of what the gamepad controls do.
 
 ## Motors
 The values in this table are probably wrong. They need verified -MRF
-| Label | PWM Port | For?               |
-|-------|:--------:|--------------------|
-| M1    |  -       |  Left drive no. 1  |
-| M2    |  -       |  Left drive no. 2  |
-| M3    |  -   |  Right Drive no. 1 |
-| M4    |  -   |  Right Drive no. 2 |
-| M5    |  -   |  Shooting |
-| M6    |  -   |  Shooting |
+| Label | PWM Port | Controller | For?              |
+|-------|:--------:|:----------:|-------------------|
+| M1/M2 |  0       | SparkMax   | Left drive no. 1  |
+| M3/M4 |  1       | SparkMax   | Right drive no. 2 |
+| M3    |  2       | SparkMax   | Shooter intake    |
+| M4    |  3       | SparkMax   | Shooter           |
+| M5    |  4       | SparkMax   | Rotate arm        |
+| M6    |  5       | SparkMax   | Pickup Roller     |
+| M7    |  - | - | - |
+| M8    |  - | - | - |
