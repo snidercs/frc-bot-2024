@@ -52,6 +52,12 @@ public:
         RightStickY  = 5  ///> Index of Right stick Y
     };
 
+    enum : int {
+        ButtonA = 0,
+        ButtonB = 1,
+        ButtonX = 2,
+        ButtonY = 3,
+    };
     /** A context in which controller values get processed runs. The context 
         holds a cache of raw values read from the Xbox, or other, controller.
      */
@@ -133,6 +139,11 @@ public:
 
     /** Returns the processed right trigger value. */
     double triggerRight() const noexcept { return values.axis[TriggerRight]; }
+
+    /** Return processed passed value. */
+    double get_value(int given_param){
+        return values.axis[given_param]; 
+    }
 
 protected:
     void modeChanged();
