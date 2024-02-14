@@ -14,6 +14,7 @@
 #include "drivetrain.hpp"
 #include "parameters.hpp"
 #include "ports.hpp"
+#include "shooter.hpp"
 
 using BotMode = snider::BotMode;
 
@@ -60,6 +61,7 @@ public:
         }
 
         timer.Restart();
+
         drivetrain.resetOdometry (trajectory.InitialPose());
 
         params.setMode (BotMode::Autonomous);
@@ -75,7 +77,12 @@ public:
         auto elapsed   = timer.Get();
         auto reference = trajectory.Sample (elapsed);
         auto speeds    = ramsete.Calculate (drivetrain.position2d(), reference);
-        drivetrain.drive (speeds.vx, speeds.omega);
+        if (elapsed < trajectory.TotalTime()) {
+            drivetrain.drive (units::meters_per_second_t (1.0),
+                              units::radians_per_second_t { 0.0 });
+        } else {
+            driveDisabled();
+        }
     }
 
     //==========================================================================
