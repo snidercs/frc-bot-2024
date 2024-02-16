@@ -81,6 +81,8 @@ public:
     //==========================================================================
     void TeleopInit() override {
         params.setMode (BotMode::Teleop);
+        // This must be a trigger because motors are PWM. A button press would be [0 to 1] not [-1 to 1] like the pwm 
+        
     }
 
     void TeleopPeriodic() {
@@ -90,8 +92,21 @@ public:
         }
 
         processParameters();
-        drivetrain.drive (calculateSpeed (params.leftStickY()),
-                          calculateAngularSpeed (params.rightStickX()));
+        drivetrain.drive (calculateSpeed (params.getLeftStickY()),
+                          calculateAngularSpeed (params.getRightStickX()));
+        double arm_motor_controller_trigger_away = Parameters::ButtonLeftBumper; //Right trigger will be for moving arm away from robot
+        double arm_motor_controller_trigger_close = Parameters::ButtonRightBumper; //Right trigger will be for moving arm closer to robot
+
+        // lots of controller hotswapping will probably occur here since this is
+        // where our stuff is execute
+        if (params.getButtonValue(arm_motor_controller_trigger_away)){
+            std::clog << "Push arm away\n";
+        }
+        if (params.getButtonValue(arm_motor_controller_trigger_close)){
+            std::clog << "pull arm close\n";
+        }
+
+        
     }
 
     //==========================================================================
@@ -145,7 +160,7 @@ private:
     const units::meters_per_second_t calculateSpeed (double value) noexcept {
         // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.
-        return -speedLimiter.Calculate (params.leftStickY()) * Drivetrain::MaxSpeed;
+        return -speedLimiter.Calculate (params.getLeftStickY()) * Drivetrain::MaxSpeed;
     }
 
     const units::radians_per_second_t calculateAngularSpeed (double value) noexcept {
@@ -153,7 +168,7 @@ private:
         // positive value when we pull to the left (remember, CCW is positive in
         // mathematics). Xbox controllers return positive values when you pull to
         // the right by default.
-        return -rotLimiter.Calculate (params.rightStickX()) * Drivetrain::MaxAngularSpeed;
+        return -rotLimiter.Calculate (params.getRightStickX()) * Drivetrain::MaxAngularSpeed;
     }
 
     void driveDisabled() {
@@ -177,44 +192,6 @@ private:
 
         if (! gamepadConnected)
             return;
-
-        // the buttons
-        if (gamepad.GetAButtonPressed()) {
-            std::clog << "[frc] A pressed\n";
-        } else if (gamepad.GetAButtonReleased()) {
-            std::clog << "[frc] A released\n";
-        }
-
-        if (gamepad.GetBButtonPressed()) {
-            std::clog << "[frc] B pressed\n";
-        } else if (gamepad.GetBButtonReleased()) {
-            std::clog << "[frc] B released\n";
-        }
-
-        if (gamepad.GetXButtonPressed()) {
-            std::clog << "[frc] X pressed\n";
-        } else if (gamepad.GetXButtonReleased()) {
-            std::clog << "[frc] X released\n";
-        }
-
-        if (gamepad.GetYButtonPressed()) {
-            std::clog << "[frc] Y pressed\n";
-        } else if (gamepad.GetYButtonReleased()) {
-            std::clog << "[frc] Y released\n";
-        }
-
-        // the bumpers
-        if (gamepad.GetLeftBumperPressed()) {
-            std::clog << "[frc] left bumper pressed\n";
-        } else if (gamepad.GetLeftBumperReleased()) {
-            std::clog << "[frc] left bumper released\n";
-        }
-
-        if (gamepad.GetRightBumperPressed()) {
-            std::clog << "[frc] right bumper pressed\n";
-        } else if (gamepad.GetRightBumperReleased()) {
-            std::clog << "[frc] right bumper released\n";
-        }
 
         // Copy axis values.
         for (int i = std::min (gamepad.GetAxisCount(), (int) Parameters::MaxAxes); --i >= 0;) {
