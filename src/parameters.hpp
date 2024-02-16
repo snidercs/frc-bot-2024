@@ -52,6 +52,21 @@ public:
         RightStickY  = 5  ///> Index of Right stick Y
     };
 
+    // I don't think this works gotta check later -MC
+    enum : int {
+        ButtonA           = 0,
+        ButtonB           = 1,
+        ButtonX           = 2,
+        ButtonY           = 3,
+        ButtonRightBumper = 4,
+        ButtonLeftBumper  = 5,
+        ButtonBack        = 6,
+        ButtonStart       = 7,
+        ButtonHome        = 8,
+        ButtonL3          = 9,
+        ButtonR3          = 10
+
+    };
     /** A context in which controller values get processed runs. The context 
         holds a cache of raw values read from the Xbox, or other, controller.
      */
@@ -60,16 +75,8 @@ public:
         Context() { reset(); }
         ~Context() = default;
 
-        /** Copy ctor and operator.  I can explain what these are, ask me -MRF. */
-        Context (const Context& o) { *this = o; }
-        Context& operator= (const Context& o) noexcept {
-            // This literally means memory copy, and that's exactly what it
-            // does... copy raw memory from one address to another and how many
-            // bytes.
-            memcpy (axis, o.axis, MaxAxes * sizeof (double));
-            memcpy (povs, o.povs, MaxPOVs * sizeof (int));
-            return *this;
-        }
+        /** Copy ctor and opera
+        if (params.get_value(arm_motor_controller_trigger_away) > 0){
 
         /** Storage for axis data (the thumb sticks and triggers)
             
@@ -116,23 +123,81 @@ public:
      */
     void process (const Context& context) noexcept;
 
+    /** Returns the axis value of the given axis */
+    double getAxisValue (int axisParam) const noexcept {
+        return values.axis[axisParam];
+    }
+
     /** Returns the processed left stick X value. */
-    double leftStickX() const noexcept { return values.axis[LeftStickX]; }
+    double getLeftStickX() const noexcept { return getAxisValue (LeftStickX); }
 
     /** Returns the processed left stick Y value. */
-    double leftStickY() const noexcept { return values.axis[LeftStickY]; }
+    double getLeftStickY() const noexcept { return getAxisValue (LeftStickY); }
 
     /** Returns the processed right stick X value. */
-    double rightStickX() const noexcept { return values.axis[RightStickX]; }
+    double getRightStickX() const noexcept { return getAxisValue (RightStickX); }
 
     /** Returns the processed right stick Y value. */
-    double rightStickY() const noexcept { return values.axis[RightStickY]; }
+    double getRightStickY() const noexcept { return getAxisValue (RightStickY); }
 
     /** Returns the processed left trigger value. */
-    double triggerLeft() const noexcept { return values.axis[TriggerLeft]; }
+    double getTriggerLeft() const noexcept { return getAxisValue (TriggerLeft); }
 
     /** Returns the processed right trigger value. */
-    double triggerRight() const noexcept { return values.axis[TriggerRight]; }
+    double getTriggerRight() const noexcept { return getAxisValue (TriggerRight); }
+
+    /** Return processed passed value. */
+    bool getButtonValue (int givenParam) const noexcept {
+        return values.buttons[givenParam];
+    }
+    /** Returns the processed A button value . */
+    bool getAButton() const noexcept {
+        return getButtonValue (ButtonA);
+    }
+    /** Returns the processed B button value . */
+    bool getBButton() const noexcept {
+        return getButtonValue (ButtonB);
+    }
+    /** Returns the processed X button value . */
+    bool getXButton() const noexcept {
+        return getButtonValue (ButtonX);
+    }
+    /** Returns the processed Y button value . */
+    bool getYButton() const noexcept {
+        return getButtonValue (ButtonY);
+    }
+    /** Returns the processed right bumper button value . */
+    bool getRightBumperButton() const noexcept {
+        return getButtonValue (ButtonRightBumper);
+    }
+    /** Returns the processed left bumper button value . */
+    bool getLeftBumperButton() const noexcept {
+        return getButtonValue (ButtonLeftBumper);
+    }
+    /** Returns the processed back button value . */
+    bool getBackButton() const noexcept {
+        return getButtonValue (ButtonBack);
+    }
+    /** Returns the processed start button value . */
+    bool getStartButton() const noexcept {
+        return getButtonValue (ButtonStart);
+    }
+    /** Returns the processed home button value . */
+    bool getHomeButton() const noexcept {
+        return getButtonValue (ButtonHome);
+    }
+    /** Returns the processed l3 button value . */
+    bool getL3Button() const noexcept {
+        return getButtonValue (ButtonL3);
+    }
+    /** Returns the processed r3 button value . */
+    bool getR3Button() const noexcept {
+        return getButtonValue (ButtonR3);
+    }
+    /** Return processed passed value. */
+    int getPOVValue (int givenParam) const noexcept {
+        return values.povs[givenParam];
+    }
 
 protected:
     void modeChanged();
