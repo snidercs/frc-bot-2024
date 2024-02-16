@@ -2,8 +2,9 @@
 
 #include <iostream>
 #include <string>
-
-#include <boost/algorithm/string/trim.hpp>
+#if __has_include(<boost/algorithm/string/trim.hpp>)
+#    include <boost/algorithm/string/trim.hpp>
+#endif
 
 namespace snider {
 
@@ -25,8 +26,11 @@ inline static void log (Str&&... msgs) {
     }(),
      ...);
 
+#if __has_include(<boost/algorithm/string/trim.hpp>)
     // trim the last tab
     boost::trim (out);
+#endif
+
     // render to console
     std::clog << out << std::endl;
 }

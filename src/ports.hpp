@@ -1,6 +1,7 @@
 #pragma once
 
 namespace Port {
+
 /** The default gamepad port to use. */
 static constexpr int DefaultGamepad = 0;
 

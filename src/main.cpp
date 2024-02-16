@@ -12,6 +12,7 @@
 #include <frc/trajectory/TrajectoryGenerator.h>
 
 #include "drivetrain.hpp"
+#include "mechanicalarm.hpp"
 #include "parameters.hpp"
 #include "ports.hpp"
 #include "shooter.hpp"
@@ -98,19 +99,19 @@ public:
         }
 
         processParameters();
+
         drivetrain.drive (calculateSpeed (params.getLeftStickY()),
                           calculateAngularSpeed (params.getRightStickX()));
-        double arm_motor_controller_trigger_away  = Parameters::ButtonLeftBumper;  //Right trigger will be for moving arm away from robot
-        double arm_motor_controller_trigger_close = Parameters::ButtonRightBumper; //Right trigger will be for moving arm closer to robot
 
-        // lots of controller hotswapping will probably occur here since this is
-        // where our stuff is execute
-        if (params.getButtonValue (arm_motor_controller_trigger_away)) {
-            std::clog << "Push arm away\n";
-        }
-        if (params.getButtonValue (arm_motor_controller_trigger_close)) {
-            std::clog << "pull arm close\n";
-        }
+        if (params.getButtonValue (Parameters::ButtonLeftBumper))
+            mechanicalArm.moveDown();
+        else if (params.getButtonValue (Parameters::ButtonRightBumper))
+            mechanicalArm.moveUp();
+
+        if (params.getButtonValue (Parameters::ButtonX))
+            shooter.shoot();
+        else if (params.getButtonValue (Parameters::ButtonB))
+            shooter.load();
     }
 
     //==========================================================================
@@ -154,6 +155,9 @@ private:
     frc::SlewRateLimiter<units::scalar> rotLimiter { 3 / 1_s };
 
     Drivetrain drivetrain;
+    MechanicalArm mechanicalArm;
+    Shooter shooter;
+
     frc::Trajectory trajectory;
     frc::RamseteController ramsete;
     frc::Timer timer;
