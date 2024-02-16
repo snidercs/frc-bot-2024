@@ -1,5 +1,8 @@
 #pragma once
 
+/** Ports defined in this file are indexes/IDs used by PWM controller, Gamepads,
+    and any other device connected which has a Port ID.
+*/
 namespace Port {
 
 /** The default gamepad port to use. */

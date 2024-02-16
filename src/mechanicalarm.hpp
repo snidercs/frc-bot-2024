@@ -28,6 +28,5 @@ public:
     void moveDown() { move (Down); }
 
 private:
-    frc::PWMSparkMax intakeMotor { Port::ShooterIntake };
-    frc::PWMSparkMax shootMotor { Port::ShooterIntake };
+    frc::PWMSparkMax moveMotor { Port::ArmPickup };
 };
