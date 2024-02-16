@@ -54,18 +54,17 @@ public:
 
     // I don't think this works gotta check later -MC
     enum : int {
-        ButtonA = 0,
-        ButtonB = 1,
-        ButtonX = 2,
-        ButtonY = 3,
+        ButtonA           = 0,
+        ButtonB           = 1,
+        ButtonX           = 2,
+        ButtonY           = 3,
         ButtonRightBumper = 4,
-        ButtonLeftBumper = 5,
-        ButtonBack = 6,
-        ButtonStart = 7,
-        ButtonHome = 8,
-        ButtonL3 = 9,
-        ButtonR3 = 10
-
+        ButtonLeftBumper  = 5,
+        ButtonBack        = 6,
+        ButtonStart       = 7,
+        ButtonHome        = 8,
+        ButtonL3          = 9,
+        ButtonR3          = 10
 
     };
     /** A context in which controller values get processed runs. The context 
@@ -125,83 +124,80 @@ public:
     void process (const Context& context) noexcept;
 
     /** Returns the axis value of the given axis */
-    double getAxisValue(int axisParam) const noexcept {
+    double getAxisValue (int axisParam) const noexcept {
         return values.axis[axisParam];
     }
 
     /** Returns the processed left stick X value. */
-    double getLeftStickX() const noexcept { return getAxisValue(LeftStickX); }
+    double getLeftStickX() const noexcept { return getAxisValue (LeftStickX); }
 
     /** Returns the processed left stick Y value. */
-    double getLeftStickY() const noexcept { return getAxisValue(LeftStickY);}
+    double getLeftStickY() const noexcept { return getAxisValue (LeftStickY); }
 
     /** Returns the processed right stick X value. */
-    double getRightStickX() const noexcept { return getAxisValue(RightStickX);}
+    double getRightStickX() const noexcept { return getAxisValue (RightStickX); }
 
     /** Returns the processed right stick Y value. */
-    double getRightStickY() const noexcept { return getAxisValue(RightStickY);}
+    double getRightStickY() const noexcept { return getAxisValue (RightStickY); }
 
     /** Returns the processed left trigger value. */
-    double getTriggerLeft() const noexcept { return getAxisValue(TriggerLeft);}
+    double getTriggerLeft() const noexcept { return getAxisValue (TriggerLeft); }
 
     /** Returns the processed right trigger value. */
-    double getTriggerRight() const noexcept { return getAxisValue(TriggerRight); }
-
+    double getTriggerRight() const noexcept { return getAxisValue (TriggerRight); }
 
     /** Return processed passed value. */
-    bool getButtonValue(int givenParam) const noexcept {
-        return values.buttons[givenParam]; 
+    bool getButtonValue (int givenParam) const noexcept {
+        return values.buttons[givenParam];
     }
     /** Returns the processed A button value . */
     bool getAButton() const noexcept {
-        return getButtonValue(ButtonA);
+        return getButtonValue (ButtonA);
     }
     /** Returns the processed B button value . */
     bool getBButton() const noexcept {
-        return getButtonValue(ButtonB);
+        return getButtonValue (ButtonB);
     }
     /** Returns the processed X button value . */
     bool getXButton() const noexcept {
-        return getButtonValue(ButtonX);
+        return getButtonValue (ButtonX);
     }
     /** Returns the processed Y button value . */
     bool getYButton() const noexcept {
-        return getButtonValue(ButtonY);
+        return getButtonValue (ButtonY);
     }
     /** Returns the processed right bumper button value . */
     bool getRightBumperButton() const noexcept {
-        return getButtonValue(ButtonRightBumper);
+        return getButtonValue (ButtonRightBumper);
     }
     /** Returns the processed left bumper button value . */
     bool getLeftBumperButton() const noexcept {
-        return getButtonValue(ButtonLeftBumper);
+        return getButtonValue (ButtonLeftBumper);
     }
     /** Returns the processed back button value . */
     bool getBackButton() const noexcept {
-        return getButtonValue(ButtonBack);
+        return getButtonValue (ButtonBack);
     }
     /** Returns the processed start button value . */
     bool getStartButton() const noexcept {
-        return getButtonValue(ButtonStart);
+        return getButtonValue (ButtonStart);
     }
     /** Returns the processed home button value . */
     bool getHomeButton() const noexcept {
-        return getButtonValue(ButtonHome);
+        return getButtonValue (ButtonHome);
     }
     /** Returns the processed l3 button value . */
     bool getL3Button() const noexcept {
-        return getButtonValue(ButtonL3);
+        return getButtonValue (ButtonL3);
     }
     /** Returns the processed r3 button value . */
     bool getR3Button() const noexcept {
-        return getButtonValue(ButtonR3);
+        return getButtonValue (ButtonR3);
     }
     /** Return processed passed value. */
-    int getPOVValue(int givenParam) const noexcept {
+    int getPOVValue (int givenParam) const noexcept {
         return values.povs[givenParam];
     }
-
-    
 
 protected:
     void modeChanged();
