@@ -81,8 +81,7 @@ public:
     //==========================================================================
     void TeleopInit() override {
         params.setMode (BotMode::Teleop);
-        // This must be a trigger because motors are PWM. A button press would be [0 to 1] not [-1 to 1] like the pwm 
-        
+        // This must be a trigger because motors are PWM. A button press would be [0 to 1] not [-1 to 1] like the pwm
     }
 
     void TeleopPeriodic() {
@@ -94,19 +93,17 @@ public:
         processParameters();
         drivetrain.drive (calculateSpeed (params.getLeftStickY()),
                           calculateAngularSpeed (params.getRightStickX()));
-        double arm_motor_controller_trigger_away = Parameters::ButtonLeftBumper; //Right trigger will be for moving arm away from robot
+        double arm_motor_controller_trigger_away  = Parameters::ButtonLeftBumper;  //Right trigger will be for moving arm away from robot
         double arm_motor_controller_trigger_close = Parameters::ButtonRightBumper; //Right trigger will be for moving arm closer to robot
 
         // lots of controller hotswapping will probably occur here since this is
         // where our stuff is execute
-        if (params.getButtonValue(arm_motor_controller_trigger_away)){
+        if (params.getButtonValue (arm_motor_controller_trigger_away)) {
             std::clog << "Push arm away\n";
         }
-        if (params.getButtonValue(arm_motor_controller_trigger_close)){
+        if (params.getButtonValue (arm_motor_controller_trigger_close)) {
             std::clog << "pull arm close\n";
         }
-
-        
     }
 
     //==========================================================================
