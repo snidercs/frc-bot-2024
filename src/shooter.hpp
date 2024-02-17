@@ -15,5 +15,5 @@ public:
 
 private:
     frc::PWMSparkMax intakeMotor { Port::ShooterIntake };
-    frc::PWMSparkMax shootMotor { Port::ShooterIntake };
+    frc::PWMSparkMax shootMotor { Port::ShooterShoot };
 };

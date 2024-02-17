@@ -37,7 +37,3 @@ void Parameters::process (const Context& context) noexcept {
     // interpolations...
     lastContext = values;
 }
-
-void Parameters::modeChanged() {
-    std::clog << "[params] bot mode changed: " << std::to_string (mode()) << std::endl;
-}

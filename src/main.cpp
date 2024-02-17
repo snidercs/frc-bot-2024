@@ -11,6 +11,8 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
 
+#include "snider/padmode.hpp"
+
 #include "drivetrain.hpp"
 #include "mechanicalarm.hpp"
 #include "parameters.hpp"
@@ -29,7 +31,7 @@ public:
         frc::SmartDashboard::PutData ("Auto Modes", &chooser);
 
         // A safe assumption I guess....
-        params.setMode (BotMode::Disconnected);
+        params.setBotMode (BotMode::Disconnected);
 
         trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
             frc::Pose2d { 2_m, 2_m, 0_rad },
@@ -65,7 +67,7 @@ public:
 
         drivetrain.resetOdometry (trajectory.InitialPose());
 
-        params.setMode (BotMode::Autonomous);
+        params.setBotMode (BotMode::Autonomous);
     }
 
     void AutonomousPeriodic() override {
@@ -88,7 +90,7 @@ public:
 
     //==========================================================================
     void TeleopInit() override {
-        params.setMode (BotMode::Teleop);
+        params.setBotMode (BotMode::Teleop);
         // This must be a trigger because motors are PWM. A button press would be [0 to 1] not [-1 to 1] like the pwm
     }
 
@@ -100,8 +102,8 @@ public:
 
         processParameters();
 
-        drivetrain.drive (calculateSpeed (params.getLeftStickY()),
-                          calculateAngularSpeed (params.getRightStickX()));
+        drivetrain.drive (calculateSpeed (params.getSpeed()),
+                          calculateAngularSpeed (params.getAngularSpeed()));
 
         if (params.getButtonValue (Parameters::ButtonLeftBumper))
             mechanicalArm.moveDown();
@@ -116,7 +118,7 @@ public:
 
     //==========================================================================
     void DisabledInit() override {
-        params.setMode (BotMode::Disabled);
+        params.setBotMode (BotMode::Disabled);
     }
 
     void DisabledPeriodic() override {
@@ -125,7 +127,7 @@ public:
 
     //==========================================================================
     void TestInit() override {
-        params.setMode (BotMode::Test);
+        params.setBotMode (BotMode::Test);
     }
 
     void TestPeriodic() override {
