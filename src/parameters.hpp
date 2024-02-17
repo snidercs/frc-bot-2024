@@ -47,9 +47,9 @@ public:
         LeftStickX   = 0, ///> Index of Left stick X
         LeftStickY   = 1, ///> Index of Left stick Y
         TriggerLeft  = 2, ///> Index of Trigger left
-        TriggerRight = 3, ///> Index of Trigger right
-        RightStickX  = 4, ///> Index of Right stick X
-        RightStickY  = 5  ///> Index of Right stick Y
+        TriggerRight = 5, ///> Index of Trigger right
+        RightStickX  = 3, ///> Index of Right stick X
+        RightStickY  = 4  ///> Index of Right stick Y
     };
 
     // I don't think this works gotta check later -MC
@@ -65,7 +65,6 @@ public:
         ButtonHome        = 8,
         ButtonL3          = 9,
         ButtonR3          = 10
-
     };
     /** A context in which controller values get processed runs. The context 
         holds a cache of raw values read from the Xbox, or other, controller.
