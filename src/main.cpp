@@ -170,7 +170,7 @@ private:
     const units::meters_per_second_t calculateSpeed (double value) noexcept {
         // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.
-        return -speedLimiter.Calculate (params.getLeftStickY()) * Drivetrain::MaxSpeed;
+        return -speedLimiter.Calculate (value) * Drivetrain::MaxSpeed;
     }
 
     const units::radians_per_second_t calculateAngularSpeed (double value) noexcept {
@@ -178,7 +178,7 @@ private:
         // positive value when we pull to the left (remember, CCW is positive in
         // mathematics). Xbox controllers return positive values when you pull to
         // the right by default.
-        return -rotLimiter.Calculate (params.getRightStickX()) * Drivetrain::MaxAngularSpeed;
+        return -rotLimiter.Calculate (value) * Drivetrain::MaxAngularSpeed;
     }
 
     void driveDisabled() {
