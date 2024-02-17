@@ -4,7 +4,7 @@
 
 #include "snider/botmode.hpp"
 #include "snider/messageticker.hpp"
-
+#include "snider/padmode.hpp"
 /** Parameter state. e.g. Raw controller value storage and filtering.
  
     It is this object's job to process data coming from the FRC system.  Think 
@@ -75,8 +75,16 @@ public:
         Context() { reset(); }
         ~Context() = default;
 
-        /** Copy ctor and opera
-        if (params.get_value(arm_motor_controller_trigger_away) > 0){
+        /** Copy ctor and operator. */
+        Context (const Context& o) { *this = o; }
+        Context& operator= (const Context& o) noexcept {
+            // This literally means memory copy, and that's exactly what it
+            // does... copy raw memory from one address to another and how many
+            // bytes.
+            memcpy (axis, o.axis, MaxAxes * sizeof (double));
+            memcpy (povs, o.povs, MaxPOVs * sizeof (int));
+            return *this;
+        }
 
         /** Storage for axis data (the thumb sticks and triggers)
             
@@ -102,14 +110,27 @@ public:
     };
 
     /** Returns the current mode in which the bot is running. */
-    constexpr auto mode() const noexcept { return _mode; }
+    constexpr auto getBotMode() const noexcept { return _mode; }
 
     /** Set the mode of the bot. */
-    void setMode (snider::BotMode newMode) noexcept {
+    void setBotMode (snider::BotMode newMode) noexcept {
         if (newMode == _mode)
             return;
         _mode = newMode;
-        modeChanged();
+    }
+
+    /** Returns the current gamepad mode. */
+    constexpr auto getPadMode() const noexcept { return _padMode; }
+
+    /** Returns the pad mode as a string. */
+    std::string getPadModeString() const noexcept {
+        return std::to_string (_padMode);
+    }
+
+    void setPadMode (snider::PadMode newMode) noexcept {
+        if (newMode == _padMode)
+            return;
+        _padMode = newMode;
     }
 
     /** Returns true if in teleop mode. */
@@ -199,11 +220,45 @@ public:
         return values.povs[givenParam];
     }
 
-protected:
-    void modeChanged();
+    //==========================================================================
+    /** Get the normalized speed value.
+        
+        @returns A speed value in the range of -1.0 to 1.0
+    */
+    double getSpeed() const noexcept {
+        double val = 0.0;
+
+        switch (_padMode) {
+            case PadMode::Standard:
+                val = getLeftStickY();
+                break;
+        }
+
+        return val;
+    }
+
+    /** Get the normalized angular speed value.
+        
+        @returns A speed value in the range of -1.0 to 1.0
+    */
+    double getAngularSpeed() const noexcept {
+        double val = 0.0;
+
+        switch (_padMode) {
+            case PadMode::Standard:
+                val = getRightStickX();
+                break;
+        }
+
+        return val;
+    }
 
 private:
+    using BotMode = snider::BotMode;
+    using PadMode = snider::PadMode;
+
     Context values;
     Context lastContext;
-    snider::BotMode _mode { snider::BotMode::Disconnected };
+    BotMode _mode { BotMode::Disconnected };
+    PadMode _padMode { PadMode::Standard };
 };
