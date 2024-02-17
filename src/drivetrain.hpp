@@ -12,7 +12,10 @@
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/kinematics/DifferentialDriveKinematics.h>
 #include <frc/kinematics/DifferentialDriveOdometry.h>
-#include <frc/motorcontrol/PWMSparkMax.h>
+
+#include <rev/CANSparkMax.h>
+#include <rev/CANSparkMaxLowLevel.h>
+
 #include <frc/simulation/AnalogGyroSim.h>
 #include <frc/simulation/DifferentialDrivetrainSim.h>
 #include <frc/simulation/EncoderSim.h>
@@ -60,8 +63,10 @@ private:
     frc::PWMSparkMax rightLeader { 3 };
     frc::PWMSparkMax rightFollower { 4 };
 #else
-    frc::PWMSparkMax leftLeader { Port::DriveLeftLeader };
-    frc::PWMSparkMax rightLeader { Port::DriveRightLeader };
+    rev::CANSparkMax leftLeader { Port::DriveLeftLeader,
+                                  rev::CANSparkLowLevel::MotorType::kBrushed };
+    rev::CANSparkMax rightLeader { Port::DriveRightLeader,
+                                   rev::CANSparkLowLevel::MotorType::kBrushed };
 #endif
 
     //==========================================================================
