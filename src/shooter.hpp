@@ -1,6 +1,7 @@
 #pragma once
 
-#include <frc/motorcontrol/PWMSparkMax.h>
+#include <rev/CANSparkMax.h>
+#include <rev/CANSparkMaxLowLevel.h>
 
 #include "ports.hpp"
 #include "snider/console.hpp"
@@ -14,6 +15,8 @@ public:
     void shoot() { snider::console::log ("[bot] shoot"); }
 
 private:
-    frc::PWMSparkMax intakeMotor { Port::ShooterIntake };
-    frc::PWMSparkMax shootMotor { Port::ShooterShoot };
+    rev::CANSparkMax intakeMotor { Port::ShooterIntake,
+                                   rev::CANSparkLowLevel::MotorType::kBrushed };
+    rev::CANSparkMax shootMotor { Port::ShooterShoot,
+                                  rev::CANSparkLowLevel::MotorType::kBrushed };
 };
