@@ -1,6 +1,7 @@
 #pragma once
 
-#include <frc/motorcontrol/PWMSparkMax.h>
+#include <rev/CANSparkMax.h>
+#include <rev/CANSparkMaxLowLevel.h>
 
 #include "ports.hpp"
 #include "snider/console.hpp"
@@ -28,5 +29,6 @@ public:
     void moveDown() { move (Down); }
 
 private:
-    frc::PWMSparkMax moveMotor { Port::ArmPickup };
+    rev::CANSparkMax moveMotor { Port::ArmPickup,
+                                 rev::CANSparkLowLevel::MotorType::kBrushed };
 };

@@ -12,16 +12,16 @@
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/kinematics/DifferentialDriveKinematics.h>
 #include <frc/kinematics/DifferentialDriveOdometry.h>
-
-#include <rev/CANSparkMax.h>
-#include <rev/CANSparkMaxLowLevel.h>
-
 #include <frc/simulation/AnalogGyroSim.h>
 #include <frc/simulation/DifferentialDrivetrainSim.h>
 #include <frc/simulation/EncoderSim.h>
 #include <frc/smartdashboard/Field2d.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/system/plant/LinearSystemId.h>
+
+#include <rev/CANSparkMax.h>
+#include <rev/CANSparkMaxLowLevel.h>
+
 #include <units/angle.h>
 #include <units/angular_velocity.h>
 #include <units/length.h>
