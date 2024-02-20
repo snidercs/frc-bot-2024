@@ -52,19 +52,19 @@ public:
         RightStickY  = 4  ///> Index of Right stick Y
     };
 
-    // I don't think this works gotta check later -MC
+    
     enum : int {
-        ButtonA           = 0,
-        ButtonB           = 1,
-        ButtonX           = 2,
-        ButtonY           = 3,
-        ButtonRightBumper = 4,
-        ButtonLeftBumper  = 5,
-        ButtonBack        = 6,
-        ButtonStart       = 7,
-        ButtonHome        = 8,
-        ButtonL3          = 9,
-        ButtonR3          = 10
+        ButtonA           = 0, ///> Index of Button A
+        ButtonB           = 1, ///> Index of Button B
+        ButtonX           = 2, ///> Index of Button X
+        ButtonY           = 3, ///> Index of Button Y
+        ButtonRightBumper = 4, ///> Index of Right Bumper
+        ButtonLeftBumper  = 5, ///> Index of Left Bumper
+        ButtonBack        = 6, ///> Index of Back Button 
+        ButtonStart       = 7, ///> Index of Start Button
+        ButtonHome        = 8, ///> Index of Home Button
+        ButtonL3          = 9, ///> Index of L3 Button
+        ButtonR3          = 10 ///> Index of R3 Button
     };
     /** A context in which controller values get processed runs. The context 
         holds a cache of raw values read from the Xbox, or other, controller.
