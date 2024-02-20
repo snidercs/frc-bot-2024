@@ -82,6 +82,7 @@ public:
             // bytes.
             memcpy (axis, o.axis, MaxAxes * sizeof (double));
             memcpy (povs, o.povs, MaxPOVs * sizeof (int));
+            memcpy (buttons, o.buttons, MaxButtons * sizeof(bool));
             return *this;
         }
 
