@@ -29,6 +29,8 @@ public:
     void moveDown() { move (Down); }
 
 private:
-    rev::CANSparkMax moveMotor { Port::ArmPickup,
+    rev::CANSparkMax rightArm { Port::RightArm,
                                  rev::CANSparkLowLevel::MotorType::kBrushed };
+    rev::CANSparkMax leftArm { Port::LeftArm,
+                                rev::CANSparkLowLevel::MotorType::kBrushed };
 };
