@@ -30,7 +30,7 @@
 #include "ports.hpp"
 
 // Enable this when using 4 PWM's. e.g. 2x for left and 2x for right.
-#define BOT_USE_4_PWM 0
+#define BOT_USE_4_PWM 1
 
 /**
  * Represents a differential drive style drivetrain.
@@ -58,14 +58,18 @@ private:
     static constexpr int EncoderResolution     = 4096;
 
 #if BOT_USE_4_PWM
-    frc::PWMSparkMax leftLeader { 1 };
-    frc::PWMSparkMax leftFollower { 2 };
-    frc::PWMSparkMax rightLeader { 3 };
-    frc::PWMSparkMax rightFollower { 4 };
-#else
-    rev::CANSparkMax leftLeader { Port::DriveLeftLeader,
+     rev::CANSparkMax leftLeader { Port::DriveLeftFront,
                                   rev::CANSparkLowLevel::MotorType::kBrushed };
-    rev::CANSparkMax rightLeader { Port::DriveRightLeader,
+    rev::CANSparkMax leftFollower { Port::DriveLeftBack,
+                                   rev::CANSparkLowLevel::MotorType::kBrushed };
+    rev::CANSparkMax rightLeader { Port::DriveRightFront,
+                                  rev::CANSparkLowLevel::MotorType::kBrushed };
+    rev::CANSparkMax rightFollower { Port::DriveRightBack,
+                                   rev::CANSparkLowLevel::MotorType::kBrushed };
+#else
+    rev::CANSparkMax leftLeader { Port::DriveLeftFront,
+                                  rev::CANSparkLowLevel::MotorType::kBrushed };
+    rev::CANSparkMax rightLeader { Port::DriveRightFront,
                                    rev::CANSparkLowLevel::MotorType::kBrushed };
 #endif
 

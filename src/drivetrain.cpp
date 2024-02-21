@@ -10,8 +10,8 @@ Drivetrain::Drivetrain() {
     gyro.Reset();
 
 #if BOT_USE_4_PWM
-    leftLeader.AddFollower (leftFollower);
-    rightLeader.AddFollower (rightFollower);
+    leftFollower.Follow (leftLeader);
+    rightFollower.Follow (rightLeader);
 #endif
 
     // We need to invert one side of the drivetrain so that positive voltages
