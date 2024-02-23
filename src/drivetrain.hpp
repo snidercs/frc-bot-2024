@@ -59,18 +59,18 @@ private:
 
 #if BOT_USE_4_PWM
      rev::CANSparkMax leftLeader { Port::DriveLeftFront,
-                                  rev::CANSparkLowLevel::MotorType::kBrushed };
+                                  rev::CANSparkLowLevel::MotorType::kBrushless };
     rev::CANSparkMax leftFollower { Port::DriveLeftBack,
-                                   rev::CANSparkLowLevel::MotorType::kBrushed };
+                                   rev::CANSparkLowLevel::MotorType::kBrushless };
     rev::CANSparkMax rightLeader { Port::DriveRightFront,
-                                  rev::CANSparkLowLevel::MotorType::kBrushed };
+                                  rev::CANSparkLowLevel::MotorType::kBrushless };
     rev::CANSparkMax rightFollower { Port::DriveRightBack,
-                                   rev::CANSparkLowLevel::MotorType::kBrushed };
+                                   rev::CANSparkLowLevel::MotorType::kBrushless };
 #else
     rev::CANSparkMax leftLeader { Port::DriveLeftFront,
-                                  rev::CANSparkLowLevel::MotorType::kBrushed };
+                                  rev::CANSparkLowLevel::MotorType::kBrushless };
     rev::CANSparkMax rightLeader { Port::DriveRightFront,
-                                   rev::CANSparkLowLevel::MotorType::kBrushed };
+                                   rev::CANSparkLowLevel::MotorType::kBrushless };
 #endif
 
     //==========================================================================
