@@ -15,8 +15,10 @@ public:
     void shoot() { snider::console::log ("[bot] shoot"); }
 
 private:
+#if 0
     rev::CANSparkMax intakeMotor { Port::BottomShootingWheel,
-                                   rev::CANSparkLowLevel::MotorType::kBrushed };
+                                   rev::CANSparkLowLevel::MotorType::kBrushless };
     rev::CANSparkMax shootMotor { Port::TopShootingWheel,
-                                  rev::CANSparkLowLevel::MotorType::kBrushed };
+                                  rev::CANSparkLowLevel::MotorType::kBrushless };
+#endif
 };
