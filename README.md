@@ -38,6 +38,8 @@ If it gives problems, cleaning the project could help. The `--info` option could
 ## Simulation
 Bot simulation is available in a few ways...
 
+**IMPORTANT**: The `Map gamepad` in the controllers list must be checked to mock the real bot.
+
 ### Basic Simulator
 This is the data-based simulator panel.
 
