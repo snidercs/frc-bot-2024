@@ -47,9 +47,9 @@ public:
         LeftStickX   = 0, ///> Index of Left stick X
         LeftStickY   = 1, ///> Index of Left stick Y
         TriggerLeft  = 2, ///> Index of Trigger left
-        TriggerRight = 5, ///> Index of Trigger right
-        RightStickX  = 3, ///> Index of Right stick X
-        RightStickY  = 4  ///> Index of Right stick Y
+        TriggerRight = 3, ///> Index of Trigger right
+        RightStickX  = 4, ///> Index of Right stick X
+        RightStickY  = 5  ///> Index of Right stick Y
     };
 
     
