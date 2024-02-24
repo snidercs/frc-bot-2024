@@ -105,14 +105,14 @@ public:
         drivetrain.drive (calculateSpeed (params.getSpeed()),
                           calculateAngularSpeed (params.getAngularSpeed()));
 
-        if (params.getButtonValue (Parameters::ButtonLeftBumper))
+        if (params.getButtonValue (Parameters::ButtonA))
             mechanicalArm.moveDown();
-        else if (params.getButtonValue (Parameters::ButtonRightBumper))
+        else if (params.getButtonValue (Parameters::ButtonY))
             mechanicalArm.moveUp();
 
-        if (params.getButtonValue (Parameters::ButtonX))
+        if (params.getButtonValue (Parameters::ButtonRightBumper))
             shooter.shoot();
-        else if (params.getButtonValue (Parameters::ButtonB))
+        else if (params.getButtonValue (Parameters::ButtonLeftBumper))
             shooter.load();
     }
 

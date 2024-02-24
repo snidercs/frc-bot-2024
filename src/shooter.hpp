@@ -11,14 +11,21 @@ public:
     Shooter()  = default;
     ~Shooter() = default;
 
-    void load() { snider::console::log ("[bot] load"); }
-    void shoot() { snider::console::log ("[bot] shoot"); }
+    void load() { 
+        std::clog << "[bot] load\n";
+        topMotor.SetVoltage (units::volt_t { 12.0 * 0.20 });
+        bottomMotor.SetVoltage (units::volt_t { 12.0 * 0.20 });
+    }
+    
+    void shoot() {
+        std::clog << "[bot] shoot\n";
+        topMotor.SetVoltage (units::volt_t { 12.0 });
+        bottomMotor.SetVoltage (units::volt_t { 12.0 * 0.90 });
+    }
 
 private:
-#if 0
-    rev::CANSparkMax intakeMotor { Port::BottomShootingWheel,
+    rev::CANSparkMax bottomMotor { Port::BottomShootingWheel,
                                    rev::CANSparkLowLevel::MotorType::kBrushless };
-    rev::CANSparkMax shootMotor { Port::TopShootingWheel,
+    rev::CANSparkMax topMotor { Port::TopShootingWheel,
                                   rev::CANSparkLowLevel::MotorType::kBrushless };
-#endif
 };
