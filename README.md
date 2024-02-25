@@ -55,3 +55,7 @@ This is the data-based simulator panel.
 ```bash
 ./gradlew simulateExternalNativeDebug
 ```
+or
+```bash
+./gradlew simulateExternalNativeRelease
+```
