@@ -50,3 +50,8 @@ This is the data-based simulator panel.
 
 ![](doc/images/basic-simulator.png)
 
+### Extern Sim With Real Driver Station
+
+```bash
+./gradlew simulateExternalNativeDebug
+```
