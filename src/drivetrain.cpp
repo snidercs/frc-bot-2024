@@ -41,10 +41,10 @@ void Drivetrain::drive (units::meters_per_second_t xSpeed,
 void Drivetrain::setSpeeds (const frc::DifferentialDriveWheelSpeeds& speeds) {
     auto leftFeedforward  = feedforward.Calculate (speeds.left);
     auto rightFeedforward = feedforward.Calculate (speeds.right);
-    double leftOutput     = 0.0; // leftPIDController.Calculate (leftEncoder.GetRate(),
-                                 //                  speeds.left.value());
-    double rightOutput    = 0.0; // rightPIDController.Calculate (rightEncoder.GetRate(),
-                                 //                      speeds.right.value());
+    double leftOutput     = leftPIDController.Calculate (leftEncoder.GetRate(),
+                                                     speeds.left.value());
+    double rightOutput    = rightPIDController.Calculate (rightEncoder.GetRate(),
+                                                       speeds.right.value());
     leftLeader.SetVoltage (units::volt_t { leftOutput } + leftFeedforward);
     rightLeader.SetVoltage (units::volt_t { rightOutput } + rightFeedforward);
 }

@@ -1,22 +1,18 @@
 {
   "HALProvider": {
+    "Analog Inputs": {
+      "window": {
+        "visible": true
+      }
+    },
     "Other Devices": {
       "window": {
         "visible": false
       }
     },
     "RoboRIO": {
-      "3.3V Rail": {
-        "open": false
-      },
-      "5V Rail": {
-        "open": false
-      },
-      "6V Rail": {
-        "open": false
-      },
-      "RoboRIO Input": {
-        "open": false
+      "window": {
+        "visible": true
       }
     }
   },
@@ -27,6 +23,11 @@
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
+      "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "bottom": 1476,
         "height": 8.210550308227539,
@@ -42,17 +43,30 @@
   },
   "NetworkTables": {
     "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
       "SmartDashboard": {
         "2d Field": {
           "double[]##v_/SmartDashboard/2d Field/Robot": {
             "open": false
           },
           "open": false
-        }
+        },
+        "open": true
       }
     }
   },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
     "visible": true
   },
   "NetworkTables View": {

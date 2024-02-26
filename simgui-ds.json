@@ -98,5 +98,7 @@
     {
       "useGamepad": true
     }
-  ]
+  ],
+  "useEstopHotkey": true,
+  "zeroDisconnectedJoysticks": false
 }
