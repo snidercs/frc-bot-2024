@@ -70,10 +70,8 @@ public:
 
         // clang-format on
 
-        if (--tick <= 0) {
-            if (! isIdle()) {
-                std::clog << "[bot] shoot/load sequence finished.\n";
-            }
+        if (! isIdle() && --tick <= 0) {
+            std::clog << "[bot] shoot/load sequence finished.\n";
             _state = Idle;
         }
 
