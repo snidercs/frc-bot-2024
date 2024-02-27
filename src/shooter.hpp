@@ -66,7 +66,9 @@ public:
             std::clog << "[bot] " << stateString() << std::endl;
         }
 
-        topMotor.Set (speed);
+        // topMotor.Set (speed);
+        const auto volts = speed != 0.0 ? 12.0 : 0.0;
+        topMotor.SetVoltage (units::volt_t { volts });
 
         // clang-format on
 
@@ -89,8 +91,8 @@ private:
     int tick = 0;
 
     using MotorType = rev::CANSparkLowLevel::MotorType;
-    rev::CANSparkMax bottomMotor { Port::BottomShootingWheel, MotorType::kBrushless };
-    rev::CANSparkMax topMotor { Port::TopShootingWheel, MotorType::kBrushless };
+    rev::CANSparkMax bottomMotor { Port::BottomShootingWheel, MotorType::kBrushed };
+    rev::CANSparkMax topMotor { Port::TopShootingWheel, MotorType::kBrushed };
     std::array<rev::CANSparkMax*, 2> motors { &topMotor, &bottomMotor };
 
     std::string stateString() const noexcept {
