@@ -31,8 +31,8 @@ public:
 private:
 #if 1
     rev::CANSparkMax rightArm { Port::RightArm,
-                                 rev::CANSparkLowLevel::MotorType::kBrushless };
-    rev::CANSparkMax leftArm { Port::LeftArm,
                                 rev::CANSparkLowLevel::MotorType::kBrushless };
+    rev::CANSparkMax leftArm { Port::LeftArm,
+                               rev::CANSparkLowLevel::MotorType::kBrushless };
 #endif
 };
