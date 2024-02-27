@@ -168,9 +168,10 @@ public:
     double getTriggerRight() const noexcept { return getAxisValue (TriggerRight); }
 
     /** Return processed passed value. */
-    bool getButtonValue (int givenParam) const noexcept {
-        return values.buttons[givenParam];
+    bool getButtonValue (int button) const noexcept {
+        return values.buttons [button];
     }
+
     /** Returns the processed A button value . */
     bool getAButton() const noexcept {
         return getButtonValue (ButtonA);

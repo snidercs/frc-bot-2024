@@ -6,16 +6,6 @@
           "open": true
         },
         "name": "AnalogGyro[0] (sim)"
-      },
-      "SPARK MAX [10]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [9]": {
-        "header": {
-          "open": true
-        }
       }
     },
     "RoboRIO": {
@@ -121,6 +111,15 @@
             0.8500000238418579
           ],
           "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "SPARK MAX [10]-Analog Position"
+            },
             {
               "color": [
                 0.8666667342185974,

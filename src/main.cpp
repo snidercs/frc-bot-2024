@@ -109,10 +109,14 @@ public:
         else if (params.getButtonValue (Parameters::ButtonY))
             mechanicalArm.moveUp();
 
-        if (params.getButtonValue (Parameters::ButtonRightBumper))
-            shooter.shoot();
-        else if (params.getButtonValue (Parameters::ButtonLeftBumper))
+        if (gamepad.GetLeftBumperPressed()) {
+            std::clog << "shooter.load()\n";
             shooter.load();
+        } else if (gamepad.GetRightBumperPressed()) {
+            std::clog << "shooter.shoot()\n";
+            shooter.shoot();
+        }
+        
         shooter.process();
     }
 
