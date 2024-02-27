@@ -22,6 +22,6 @@ private:
                                rev::CANSparkLowLevel::MotorType::kBrushless };
     rev::CANSparkMax rightArm { Port::RightArm,
                                 rev::CANSparkLowLevel::MotorType::kBrushless };
-    
+
 #endif
 };
