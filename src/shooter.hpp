@@ -66,9 +66,9 @@ public:
             std::clog << "[bot] " << stateString() << std::endl;
         }
 
-        // topMotor.Set (speed);
-        const auto volts = speed != 0.0 ? 12.0 : 0.0;
-        topMotor.SetVoltage (units::volt_t { volts });
+        topMotor.Set (speed);
+        // const auto volts = speed != 0.0 ? 12.0 : 0.0;
+        // topMotor.SetVoltage (units::volt_t { volts });
 
         // clang-format on
 
