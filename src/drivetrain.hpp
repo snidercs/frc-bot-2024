@@ -58,14 +58,14 @@ private:
     static constexpr int EncoderResolution     = 4096;
 
 #if BOT_USE_4_PWM
-     rev::CANSparkMax leftLeader { Port::DriveLeftFront,
+    rev::CANSparkMax leftLeader { Port::DriveLeftFront,
                                   rev::CANSparkLowLevel::MotorType::kBrushless };
     rev::CANSparkMax leftFollower { Port::DriveLeftBack,
-                                   rev::CANSparkLowLevel::MotorType::kBrushless };
+                                    rev::CANSparkLowLevel::MotorType::kBrushless };
     rev::CANSparkMax rightLeader { Port::DriveRightFront,
-                                  rev::CANSparkLowLevel::MotorType::kBrushless };
-    rev::CANSparkMax rightFollower { Port::DriveRightBack,
                                    rev::CANSparkLowLevel::MotorType::kBrushless };
+    rev::CANSparkMax rightFollower { Port::DriveRightBack,
+                                     rev::CANSparkLowLevel::MotorType::kBrushless };
 #else
     rev::CANSparkMax leftLeader { Port::DriveLeftFront,
                                   rev::CANSparkLowLevel::MotorType::kBrushless };

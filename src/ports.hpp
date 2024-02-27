@@ -7,18 +7,18 @@ namespace Port {
 
 // Gamepads and joysticks
 /** The default gamepad port to use. */
-static constexpr int DefaultGamepad = 0; 
+static constexpr int DefaultGamepad = 0;
 
 /** Default joystick port, not currently used. */
 static constexpr int DefaultJoystick = 1;
 
 // Motor Controllers
 /** Controller for the left drive motors. */
-static constexpr int DriveLeftBack = 3;
+static constexpr int DriveLeftBack  = 3;
 static constexpr int DriveLeftFront = 7;
 
 /** Controller for the right drive motors. */
-static constexpr int DriveRightBack = 5;
+static constexpr int DriveRightBack  = 5;
 static constexpr int DriveRightFront = 6;
 
 /** Controller for arm rotation. */

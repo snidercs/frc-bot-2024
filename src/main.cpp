@@ -91,7 +91,6 @@ public:
     //==========================================================================
     void TeleopInit() override {
         params.setBotMode (BotMode::Teleop);
-        // This must be a trigger because motors are PWM. A button press would be [0 to 1] not [-1 to 1] like the pwm
     }
 
     void TeleopPeriodic() {
