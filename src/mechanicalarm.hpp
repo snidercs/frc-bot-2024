@@ -6,33 +6,22 @@
 #include "ports.hpp"
 #include "snider/console.hpp"
 
+#define MECHANICAL_ARM_ENABLED 0
+
 class MechanicalArm {
 public:
     MechanicalArm()  = default;
     ~MechanicalArm() = default;
 
-    enum Direction { Up,
-                     Down };
-
-    void move (Direction direction) {
-        switch (direction) {
-            case Up:
-                snider::console::log ("Push arm away");
-                break;
-            case Down:
-                snider::console::log ("Pull arm close");
-                break;
-        }
-    }
-
-    void moveUp() { move (Up); }
-    void moveDown() { move (Down); }
+    void moveUp() { snider::console::log ("Push arm away"); }
+    void moveDown() { snider::console::log ("Pull arm close"); }
 
 private:
-#if 1
-    rev::CANSparkMax rightArm { Port::RightArm,
-                                rev::CANSparkLowLevel::MotorType::kBrushless };
+#if MECHANICAL_ARM_ENABLED
     rev::CANSparkMax leftArm { Port::LeftArm,
                                rev::CANSparkLowLevel::MotorType::kBrushless };
+    rev::CANSparkMax rightArm { Port::RightArm,
+                                rev::CANSparkLowLevel::MotorType::kBrushless };
+    
 #endif
 };
