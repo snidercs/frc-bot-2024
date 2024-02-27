@@ -113,6 +113,7 @@ public:
             shooter.shoot();
         else if (params.getButtonValue (Parameters::ButtonLeftBumper))
             shooter.load();
+        shooter.process();
     }
 
     //==========================================================================
