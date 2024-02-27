@@ -5,7 +5,7 @@
 #include "parameters.hpp"
 
 #ifndef BOT_LOG_AXES
-#    define BOT_LOG_AXES 1
+#    define BOT_LOG_AXES 0
 #endif
 
 using snider::BotMode;
