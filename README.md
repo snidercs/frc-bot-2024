@@ -59,3 +59,7 @@ or
 ```bash
 ./gradlew simulateExternalNativeRelease
 ```
+
+## Feedforward and Feedback Control
+
+[Picking a Control Mechanism](https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/picking-control-strategy.html)
