@@ -169,7 +169,7 @@ public:
 
     /** Return processed passed value. */
     bool getButtonValue (int button) const noexcept {
-        return values.buttons [button];
+        return values.buttons[button];
     }
 
     /** Returns the processed A button value . */

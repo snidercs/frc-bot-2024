@@ -116,7 +116,7 @@ public:
             std::clog << "shooter.shoot()\n";
             shooter.shoot();
         }
-        
+
         shooter.process();
     }
 
