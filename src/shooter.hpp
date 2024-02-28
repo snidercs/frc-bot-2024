@@ -58,6 +58,7 @@ public:
             return;
         _state = Shooting;
         tick   = std::max (5, shootDurationMs / periodMs);
+        delayTicks = std::max (1, tick / 2);
         delay = 0;
     }
 
@@ -85,7 +86,7 @@ public:
 
         if (_state != lastState && _state != Idle) {
             // if state changed and not idle....
-            std::clog << "[bot] " << stateString() << std::endl;
+            // std::clog << "[bot] " << stateString() << std::endl;
         }
 
         // topMotor.Set (speed);
@@ -110,7 +111,7 @@ public:
         }
 
         if (! isIdle() && --tick <= 0) {
-            std::clog << "[bot] shoot/load sequence finished.\n";
+            // std::clog << "[bot] shoot/load sequence finished.\n";
             _state = Idle;
         }
 
@@ -126,7 +127,7 @@ private:
     double loadSpeed { -0.20 };
     int loadDurationMs { 600 };
     double shootSpeed { 1.0 };
-    int shootDurationMs { 1000 };
+    int shootDurationMs { 2000 };
     int periodMs { 20 };
     int tick       = 0;
     int delay      = 0;
