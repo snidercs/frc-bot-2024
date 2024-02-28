@@ -28,9 +28,9 @@ static constexpr int LeftArm = 8;
 static constexpr int RightArm = 11;
 
 /** Controller for the shooter intake. */
-static constexpr int BottomShootingWheel = 9;
+static constexpr int BottomShootingWheel = 10;
 
 /** Controller for the shooting. */
-static constexpr int TopShootingWheel = 10;
+static constexpr int TopShootingWheel = 9;
 
 } // namespace Port
