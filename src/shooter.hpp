@@ -20,7 +20,6 @@ class Shooter {
 public:
     Shooter() {
         reset();
-        bottomMotor.Follow (topMotor, false);
         for (auto* const mt : motors) {
             mt->SetInverted (true);
         }
@@ -89,7 +88,16 @@ public:
         }
 
         // topMotor.Set (speed);
-        topMotor.SetVoltage (units::volt_t { speed * 12.0 });
+        switch (_state) {
+            case Loading:
+                topMotor.SetVoltage (units::volt_t { -6.0 });
+                bottomMotor.SetVoltage (units::volt_t { -3.0 });
+                break;
+            case Shooting:
+                topMotor.SetVoltage (units::volt_t { 12.0 });
+                bottomMotor.SetVoltage (units::volt_t { 12.0 });
+                break;
+        }
 
         if (! isIdle() && --tick <= 0) {
             std::clog << "[bot] shoot/load sequence finished.\n";
