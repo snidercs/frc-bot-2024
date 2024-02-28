@@ -22,12 +22,12 @@ public:
         reset();
         bottomMotor.Follow (topMotor, false);
         for (auto* const mt : motors) {
-            mt->Set (0.0);
-            mt->SetClosedLoopRampRate (0.125);
-            mt->SetOpenLoopRampRate (0.125);
-            mt->ClearFaults();
-            mt->SetCANTimeout (14);
-            mt->SetIdleMode (IdleMode::kBrake);
+            // mt->Set (0.0);
+            // mt->SetClosedLoopRampRate (0.125);
+            // mt->SetOpenLoopRampRate (0.125);
+            // mt->ClearFaults();
+            // mt->SetCANTimeout (14);
+            // mt->SetIdleMode (IdleMode::kBrake);
         }
     }
 
