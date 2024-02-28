@@ -97,6 +97,10 @@ public:
                 topMotor.SetVoltage (units::volt_t { 12.0 });
                 bottomMotor.SetVoltage (units::volt_t { 12.0 });
                 break;
+            case Idle:
+                topMotor.SetVoltage (units::volt_t { 0.0 });
+                bottomMotor.SetVoltage (units::volt_t { 0.0 });
+                break;
         }
 
         if (! isIdle() && --tick <= 0) {
