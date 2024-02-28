@@ -56,10 +56,10 @@ public:
     void shoot() {
         if (_state != Idle)
             return;
-        _state = Shooting;
-        tick   = std::max (5, shootDurationMs / periodMs);
+        _state     = Shooting;
+        tick       = std::max (5, shootDurationMs / periodMs);
         delayTicks = std::max (1, tick / 2);
-        delay = 0;
+        delay      = 0;
     }
 
     /** Stop the motors. */
