@@ -53,8 +53,8 @@ public:
     frc::Pose2d position2d() const { return odometry.GetPose(); }
 
 private:
-    static constexpr units::meter_t TrackWidth = 0.381_m * 2;
-    static constexpr double WheelRadius        = 0.0508; // meters
+    static constexpr units::meter_t TrackWidth = 0.559_m;
+    static constexpr double WheelRadius        = 0.076; // meters
     static constexpr int EncoderResolution     = 4096;
 
 #if BOT_USE_4_PWM
