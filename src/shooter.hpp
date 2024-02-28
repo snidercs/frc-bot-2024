@@ -26,6 +26,7 @@ public:
             mt->SetClosedLoopRampRate (0.125);
             mt->SetOpenLoopRampRate (0.125);
             mt->ClearFaults();
+            mt->SetCANTimeout (14);
             mt->SetIdleMode (IdleMode::kBrake);
         }
     }
