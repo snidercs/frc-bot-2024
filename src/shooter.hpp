@@ -58,6 +58,7 @@ public:
             return;
         _state = Shooting;
         tick   = std::max (5, shootDurationMs / periodMs);
+        delay = 0;
     }
 
     /** Stop the motors. */
@@ -89,18 +90,23 @@ public:
 
         // topMotor.Set (speed);
         switch (_state) {
-            case Loading:
+            case Loading: {
                 topMotor.SetVoltage (units::volt_t { -6.0 });
                 bottomMotor.SetVoltage (units::volt_t { -3.0 });
                 break;
-            case Shooting:
+            }
+            case Shooting: {
                 topMotor.SetVoltage (units::volt_t { 12.0 });
-                bottomMotor.SetVoltage (units::volt_t { 12.0 });
+                if (delay >= delayTicks)
+                    bottomMotor.SetVoltage (units::volt_t { 12.0 });
+                ++delay;
                 break;
-            case Idle:
+            }
+            case Idle: {
                 topMotor.SetVoltage (units::volt_t { 0.0 });
                 bottomMotor.SetVoltage (units::volt_t { 0.0 });
                 break;
+            }
         }
 
         if (! isIdle() && --tick <= 0) {
@@ -122,7 +128,9 @@ private:
     double shootSpeed { 1.0 };
     int shootDurationMs { 1000 };
     int periodMs { 20 };
-    int tick = 0;
+    int tick       = 0;
+    int delay      = 0;
+    int delayTicks = 2; // delayTicks x 20ms = totalDelay
 
     rev::CANSparkMax bottomMotor { Port::BottomShootingWheel, MotorType::kBrushed };
     rev::CANSparkMax topMotor { Port::TopShootingWheel, MotorType::kBrushed };
