@@ -91,6 +91,7 @@ public:
     //==========================================================================
     void TeleopInit() override {
         params.setBotMode (BotMode::Teleop);
+        shooter.reset();
     }
 
     void TeleopPeriodic() {
