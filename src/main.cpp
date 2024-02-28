@@ -110,10 +110,8 @@ public:
             mechanicalArm.moveUp();
 
         if (gamepad.GetLeftBumperPressed()) {
-            std::clog << "shooter.load()\n";
             shooter.load();
         } else if (gamepad.GetRightBumperPressed()) {
-            std::clog << "shooter.shoot()\n";
             shooter.shoot();
         }
 
