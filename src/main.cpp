@@ -103,7 +103,7 @@ public:
         processParameters();
 
         drivetrain.drive (calculateSpeed (params.getSpeed()),
-                          calculateAngularSpeed (params.getAngularSpeed()));
+                          calculateAngularSpeed (-1.0 * params.getAngularSpeed()));
 
         if (params.getButtonValue (Parameters::ButtonA))
             mechanicalArm.moveDown();
