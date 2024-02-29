@@ -81,7 +81,7 @@ public:
         auto reference = trajectory.Sample (elapsed);
         auto speeds    = ramsete.Calculate (drivetrain.position2d(), reference);
         if (elapsed < trajectory.TotalTime()) {
-            drivetrain.drive (units::meters_per_second_t (1.0),
+            drivetrain.drive (units::meters_per_second_t (1.0 * 0.25), //tweak auto speed here
                               units::radians_per_second_t { 0.0 });
         } else {
             driveDisabled();
