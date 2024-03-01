@@ -37,9 +37,7 @@ public:
     /** Reset to default values. */
     void reset() {
         _state = lastState = Idle;
-        loadSpeed          = -0.20;
         loadDurationMs     = 600;
-        shootSpeed         = 1.0;
         shootDurationMs    = 1000;
         periodMs           = 20;
     }
@@ -78,18 +76,6 @@ public:
 
     /** Set appropriate motor speed and update state if needed. */
     void process() noexcept {
-        // clang-format off
-        const auto speed = _state == Shooting ? shootSpeed :
-                           _state == Loading ? loadSpeed :
-                           _state == Idle ? 0.0 : 0.0;
-        // clang-format on
-
-        if (_state != lastState && _state != Idle) {
-            // if state changed and not idle....
-            // std::clog << "[bot] " << stateString() << std::endl;
-        }
-
-        // topMotor.Set (speed);
         switch (_state) {
             case Loading: {
                 topMotor.SetVoltage (units::volt_t { -6.0 });
@@ -111,7 +97,7 @@ public:
         }
 
         if (! isIdle() && --tick <= 0) {
-            // std::clog << "[bot] shoot/load sequence finished.\n";
+            // shoot load seq. finished. transition back to Idle.
             _state = Idle;
         }
 
@@ -124,10 +110,9 @@ private:
 
     State _state { Idle };
     State lastState { Idle };
-    double loadSpeed { -0.20 };
     int loadDurationMs { 600 };
-    double shootSpeed { 1.0 };
     int shootDurationMs { 2000 };
+
     int periodMs { 20 };
     int tick       = 0;
     int delay      = 0;
