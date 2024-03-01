@@ -159,7 +159,7 @@ private:
 
     const units::radians_per_second_t calculateAngularSpeed (double value) noexcept {
         value *= 0.5; // throttle down sensitivity.
-        if (! IsReal()) {
+        if (IsReal()) {
             // if real bot, invert direction of rotation.
             value *= -1.0;
         }
