@@ -1,12 +1,12 @@
 #pragma once
 
+#include <algorithm>
 #include <array>
 
 #include <rev/CANSparkMax.h>
 #include <rev/CANSparkMaxLowLevel.h>
 
 #include "ports.hpp"
-#include "snider/console.hpp"
 
 /** The shooter interface.
 
