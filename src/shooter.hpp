@@ -10,11 +10,10 @@
 
 /** The shooter interface.
 
-    Controls motors used in loading notes and shooting
-    them.  It operates as a state machine with three states: Idle, Shooting, 
-    Loading. Idle can transition to Shooting or Loading then back.  Shooting and 
-    Loading do not transition directly to each other which prevents shoot/load 
-    overlaps.
+    Controls motors used in loading notes and shooting them.  It operates as a 
+    state machine with three states: Idle, Shooting, Loading. Idle can 
+    transition to Shooting or Loading then back to Idle.  Shooting and Loading 
+    do not transition directly to each other which prevents shoot/load overlaps.
 */
 class Shooter {
 public:
