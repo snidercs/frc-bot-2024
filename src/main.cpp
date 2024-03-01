@@ -25,14 +25,7 @@ using BotMode = snider::BotMode;
 class RobotMain : public frc::TimedRobot {
 public:
     void RobotInit() override {
-        // autonomous options (not used yet)
-        chooser.SetDefaultOption (autoNameDefault, autoNameDefault);
-        chooser.AddOption (autoNameCustom, autoNameCustom);
-        frc::SmartDashboard::PutData ("Auto Modes", &chooser);
-
-        // A safe assumption I guess....
         params.setBotMode (BotMode::Disconnected);
-
         trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
             frc::Pose2d { 2_m, 2_m, 0_rad },
             {},
@@ -53,28 +46,12 @@ public:
     }
 
     void AutonomousInit() override {
-        autoSelected = chooser.GetSelected();
-        autoSelected = frc::SmartDashboard::GetString ("Auto Selector", autoNameDefault);
-        fmt::print ("Auto selected: {}\n", autoSelected);
-
-        if (autoSelected == autoNameCustom) {
-            // Custom Auto goes here
-        } else {
-            // Default Auto goes here
-        }
-
         timer.Restart();
         drivetrain.resetOdometry (trajectory.InitialPose());
         params.setBotMode (BotMode::Autonomous);
     }
 
     void AutonomousPeriodic() override {
-        if (autoSelected == autoNameCustom) {
-            // Custom Auto goes here
-        } else {
-            // Default Auto goes here
-        }
-
         auto elapsed   = timer.Get();
         auto reference = trajectory.Sample (elapsed);
         auto speeds    = ramsete.Calculate (drivetrain.position2d(), reference);
@@ -143,11 +120,6 @@ public:
 
 private:
     Parameters params;
-
-    std::string autoSelected;
-    frc::SendableChooser<std::string> chooser;
-    const std::string autoNameDefault = "Default";
-    const std::string autoNameCustom  = "My Auto";
 
     frc::XboxController gamepad { Port::DefaultGamepad };
 
