@@ -35,6 +35,15 @@ If it gives problems, cleaning the project could help. The `--info` option could
 
 ```
 
+## Other Useful Terminal Commands
+Useful Commands to Understand
+```bash
+./git status -a    //Shows the status of all git branches
+./git checkout .   //Resets current changes on the branch
+./git checkout new_branch_name    //Switches branches to new_branch_name from a different branch
+./git pull //Pulls new code onto the branch
+```
+
 ## Simulation
 Bot simulation is available in a few ways...
 
