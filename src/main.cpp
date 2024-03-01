@@ -36,8 +36,8 @@ public:
         trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
             frc::Pose2d { 2_m, 2_m, 0_rad },
             {},
-            frc::Pose2d { 6_m, 4_m, 0_rad },
-            frc::TrajectoryConfig (2_mps, 2_mps_sq));
+            frc::Pose2d { 4_m, 2_m, 0_rad },
+            frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
     }
 
     /**
@@ -64,9 +64,7 @@ public:
         }
 
         timer.Restart();
-
         drivetrain.resetOdometry (trajectory.InitialPose());
-
         params.setBotMode (BotMode::Autonomous);
     }
 
@@ -80,9 +78,8 @@ public:
         auto elapsed   = timer.Get();
         auto reference = trajectory.Sample (elapsed);
         auto speeds    = ramsete.Calculate (drivetrain.position2d(), reference);
-        if (elapsed < trajectory.TotalTime()) {
-            drivetrain.drive (units::meters_per_second_t (1.0 * 0.25), //tweak auto speed here
-                              units::radians_per_second_t { 0.0 });
+        if (elapsed <= trajectory.TotalTime()) {
+            drivetrain.drive (speeds.vx, speeds.omega);
         } else {
             driveDisabled();
         }
