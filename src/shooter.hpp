@@ -55,7 +55,7 @@ public:
             return;
         _state     = Shooting;
         tick       = std::max (5, shootDurationMs / periodMs);
-        delayTicks = std::max (1, tick / 2);
+        delayTicks = std::max (1, int (tick / 2));
         delay      = 0;
     }
 
@@ -82,9 +82,9 @@ public:
                 break;
             }
             case Shooting: {
-                topMotor.SetVoltage (units::volt_t { 16.0 });
+                topMotor.SetVoltage (units::volt_t { 13.0 });
                 if (delay >= delayTicks)
-                    bottomMotor.SetVoltage (units::volt_t { 16.0 });
+                    bottomMotor.SetVoltage (units::volt_t { 13.0 });
                 ++delay;
                 break;
             }
