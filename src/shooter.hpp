@@ -55,7 +55,7 @@ public:
             return;
         _state     = Shooting;
         tick       = std::max (5, shootDurationMs / periodMs);
-        delayTicks = std::max (1, tick * 0.75);
+        delayTicks = std::max (1, tick / 2);
         delay      = 0;
     }
 
