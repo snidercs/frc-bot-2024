@@ -84,6 +84,8 @@ public:
             mechanicalArm.moveDown();
         else if (params.getButtonValue (Parameters::ButtonY))
             mechanicalArm.moveUp();
+        else
+            mechanicalArm.stop();
 
         if (gamepad.GetLeftBumperPressed()) {
             shooter.load();

@@ -82,9 +82,9 @@ public:
                 break;
             }
             case Shooting: {
-                topMotor.SetVoltage (units::volt_t { 12.0 });
+                topMotor.SetVoltage (units::volt_t { 13.0 });
                 if (delay >= delayTicks)
-                    bottomMotor.SetVoltage (units::volt_t { 12.0 });
+                    bottomMotor.SetVoltage (units::volt_t { 13.0 });
                 ++delay;
                 break;
             }
