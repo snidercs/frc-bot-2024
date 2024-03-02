@@ -30,7 +30,7 @@ public:
         trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
             frc::Pose2d { 2_m, 2_m, 0_rad },
             {},
-            frc::Pose2d { 4_m, 2_m, 0_rad },
+            frc::Pose2d { 3_m, 2_m, 0_rad },
             frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
     }
 
