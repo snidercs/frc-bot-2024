@@ -20,17 +20,17 @@ public:
 
     void moveUp() {
         leader.SetVoltage (units::volt_t { 0.3 * 12.0 });      
-        // follower.SetVoltage (units::volt_t { 0.3 * 12.0 });
+        follower.SetVoltage (units::volt_t { 0.3 * 12.0 });
     }
 
     void moveDown() {
         leader.SetVoltage (units::volt_t { 0.3 * -12.0 });
-        // follower.SetVoltage (units::volt_t { 0.3 * -12.0 });
+        follower.SetVoltage (units::volt_t { 0.3 * -12.0 });
     }
 
     void stop() {
         leader.SetVoltage (units::volt_t { 0.0 });
-        // follower.SetVoltage (units::volt_t { 0.0 });
+        follower.SetVoltage (units::volt_t { 0.0 });
     }
 
     void resetEncoders() {

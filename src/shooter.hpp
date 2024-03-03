@@ -37,7 +37,7 @@ public:
     void reset() {
         _state = lastState = Idle;
         loadDurationMs     = 600;
-        shootDurationMs    = 1000;
+        shootDurationMs    = 5000;
         periodMs           = 20;
     }
 
@@ -55,7 +55,7 @@ public:
             return;
         _state     = Shooting;
         tick       = std::max (5, shootDurationMs / periodMs);
-        delayTicks = std::max (1, int (tick / 2));
+        delayTicks = std::max (1, int ((shootDurationMs - 1000) / periodMs));
         delay      = 0;
     }
 
@@ -110,7 +110,7 @@ private:
     State _state { Idle };
     State lastState { Idle };
     int loadDurationMs { 600 };
-    int shootDurationMs { 2000 };
+    int shootDurationMs { 5000 };
 
     int periodMs { 20 };
     int tick       = 0;
