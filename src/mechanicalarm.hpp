@@ -13,6 +13,9 @@ class MechanicalArm {
 public:
     MechanicalArm() {
         follower.Follow (leader);
+        // enable if motors could be swapped.
+        leader.SetSmartCurrentLimit (40, 30);
+        follower.SetSmartCurrentLimit (40, 30);
         resetEncoders();
     }
 
