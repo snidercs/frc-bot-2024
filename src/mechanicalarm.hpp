@@ -13,17 +13,27 @@ class MechanicalArm {
 public:
     MechanicalArm() {
         follower.Follow (leader);
+        // enable if motors could be swapped.
+        leader.SetSmartCurrentLimit (40, 30);
+        follower.SetSmartCurrentLimit (40, 30);
         resetEncoders();
     }
 
     ~MechanicalArm() = default;
 
     void moveUp() {
-        leader.SetVoltage (units::volt_t { 0.3 * 12.0 });
+        leader.SetVoltage (units::volt_t { 0.3 * 12.0 });      
+        follower.SetVoltage (units::volt_t { 0.3 * 12.0 });
     }
 
     void moveDown() {
         leader.SetVoltage (units::volt_t { 0.3 * -12.0 });
+        follower.SetVoltage (units::volt_t { 0.3 * -12.0 });
+    }
+
+    void stop() {
+        leader.SetVoltage (units::volt_t { 0.0 });
+        follower.SetVoltage (units::volt_t { 0.0 });
     }
 
     void resetEncoders() {
