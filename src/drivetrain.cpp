@@ -8,7 +8,9 @@
 
 Drivetrain::Drivetrain() {
     gyro.Reset();
-
+    for (auto* const motor : motors) {
+        motor->SetIdleMode (IdleMode::kBrake);
+    }
 #if BOT_USE_4_PWM
     leftFollower.Follow (leftLeader);
     rightFollower.Follow (rightLeader);

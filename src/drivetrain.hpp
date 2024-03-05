@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <array>
 #include <numbers>
 
 #include <frc/AnalogGyro.h>
@@ -53,6 +54,8 @@ public:
     frc::Pose2d position2d() const { return odometry.GetPose(); }
 
 private:
+    using IdleMode = rev::CANSparkMax::IdleMode;
+    
     static constexpr units::meter_t TrackWidth = 0.559_m;
     static constexpr double WheelRadius        = 0.076; // meters
     static constexpr int EncoderResolution     = 4096;
@@ -66,6 +69,8 @@ private:
                                    rev::CANSparkLowLevel::MotorType::kBrushed };
     rev::CANSparkMax rightFollower { Port::DriveRightBack,
                                      rev::CANSparkLowLevel::MotorType::kBrushed };
+    std::array<rev::CANSparkMax*, 4> motors { &leftLeader, &leftFollower, 
+                                              &rightLeader, &rightFollower };
 #else
     rev::CANSparkMax leftLeader { Port::DriveLeftFront,
                                   rev::CANSparkLowLevel::MotorType::kBrushed };

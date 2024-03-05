@@ -15,6 +15,7 @@
 
 #include "drivetrain.hpp"
 #include "mechanicalarm.hpp"
+#include "normalisablerange.hpp"
 #include "parameters.hpp"
 #include "ports.hpp"
 #include "shooter.hpp"
@@ -29,7 +30,7 @@ public:
         trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
             frc::Pose2d { 2_m, 2_m, 0_rad },
             {},
-            frc::Pose2d { 4_m, 2_m, 0_rad },
+            frc::Pose2d { 2.5_m, 2_m, 0_rad },
             frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
     }
 
@@ -77,12 +78,14 @@ public:
         processParameters();
 
         drivetrain.drive (calculateSpeed (params.getSpeed()),
-                          calculateAngularSpeed (0.5 * -1.0 * params.getAngularSpeed()));
+                          calculateAngularSpeed (params.getAngularSpeed()));
 
         if (params.getButtonValue (Parameters::ButtonA))
             mechanicalArm.moveDown();
         else if (params.getButtonValue (Parameters::ButtonY))
             mechanicalArm.moveUp();
+        else
+            mechanicalArm.stop();
 
         if (gamepad.GetLeftBumperPressed()) {
             shooter.load();
@@ -120,6 +123,13 @@ public:
 
 private:
     Parameters params;
+    
+    /** Used to apply a logarithmic scale to speed inputs. */
+    struct SpeedRange : public juce::NormalisableRange<double>  {
+        using range_type = juce::NormalisableRange<double>;
+        SpeedRange() : range_type (-1.0, 1.0, 0.0, 0.5, true) {}
+        ~SpeedRange() = default;
+    } speedRange;
 
     frc::XboxController gamepad { Port::DefaultGamepad };
 
@@ -140,16 +150,21 @@ private:
     bool gamepadConnected = false;
 
     const units::meters_per_second_t calculateSpeed (double value) noexcept {
-        // Get the x speed. We are inverting this because Xbox controllers return
-        // negative values when we push forward.
+        // clamp to valid -1 to 1 range.
+        value = speedRange.snapToLegalValue (value);
+        // convert to 0.0 - 1.0 range.
+        value = (value - speedRange.start) / (speedRange.end - speedRange.start);
+        // apply and re-scale using scale factor.
+        value = speedRange.convertFrom0to1 (value);
         return -speedLimiter.Calculate (value) * Drivetrain::MaxSpeed;
     }
 
     const units::radians_per_second_t calculateAngularSpeed (double value) noexcept {
-        // Get the rate of angular rotation. We are inverting this because we want a
-        // positive value when we pull to the left (remember, CCW is positive in
-        // mathematics). Xbox controllers return positive values when you pull to
-        // the right by default.
+        value *= 0.5; // throttle down sensitivity.
+        if (IsReal()) {
+            // if real bot, invert direction of rotation.
+            value *= -1.0;
+        }
         return -rotLimiter.Calculate (value) * Drivetrain::MaxAngularSpeed;
     }
 
