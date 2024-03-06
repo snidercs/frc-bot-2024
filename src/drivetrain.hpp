@@ -30,9 +30,6 @@
 
 #include "ports.hpp"
 
-// Enable this when using 4 PWM's. e.g. 2x for left and 2x for right.
-#define BOT_USE_4_PWM 1
-
 /**
  * Represents a differential drive style drivetrain.
  */
@@ -47,6 +44,10 @@ public:
         std::numbers::pi
     }; // 1/2 rotation per second
 
+    static constexpr units::meter_t TrackWidth = 0.559_m;
+    static constexpr double WheelRadius        = 0.076; // meters
+    static constexpr int EncoderResolution     = 4096;
+
     void drive (units::meters_per_second_t xSpeed, units::radians_per_second_t rot);
     void updateSimulation();
     void postProcess();
@@ -54,33 +55,15 @@ public:
     frc::Pose2d position2d() const { return odometry.GetPose(); }
 
 private:
-    using IdleMode = rev::CANSparkMax::IdleMode;
-    
-    static constexpr units::meter_t TrackWidth = 0.559_m;
-    static constexpr double WheelRadius        = 0.076; // meters
-    static constexpr int EncoderResolution     = 4096;
+    using IdleMode  = rev::CANSparkMax::IdleMode;
+    using MotorType = rev::CANSparkLowLevel::MotorType;
 
-#if BOT_USE_4_PWM
-    rev::CANSparkMax leftLeader { Port::DriveLeftFront,
-                                  rev::CANSparkLowLevel::MotorType::kBrushed };
-    rev::CANSparkMax leftFollower { Port::DriveLeftBack,
-                                    rev::CANSparkLowLevel::MotorType::kBrushed };
-    rev::CANSparkMax rightLeader { Port::DriveRightFront,
-                                   rev::CANSparkLowLevel::MotorType::kBrushed };
-    rev::CANSparkMax rightFollower { Port::DriveRightBack,
-                                     rev::CANSparkLowLevel::MotorType::kBrushed };
-    std::array<rev::CANSparkMax*, 4> motors { &leftLeader, &leftFollower, 
-                                              &rightLeader, &rightFollower };
-#else
-    rev::CANSparkMax leftLeader { Port::DriveLeftFront,
-                                  rev::CANSparkLowLevel::MotorType::kBrushed };
-    rev::CANSparkMax rightLeader { Port::DriveRightFront,
-                                   rev::CANSparkLowLevel::MotorType::kBrushed };
-#endif
-
+    rev::CANSparkMax leftLeader { Port::DriveLeftFront, MotorType::kBrushed };
+    rev::CANSparkMax leftFollower { Port::DriveLeftBack, MotorType::kBrushed };
+    rev::CANSparkMax rightLeader { Port::DriveRightFront, MotorType::kBrushed };
+    rev::CANSparkMax rightFollower { Port::DriveRightBack, MotorType::kBrushed };
+    std::array<rev::CANSparkMax*, 4> motors { &leftLeader, &leftFollower, &rightLeader, &rightFollower };
     //==========================================================================
-    // This section of class members came from the examples.  Some of it may not
-    // be needed except for simulation. -MRF
     frc::Encoder leftEncoder { 0, 1 };
     frc::Encoder rightEncoder { 2, 3 };
 
@@ -92,8 +75,8 @@ private:
     frc::DifferentialDriveKinematics kinematics { TrackWidth };
     frc::DifferentialDriveOdometry odometry {
         gyro.GetRotation2d(),
-        units::meter_t { leftEncoder.GetDistance() },
-        units::meter_t { rightEncoder.GetDistance() }
+        units::meter_t { 0.0 },
+        units::meter_t { 0.0 }
     };
 
     // Gains are for example purposes only - must be determined for your own
