@@ -24,9 +24,7 @@
 #include <algorithm>
 #include <cassert>
 
-namespace juce
-{
-
+namespace juce {
 
 //==============================================================================
 /**
@@ -41,16 +39,15 @@ namespace juce
     @tags{Core}
 */
 template <typename ValueType>
-class NormalisableRange
-{
+class NormalisableRange {
 public:
     /** Creates a continuous range that performs a dummy mapping. */
     NormalisableRange() = default;
 
-    NormalisableRange (const NormalisableRange&) = default;
+    NormalisableRange (const NormalisableRange&)            = default;
     NormalisableRange& operator= (const NormalisableRange&) = default;
-    NormalisableRange (NormalisableRange&&) = default;
-    NormalisableRange& operator= (NormalisableRange&&) = default;
+    NormalisableRange (NormalisableRange&&)                 = default;
+    NormalisableRange& operator= (NormalisableRange&&)      = default;
 
     /** Creates a NormalisableRange with a given range, interval and skew factor. */
     NormalisableRange (ValueType rangeStart,
@@ -58,17 +55,14 @@ public:
                        ValueType intervalValue,
                        ValueType skewFactor,
                        bool useSymmetricSkew = false) noexcept
-        : start (rangeStart), end (rangeEnd), interval (intervalValue),
-          skew (skewFactor), symmetricSkew (useSymmetricSkew)
-    {
+        : start (rangeStart), end (rangeEnd), interval (intervalValue), skew (skewFactor), symmetricSkew (useSymmetricSkew) {
         checkInvariants();
     }
 
     /** Creates a NormalisableRange with a given range, continuous interval, but a dummy skew-factor. */
     NormalisableRange (ValueType rangeStart,
                        ValueType rangeEnd) noexcept
-        : start (rangeStart), end (rangeEnd)
-    {
+        : start (rangeStart), end (rangeEnd) {
         checkInvariants();
     }
 
@@ -76,8 +70,7 @@ public:
     NormalisableRange (ValueType rangeStart,
                        ValueType rangeEnd,
                        ValueType intervalValue) noexcept
-        : start (rangeStart), end (rangeEnd), interval (intervalValue)
-    {
+        : start (rangeStart), end (rangeEnd), interval (intervalValue) {
         checkInvariants();
     }
 #if 0
@@ -94,9 +87,9 @@ public:
     }
 #endif
     /** A function object which can remap a value in some way based on the start and end of a range. */
-    using ValueRemapFunction = std::function<ValueType(ValueType rangeStart,
-                                                       ValueType rangeEnd,
-                                                       ValueType valueToRemap)>;
+    using ValueRemapFunction = std::function<ValueType (ValueType rangeStart,
+                                                        ValueType rangeEnd,
+                                                        ValueType valueToRemap)>;
 
     /** Creates a NormalisableRange with a given range and an injective mapping function.
 
@@ -115,19 +108,17 @@ public:
                        ValueRemapFunction convertTo0To1Func,
                        ValueRemapFunction snapToLegalValueFunc = {}) noexcept
         : start (rangeStart),
-          end   (rangeEnd),
-          convertFrom0To1Function  (std::move (convertFrom0To1Func)),
-          convertTo0To1Function    (std::move (convertTo0To1Func)),
-          snapToLegalValueFunction (std::move (snapToLegalValueFunc))
-    {
+          end (rangeEnd),
+          convertFrom0To1Function (std::move (convertFrom0To1Func)),
+          convertTo0To1Function (std::move (convertTo0To1Func)),
+          snapToLegalValueFunction (std::move (snapToLegalValueFunc)) {
         checkInvariants();
     }
 
     /** Uses the properties of this mapping to convert a non-normalised value to
         its 0->1 representation.
     */
-    ValueType convertTo0to1 (ValueType v) const noexcept
-    {
+    ValueType convertTo0to1 (ValueType v) const noexcept {
         if (convertTo0To1Function != nullptr)
             return clampTo0To1 (convertTo0To1Function (start, end, v));
 
@@ -141,24 +132,20 @@ public:
 
         auto distanceFromMiddle = static_cast<ValueType> (2) * proportion - static_cast<ValueType> (1);
 
-        return (static_cast<ValueType> (1) + std::pow (std::abs (distanceFromMiddle), skew)
-                                           * (distanceFromMiddle < ValueType() ? static_cast<ValueType> (-1)
-                                                                               : static_cast<ValueType> (1)))
+        return (static_cast<ValueType> (1) + std::pow (std::abs (distanceFromMiddle), skew) * (distanceFromMiddle < ValueType() ? static_cast<ValueType> (-1) : static_cast<ValueType> (1)))
                / static_cast<ValueType> (2);
     }
 
     /** Uses the properties of this mapping to convert a normalised 0->1 value to
         its full-range representation.
     */
-    ValueType convertFrom0to1 (ValueType proportion) const noexcept
-    {
+    ValueType convertFrom0to1 (ValueType proportion) const noexcept {
         proportion = clampTo0To1 (proportion);
 
         if (convertFrom0To1Function != nullptr)
             return convertFrom0To1Function (start, end, proportion);
 
-        if (! symmetricSkew)
-        {
+        if (! symmetricSkew) {
             if (skew != static_cast<ValueType> (1) && proportion > ValueType())
                 proportion = std::exp (std::log (proportion) / skew);
 
@@ -178,8 +165,7 @@ public:
     /** Takes a non-normalised value and snaps it based on either the interval property of
         this NormalisableRange or the lambda function supplied to the constructor.
     */
-    ValueType snapToLegalValue (ValueType v) const noexcept
-    {
+    ValueType snapToLegalValue (ValueType v) const noexcept {
         if (snapToLegalValueFunction != nullptr)
             return snapToLegalValueFunction (start, end, v);
 
@@ -202,13 +188,12 @@ public:
 
         @param centrePointValue  this must be greater than the start of the range and less than the end.
     */
-    void setSkewForCentre (ValueType centrePointValue) noexcept
-    {
+    void setSkewForCentre (ValueType centrePointValue) noexcept {
         jassert (centrePointValue > start);
         jassert (centrePointValue < end);
 
         symmetricSkew = false;
-        skew = std::log (static_cast<ValueType> (0.5)) / std::log ((centrePointValue - start) / (end - start));
+        skew          = std::log (static_cast<ValueType> (0.5)) / std::log ((centrePointValue - start) / (end - start));
         checkInvariants();
     }
 
@@ -244,17 +229,15 @@ public:
     bool symmetricSkew = false;
 
 private:
-    void checkInvariants() const
-    {
+    void checkInvariants() const {
         assert (end > start);
         assert (interval >= ValueType());
         assert (skew > ValueType());
     }
 
-    static ValueType clampTo0To1 (ValueType value)
-    {
-        auto clampedValue = std::max (static_cast<ValueType> (0), 
-            std::min (static_cast<ValueType> (1), value));
+    static ValueType clampTo0To1 (ValueType value) {
+        auto clampedValue = std::max (static_cast<ValueType> (0),
+                                      std::min (static_cast<ValueType> (1), value));
 
         // If you hit this assertion then either your normalisation function is not working
         // correctly or your input is out of the expected bounds.

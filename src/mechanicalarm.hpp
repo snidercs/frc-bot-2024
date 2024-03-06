@@ -22,7 +22,7 @@ public:
     ~MechanicalArm() = default;
 
     void moveUp() {
-        leader.SetVoltage (units::volt_t { 0.3 * 12.0 });      
+        leader.SetVoltage (units::volt_t { 0.3 * 12.0 });
         follower.SetVoltage (units::volt_t { 0.3 * 12.0 });
     }
 
