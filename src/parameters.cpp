@@ -4,20 +4,17 @@
 
 #include "parameters.hpp"
 
+/** Enable to log value changes in the axis controls. */
 #ifndef BOT_LOG_AXES
 #    define BOT_LOG_AXES 0
 #endif
 
-using snider::BotMode;
-
 void Parameters::process (const Context& context) noexcept {
     values = context;
 
-    // A vector is a list of things.  In this case, integer indexes.
-    std::vector<int> indexes = { LeftStickX, LeftStickY, RightStickX, RightStickY };
-    // This is another type of for loop: called a 'foreach' loop.
-    // more on loops: https://www.w3schools.com/cpp/cpp_for_loop.asp
-    for (auto i : indexes) {
+    static const std::vector<int> sticks { LeftStickX, LeftStickY, RightStickX, RightStickY };
+
+    for (auto i : sticks) {
         if (std::abs (values.axis[i]) <= 0.1) {
             values.axis[i] = 0;
         }

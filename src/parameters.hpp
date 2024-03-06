@@ -2,9 +2,8 @@
 
 #include <cstring> // for memcpy, memset
 
-#include "snider/botmode.hpp"
-#include "snider/messageticker.hpp"
 #include "snider/padmode.hpp"
+
 /** Parameter state. e.g. Raw controller value storage and filtering.
  
     It is this object's job to process data coming from the FRC system.  Think 
@@ -109,16 +108,6 @@ public:
         }
     };
 
-    /** Returns the current mode in which the bot is running. */
-    constexpr auto getBotMode() const noexcept { return _mode; }
-
-    /** Set the mode of the bot. */
-    void setBotMode (snider::BotMode newMode) noexcept {
-        if (newMode == _mode)
-            return;
-        _mode = newMode;
-    }
-
     /** Returns the current gamepad mode. */
     constexpr auto getPadMode() const noexcept { return _padMode; }
 
@@ -127,16 +116,16 @@ public:
         return std::to_string (_padMode);
     }
 
+    /** Change the gamepad mode.
+     
+        @param newMode The new gamepad mode to use when retrieving parameter
+                       values.
+    */
     void setPadMode (snider::PadMode newMode) noexcept {
         if (newMode == _padMode)
             return;
         _padMode = newMode;
     }
-
-    /** Returns true if in teleop mode. */
-    bool isTeleop() const noexcept { return _mode == snider::BotMode::Teleop; }
-    /** Returns true if in autonomous mode. */
-    bool isAuto() const noexcept { return _mode == snider::BotMode::Autonomous; }
 
     /** Process the context, update values, prepare for replies to bot.
         
@@ -168,58 +157,43 @@ public:
     double getTriggerRight() const noexcept { return getAxisValue (TriggerRight); }
 
     /** Return processed passed value. */
-    bool getButtonValue (int button) const noexcept {
-        return values.buttons[button];
-    }
+    bool getButtonValue (int button) const noexcept { return values.buttons[button]; }
 
-    /** Returns the processed A button value . */
-    bool getAButton() const noexcept {
-        return getButtonValue (ButtonA);
-    }
-    /** Returns the processed B button value . */
-    bool getBButton() const noexcept {
-        return getButtonValue (ButtonB);
-    }
-    /** Returns the processed X button value . */
-    bool getXButton() const noexcept {
-        return getButtonValue (ButtonX);
-    }
-    /** Returns the processed Y button value . */
-    bool getYButton() const noexcept {
-        return getButtonValue (ButtonY);
-    }
-    /** Returns the processed right bumper button value . */
-    bool getRightBumperButton() const noexcept {
-        return getButtonValue (ButtonRightBumper);
-    }
-    /** Returns the processed left bumper button value . */
-    bool getLeftBumperButton() const noexcept {
-        return getButtonValue (ButtonLeftBumper);
-    }
-    /** Returns the processed back button value . */
-    bool getBackButton() const noexcept {
-        return getButtonValue (ButtonBack);
-    }
-    /** Returns the processed start button value . */
-    bool getStartButton() const noexcept {
-        return getButtonValue (ButtonStart);
-    }
-    /** Returns the processed home button value . */
-    bool getHomeButton() const noexcept {
-        return getButtonValue (ButtonHome);
-    }
-    /** Returns the processed l3 button value . */
-    bool getL3Button() const noexcept {
-        return getButtonValue (ButtonL3);
-    }
-    /** Returns the processed r3 button value . */
-    bool getR3Button() const noexcept {
-        return getButtonValue (ButtonR3);
-    }
+    /** Returns the processed A button value. */
+    bool getAButton() const noexcept { return getButtonValue (ButtonA); }
+
+    /** Returns the processed B button value. */
+    bool getBButton() const noexcept { return getButtonValue (ButtonB); }
+
+    /** Returns the processed X button value. */
+    bool getXButton() const noexcept { return getButtonValue (ButtonX); }
+
+    /** Returns the processed Y button value. */
+    bool getYButton() const noexcept { return getButtonValue (ButtonY); }
+
+    /** Returns the processed right bumper button value. */
+    bool getRightBumperButton() const noexcept { return getButtonValue (ButtonRightBumper); }
+
+    /** Returns the processed left bumper button value. */
+    bool getLeftBumperButton() const noexcept { return getButtonValue (ButtonLeftBumper); }
+
+    /** Returns the processed back button value. */
+    bool getBackButton() const noexcept { return getButtonValue (ButtonBack); }
+    /** Returns the processed start button value. */
+
+    bool getStartButton() const noexcept { return getButtonValue (ButtonStart); }
+
+    /** Returns the processed home button value. */
+    bool getHomeButton() const noexcept { return getButtonValue (ButtonHome); }
+
+    /** Returns the processed l3 button value. */
+    bool getL3Button() const noexcept { return getButtonValue (ButtonL3); }
+
+    /** Returns the processed r3 button value. */
+    bool getR3Button() const noexcept { return getButtonValue (ButtonR3); }
+
     /** Return processed passed value. */
-    int getPOVValue (int givenParam) const noexcept {
-        return values.povs[givenParam];
-    }
+    int getPOVValue (int index) const noexcept { return values.povs[index]; }
 
     //==========================================================================
     /** Get the normalized speed value.
@@ -255,11 +229,9 @@ public:
     }
 
 private:
-    using BotMode = snider::BotMode;
     using PadMode = snider::PadMode;
 
     Context values;
     Context lastContext;
-    BotMode _mode { BotMode::Disconnected };
     PadMode _padMode { PadMode::Standard };
 };
