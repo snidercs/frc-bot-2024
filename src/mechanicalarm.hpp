@@ -1,39 +1,38 @@
 #pragma once
 
+#include <array>
+#include <numbers>
+
 #include <frc/Encoder.h>
 #include <rev/CANSparkMax.h>
 #include <rev/CANSparkMaxLowLevel.h>
 
 #include "ports.hpp"
-#include "snider/console.hpp"
-
-#define MECHANICAL_ARM_ENABLED 1
+#include "types.hpp"
 
 class MechanicalArm {
 public:
     MechanicalArm() {
-        follower.Follow (leader);
-        // enable if motors could be swapped.
-        leader.SetSmartCurrentLimit (40, 30);
-        follower.SetSmartCurrentLimit (40, 30);
+        for (auto m : motors)
+            m->SetSmartCurrentLimit (40, 30);
         resetEncoders();
     }
 
     ~MechanicalArm() = default;
 
     void moveUp() {
-        leader.SetVoltage (units::volt_t { 0.3 * 12.0 });      
-        follower.SetVoltage (units::volt_t { 0.3 * 12.0 });
+        for (auto m : motors)
+            m->SetVoltage (units::volt_t { 0.3 * 12.0 });
     }
 
     void moveDown() {
-        leader.SetVoltage (units::volt_t { 0.3 * -12.0 });
-        follower.SetVoltage (units::volt_t { 0.3 * -12.0 });
+        for (auto m : motors)
+            m->SetVoltage (units::volt_t { 0.3 * -12.0 });
     }
 
     void stop() {
-        leader.SetVoltage (units::volt_t { 0.0 });
-        follower.SetVoltage (units::volt_t { 0.0 });
+        for (auto m : motors)
+            m->SetVoltage (units::volt_t { 0.0 });
     }
 
     void resetEncoders() {
@@ -49,10 +48,7 @@ private:
     frc::Encoder encoderRight { 12, 13 };
     std::array<frc::Encoder*, 2> encoders { &encoderLeft, &encoderRight };
 
-#if MECHANICAL_ARM_ENABLED
-    rev::CANSparkMax follower { Port::LeftArm,
-                                rev::CANSparkLowLevel::MotorType::kBrushless };
-    rev::CANSparkMax leader { Port::RightArm,
-                              rev::CANSparkLowLevel::MotorType::kBrushless };
-#endif
+    rev::CANSparkMax leftArm { Port::LeftArm, MotorType::kBrushless };
+    rev::CANSparkMax rightArm { Port::RightArm, MotorType::kBrushless };
+    std::array<rev::CANSparkMax*, 2> motors { &leftArm, &rightArm };
 };

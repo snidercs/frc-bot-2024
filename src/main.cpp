@@ -20,13 +20,10 @@
 #include "ports.hpp"
 #include "shooter.hpp"
 
-using BotMode = snider::BotMode;
-
 //==============================================================================
 class RobotMain : public frc::TimedRobot {
 public:
     void RobotInit() override {
-        params.setBotMode (BotMode::Disconnected);
         trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
             frc::Pose2d { 2_m, 2_m, 0_rad },
             {},
@@ -34,13 +31,9 @@ public:
             frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
     }
 
-    /**
-     * This function is called every 20 ms, no matter the mode. Use
-     * this for items like diagnostics that you want ran during disabled,
-     * autonomous, teleoperated and test.
-     *
-     * This RUNS AFTER the mode specific periodic functions, but before
-     * LiveWindow and SmartDashboard integrated updating.
+    /** Called every 20 ms, no matter the mode. This RUNS AFTER the mode 
+        specific periodic functions, but before LiveWindow and SmartDashboard 
+        integrated updating.
      */
     void RobotPeriodic() override {
         drivetrain.postProcess();
@@ -49,7 +42,6 @@ public:
     void AutonomousInit() override {
         timer.Restart();
         drivetrain.resetOdometry (trajectory.InitialPose());
-        params.setBotMode (BotMode::Autonomous);
     }
 
     void AutonomousPeriodic() override {
@@ -65,7 +57,6 @@ public:
 
     //==========================================================================
     void TeleopInit() override {
-        params.setBotMode (BotMode::Teleop);
         shooter.reset();
     }
 
@@ -98,7 +89,6 @@ public:
 
     //==========================================================================
     void DisabledInit() override {
-        params.setBotMode (BotMode::Disabled);
     }
 
     void DisabledPeriodic() override {
@@ -107,7 +97,6 @@ public:
 
     //==========================================================================
     void TestInit() override {
-        params.setBotMode (BotMode::Test);
     }
 
     void TestPeriodic() override {
@@ -123,9 +112,9 @@ public:
 
 private:
     Parameters params;
-    
+
     /** Used to apply a logarithmic scale to speed inputs. */
-    struct SpeedRange : public juce::NormalisableRange<double>  {
+    struct SpeedRange : public juce::NormalisableRange<double> {
         using range_type = juce::NormalisableRange<double>;
         SpeedRange() : range_type (-1.0, 1.0, 0.0, 0.5, true) {}
         ~SpeedRange() = default;

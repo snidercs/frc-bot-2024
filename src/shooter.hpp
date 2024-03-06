@@ -7,6 +7,7 @@
 #include <rev/CANSparkMaxLowLevel.h>
 
 #include "ports.hpp"
+#include "types.hpp"
 
 /** The shooter interface.
 
@@ -104,9 +105,6 @@ public:
     }
 
 private:
-    using IdleMode  = rev::CANSparkBase::IdleMode;
-    using MotorType = rev::CANSparkLowLevel::MotorType;
-
     State _state { Idle };
     State lastState { Idle };
     int loadDurationMs { 600 };
