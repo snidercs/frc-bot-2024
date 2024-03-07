@@ -17,6 +17,8 @@ def main():
     import subprocess
     print ("Formatting Code:")
     for f in code_files():
+        if 'src/sol' in f:
+            continue
         print ("  %s" % f)
         subprocess.call (['clang-format', '-i', f])
     print ("done!")
