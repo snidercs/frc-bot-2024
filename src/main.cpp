@@ -16,6 +16,7 @@
 #include "drivetrain.hpp"
 #include "mechanicalarm.hpp"
 #include "normalisablerange.hpp"
+#include "lua.hpp"
 #include "parameters.hpp"
 #include "ports.hpp"
 #include "shooter.hpp"
@@ -202,6 +203,7 @@ private:
 
 #ifndef RUNNING_FRC_TESTS
 int main() {
+    lua::Lifecycle luaEngine;
     return frc::StartRobot<RobotMain>();
 }
 #endif
