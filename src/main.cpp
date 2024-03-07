@@ -97,10 +97,11 @@ public:
 
     //==========================================================================
     void TestInit() override {
+        TeleopInit();
     }
 
     void TestPeriodic() override {
-        driveDisabled();
+        TeleopPeriodic();
     }
 
     //==========================================================================
