@@ -19,22 +19,27 @@
 */
 class Parameters final {
 public:
+    using PadMode = snider::PadMode;
+
     Parameters()  = default;
     ~Parameters() = default;
 
     Parameters (const Parameters& o) { operator= (o); }
     Parameters& operator= (const Parameters& o) {
-        values      = o.values;
-        lastContext = o.lastContext;
+        values     = o.values;
+        lastValues = o.lastValues;
         return *this;
     }
 
     Parameters (Parameters&& o) { operator= (std::forward<Parameters> (o)); }
     Parameters& operator= (Parameters&& o) {
-        values      = std::move (o.values);
-        lastContext = std::move (o.lastContext);
+        values     = std::move (o.values);
+        lastValues = std::move (o.lastValues);
         return *this;
     }
+
+    /** Dead zone threshold */
+    static constexpr double DeadZone = 0.1;
 
     enum : int {
         MaxAxes    = 32, ///> Max number of axes supported.
@@ -102,18 +107,21 @@ public:
 
         /** Reset to default values */
         inline void reset() noexcept {
-            memset (buttons, MaxButtons, sizeof (bool));
-            memset (axis, MaxAxes, sizeof (double));
-            memset (povs, MaxPOVs, sizeof (int));
+            memset (buttons, 0, MaxButtons * sizeof (bool));
+            memset (axis, 0, MaxAxes * sizeof (double));
+            memset (povs, 0, MaxPOVs * sizeof (int));
         }
     };
 
+    /** Reset all values to default. */
+    void reset() noexcept;
+
     /** Returns the current gamepad mode. */
-    constexpr auto getPadMode() const noexcept { return _padMode; }
+    constexpr auto getPadMode() const noexcept { return padMode; }
 
     /** Returns the pad mode as a string. */
     std::string getPadModeString() const noexcept {
-        return std::to_string (_padMode);
+        return std::to_string (padMode);
     }
 
     /** Change the gamepad mode.
@@ -122,9 +130,9 @@ public:
                        values.
     */
     void setPadMode (snider::PadMode newMode) noexcept {
-        if (newMode == _padMode)
+        if (newMode == padMode)
             return;
-        _padMode = newMode;
+        padMode = newMode;
     }
 
     /** Process the context, update values, prepare for replies to bot.
@@ -134,8 +142,8 @@ public:
     void process (const Context& context) noexcept;
 
     /** Returns the axis value of the given axis */
-    double getAxisValue (int axisParam) const noexcept {
-        return values.axis[axisParam];
+    double getAxisValue (int index) const noexcept {
+        return values.axis[index];
     }
 
     /** Returns the processed left stick X value. */
@@ -203,7 +211,7 @@ public:
     double getSpeed() const noexcept {
         double val = 0.0;
 
-        switch (_padMode) {
+        switch (padMode) {
             case PadMode::Standard:
                 val = getLeftStickY();
                 break;
@@ -219,7 +227,7 @@ public:
     double getAngularSpeed() const noexcept {
         double val = 0.0;
 
-        switch (_padMode) {
+        switch (padMode) {
             case PadMode::Standard:
                 val = getRightStickX();
                 break;
@@ -229,9 +237,7 @@ public:
     }
 
 private:
-    using PadMode = snider::PadMode;
-
     Context values;
-    Context lastContext;
-    PadMode _padMode { PadMode::Standard };
+    Context lastValues;
+    PadMode padMode { PadMode::Standard };
 };
