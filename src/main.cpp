@@ -104,7 +104,9 @@ public:
     }
 
     //==========================================================================
-    void SimulationInit() override {}
+    void SimulationInit() override {
+        drivetrain.initializeSimulation();
+    }
 
     void SimulationPeriodic() override {
         drivetrain.updateSimulation();

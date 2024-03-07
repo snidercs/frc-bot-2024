@@ -4,8 +4,6 @@
 
 #include <iostream>
 
-#include <frc/RobotController.h>
-
 #include "drivetrain.hpp"
 
 Drivetrain::Drivetrain() {
@@ -30,8 +28,6 @@ Drivetrain::Drivetrain() {
     leftEncoder.Reset();
     rightEncoder.Reset();
 #endif
-
-    frc::SmartDashboard::PutData ("Field", &fieldSim);
 }
 
 void Drivetrain::drive (units::meters_per_second_t xSpeed,
@@ -54,7 +50,8 @@ void Drivetrain::setSpeeds (const frc::DifferentialDriveWheelSpeeds& speeds) {
 
 void Drivetrain::postProcess() {
     updateOdometry();
-    fieldSim.SetRobotPose (odometry.GetPose());
+    if (simulation)
+        simulation->onPostProcess();
 }
 
 void Drivetrain::updateOdometry() {
@@ -66,11 +63,12 @@ void Drivetrain::updateOdometry() {
 void Drivetrain::resetOdometry (const frc::Pose2d& pose) {
     leftEncoder.Reset();
     rightEncoder.Reset();
-    drivetrainSimulator.SetPose (pose);
     odometry.ResetPosition (gyro.GetRotation2d(),
                             units::meter_t { leftEncoder.GetDistance() },
                             units::meter_t { rightEncoder.GetDistance() },
                             pose);
+    if (simulation)
+        simulation->onOdometryReset (pose);
 }
 
 void Drivetrain::updateSimulation() {
@@ -78,14 +76,6 @@ void Drivetrain::updateSimulation() {
     // simulation, and write the simulated positions and velocities to our
     // simulated encoder and gyro. We negate the right side so that positive
     // voltages make the right side move forward.
-    drivetrainSimulator.SetInputs (units::volt_t { leftLeader.Get() } * frc::RobotController::GetInputVoltage(),
-                                   units::volt_t { rightLeader.Get() } * frc::RobotController::GetInputVoltage());
-    drivetrainSimulator.Update (20_ms);
-
-    leftEncoderSim.SetDistance (drivetrainSimulator.GetLeftPosition().value());
-    leftEncoderSim.SetRate (drivetrainSimulator.GetLeftVelocity().value());
-    rightEncoderSim.SetDistance (
-        drivetrainSimulator.GetRightPosition().value());
-    rightEncoderSim.SetRate (drivetrainSimulator.GetRightVelocity().value());
-    gyroSim.SetAngle (-drivetrainSimulator.GetHeading().Degrees().value());
+    if (simulation)
+        simulation->update();
 }
