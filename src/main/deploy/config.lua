@@ -1,3 +1,6 @@
+--- Robot configuration.
+-- @module config
+
 local M = {}
 
 local general = {
@@ -48,6 +51,6 @@ function M.team_name() return general.team_name end
 -- Convenience function that returns the team number setting.
 -- @function team_name
 -- @treturn int The team name
-function M.team_name() return general.team_name end
+function M.team_number() return general.team_number end
 
 return M
