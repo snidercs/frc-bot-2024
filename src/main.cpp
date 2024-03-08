@@ -19,7 +19,6 @@
 #include "mechanicalarm.hpp"
 #include "normalisablerange.hpp"
 #include "parameters.hpp"
-#include "ports.hpp"
 #include "shooter.hpp"
 
 //==============================================================================
@@ -125,7 +124,7 @@ private:
         ~SpeedRange() = default;
     } speedRange;
 
-    frc::XboxController gamepad { Port::DefaultGamepad };
+    frc::XboxController gamepad { lua::config::port ("gamepad") };
 
     // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0  to 1.
     // This is also called parameter smoothing.

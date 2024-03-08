@@ -21,10 +21,10 @@ struct Lifecycle final {
     ~Lifecycle();
 
     // no copy
-    Lifecycle(const Lifecycle&) = delete;
+    Lifecycle (const Lifecycle&)            = delete;
     Lifecycle& operator= (const Lifecycle&) = delete;
     // no move
-    Lifecycle(Lifecycle&&) = delete;
+    Lifecycle (Lifecycle&&)            = delete;
     Lifecycle& operator= (Lifecycle&&) = delete;
 };
 
@@ -35,10 +35,12 @@ sol::state& state();
 bool bootstrap();
 
 namespace config {
+/** Returns a port index by symbol. */
+int port (std::string_view symbol);
 /** Returns the team name. */
 std::string team_name();
 /** Returns the team number. */
 int team_number();
-}
+} // namespace config
 
-}
+} // namespace lua

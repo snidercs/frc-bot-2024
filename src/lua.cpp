@@ -1,10 +1,13 @@
 
+#include <filesystem>
 #include <memory>
 
 #include <frc/Filesystem.h>
 
 #include "lua.hpp"
 #include "sol/state.hpp"
+
+namespace fs = std::filesystem;
 
 namespace lua {
 
@@ -25,6 +28,14 @@ static void destroy() {
         return;
     delete _state;
     _state = nullptr;
+}
+
+static char separator() {
+#ifdef _WIN32
+    return '\\';
+#else
+    return '/';
+#endif
 }
 
 } // namespace detail
@@ -52,9 +63,21 @@ bool bootstrap() {
         return true;
 
     auto make_path = []() -> std::string {
-        std::string pathstr (frc::filesystem::GetDeployDirectory());
-        pathstr += "/?.lua;/?/init.lua";
-        return pathstr;
+        std::stringstream out;
+        fs::path path;
+
+#if __FRC_ROBORIO__
+        path = frc::filesystem::GetDeployDirectory();
+#else
+        path = frc::filesystem::GetOperatingDirectory();
+        path /= "robot";
+#endif
+
+        path.make_preferred();
+        out << path.string() << detail::separator() << "?.lua;"
+            << detail::separator() << "?" << detail::separator() << "init.lua";
+
+        return out.str();
     };
 
     auto& ls = lua::state();
@@ -62,9 +85,9 @@ bool bootstrap() {
     package.set ("path", make_path());
 
     sol::safe_function_result result;
-    
+
     try {
-        result = ls.safe_script (R"(
+        result = ls.script (R"(
             config = require ('config')
             print('')
             config.print()
@@ -77,9 +100,9 @@ bool bootstrap() {
 
     if (result.valid()) {
         std::cout << "[bot] lua intiialized ok" << std::endl;
-        std::cout << "[bot] team: " << lua::config::team_name() 
-            << " (" << lua::config::team_number() << ")"
-            << std::endl;
+        std::cout << "[bot] team: " << lua::config::team_name()
+                  << " (" << lua::config::team_number() << ")"
+                  << std::endl;
     } else {
         auto err = sol::error { result };
         std::cerr << "[bot] error: " << err.what() << std::endl;
@@ -100,6 +123,11 @@ std::string team_name() {
 int team_number() {
     sol::table general = state()["config"]["general"];
     return general.get_or ("team_number", 0);
+}
+
+int port (std::string_view symbol) {
+    auto& ls = state();
+    return (int) ls["config"]["port"](symbol);
 }
 
 } // namespace config

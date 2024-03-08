@@ -7,7 +7,6 @@
 #include <rev/CANSparkMax.h>
 #include <rev/CANSparkMaxLowLevel.h>
 
-#include "ports.hpp"
 #include "types.hpp"
 
 class MechanicalArm {
@@ -48,7 +47,7 @@ private:
     frc::Encoder encoderRight { 12, 13 };
     std::array<frc::Encoder*, 2> encoders { &encoderLeft, &encoderRight };
 
-    rev::CANSparkMax leftArm { Port::LeftArm, MotorType::kBrushless };
-    rev::CANSparkMax rightArm { Port::RightArm, MotorType::kBrushless };
+    rev::CANSparkMax leftArm { lua::config::port ("arm_left"), MotorType::kBrushless };
+    rev::CANSparkMax rightArm { lua::config::port ("arm_right"), MotorType::kBrushless };
     std::array<rev::CANSparkMax*, 2> motors { &leftArm, &rightArm };
 };

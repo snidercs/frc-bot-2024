@@ -30,7 +30,7 @@
 #include <units/length.h>
 #include <units/velocity.h>
 
-#include "ports.hpp"
+#include "lua.hpp"
 #include "types.hpp"
 
 /**
@@ -69,11 +69,12 @@ private:
     using IdleMode  = rev::CANSparkMax::IdleMode;
     using MotorType = rev::CANSparkLowLevel::MotorType;
 
-    rev::CANSparkMax leftLeader { Port::DriveLeftFront, MotorType::kBrushed };
-    rev::CANSparkMax leftFollower { Port::DriveLeftBack, MotorType::kBrushed };
-    rev::CANSparkMax rightLeader { Port::DriveRightFront, MotorType::kBrushed };
-    rev::CANSparkMax rightFollower { Port::DriveRightBack, MotorType::kBrushed };
+    rev::CANSparkMax leftLeader { lua::config::port ("drive_left_leader"), MotorType::kBrushed };
+    rev::CANSparkMax leftFollower { lua::config::port ("drive_left_follower"), MotorType::kBrushed };
+    rev::CANSparkMax rightLeader { lua::config::port ("drive_right_leader"), MotorType::kBrushed };
+    rev::CANSparkMax rightFollower { lua::config::port ("drive_right_follower"), MotorType::kBrushed };
     std::array<rev::CANSparkMax*, 4> motors { &leftLeader, &leftFollower, &rightLeader, &rightFollower };
+
     //==========================================================================
     frc::Encoder leftEncoder { 0, 1 };
     frc::Encoder rightEncoder { 2, 3 };

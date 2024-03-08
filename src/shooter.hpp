@@ -6,7 +6,6 @@
 #include <rev/CANSparkMax.h>
 #include <rev/CANSparkMaxLowLevel.h>
 
-#include "ports.hpp"
 #include "types.hpp"
 
 /** The shooter interface.
@@ -115,8 +114,16 @@ private:
     int delay      = 0;
     int delayTicks = 2; // delayTicks x 20ms = totalDelay
 
-    rev::CANSparkMax bottomMotor { Port::BottomShootingWheel, MotorType::kBrushed };
-    rev::CANSparkMax topMotor { Port::TopShootingWheel, MotorType::kBrushed };
+    rev::CANSparkMax topMotor {
+        lua::config::port ("shooter_primary"),
+        MotorType::kBrushed
+    };
+
+    rev::CANSparkMax bottomMotor {
+        lua::config::port ("shooter_secondary"),
+        MotorType::kBrushed
+    };
+
     std::array<rev::CANSparkMax*, 2> motors { &topMotor, &bottomMotor };
 
     std::string stateString() const noexcept {
