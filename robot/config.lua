@@ -43,7 +43,7 @@ local function lookup (cat, sym)
         if key == sym then return value end
     end
     -- not found
-    return nil
+    return -1
 end
 
 --- General settings access.

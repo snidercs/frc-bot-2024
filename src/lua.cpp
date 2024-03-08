@@ -58,11 +58,17 @@ sol::state& state() {
     return *detail::_state;
 }
 
+void set_path (std::string_view path) {
+    auto& ls = lua::state();
+    sol::table package { ls["package"] };
+    package.set ("path", path);
+}
+
 bool bootstrap() {
     if (detail::boostraped)
         return true;
 
-    auto make_path = []() -> std::string {
+    set_path ([]() -> std::string {
         std::stringstream out;
         fs::path path;
 
@@ -78,12 +84,9 @@ bool bootstrap() {
             << detail::separator() << "?" << detail::separator() << "init.lua";
 
         return out.str();
-    };
+    }());
 
-    auto& ls = lua::state();
-    sol::table package { ls["package"] };
-    package.set ("path", make_path());
-
+    auto& ls = state();
     sol::safe_function_result result;
 
     try {
