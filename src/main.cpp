@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 
+#include <frc/Filesystem.h>
 #include <frc/TimedRobot.h>
 #include <frc/XboxController.h>
 #include <frc/controller/RamseteController.h>
@@ -14,9 +15,9 @@
 #include "snider/padmode.hpp"
 
 #include "drivetrain.hpp"
+#include "lua.hpp"
 #include "mechanicalarm.hpp"
 #include "normalisablerange.hpp"
-#include "lua.hpp"
 #include "parameters.hpp"
 #include "ports.hpp"
 #include "shooter.hpp"
@@ -204,6 +205,6 @@ private:
 #ifndef RUNNING_FRC_TESTS
 int main() {
     lua::Lifecycle luaEngine;
-    return frc::StartRobot<RobotMain>();
+    return lua::bootstrap() ? frc::StartRobot<RobotMain>() : -1;
 }
 #endif
