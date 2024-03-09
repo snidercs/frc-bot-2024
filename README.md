@@ -1,10 +1,27 @@
 # Bot 2024
 
+## Features
+- Built-in Lua interpreter.
+- Smart bot configuration with Lua bindings and negligible overhead.
+- Fast code deploys when c++ doesn't need recompiled.
+- Ultra low latency performance.
+- Design is decoupled from wpilib making it portable to other robotics systems.
+
+## VScode Dommands
+There are shortcuts to command line tasks.
+
+Press `shift + ctrl + p` to open a list of commands. Type `wpilib` to filter FRC specific actions.
+
 ## Building
 Build all targets, and run the simulator.
 ```bash
 ./gradlew build
 ```
+
+## Testing
+Run all unit tests.
+```bash
+./gradlew check
 
 ## Deployment
 Run the following command to deploy code to the roboRIO
