@@ -1,19 +1,19 @@
 
+#include <filesystem>
+
 #include <gtest/gtest.h>
 
 #include "lua.hpp"
 #include "sol/sol.hpp"
 
+namespace fs = std::filesystem;
+
 namespace detail {
 } // namespace detail
 
-#if 0
 class ConfigTest : public testing::Test {
 public:
-    ConfigTest() { lua::bootstrap(); }
-
-protected:
-    lua::Lifecycle engine;
+    ConfigTest() {}
 };
 
 TEST_F (ConfigTest, Ports) {
@@ -33,19 +33,20 @@ TEST_F (ConfigTest, Ports) {
         "shooter_secondary",
     };
 
+    EXPECT_EQ (lua::config::num_ports(), (int) symbols.size());
     for (const auto& sym : symbols)
         EXPECT_GE (lua::config::port (sym), 0);
 }
 
 TEST_F (ConfigTest, NoExceptions) {
-    auto& ls = lua::state();
     try {
-        lua::config::port ("");
+        
+        EXPECT_LT (lua::config::port (""), 0);
+        EXPECT_LT (lua::config::port ("invalid_____index____not_good"), 0);
         EXPECT_EQ (lua::config::team_name(), "The Gold Standard");
         EXPECT_EQ (lua::config::team_number(), 9431);
-    } catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "exception in: " << __FILE__ << std::endl;
         EXPECT_TRUE (false);
     }
 }
-#endif

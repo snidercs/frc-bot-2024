@@ -31,16 +31,34 @@ struct Lifecycle final {
 /** Returns the global Lua context. */
 sol::state& state();
 
+/** Append lua path qualifiers. e.g. ?.lua and /?/init.lua */
+std::string append_search_qualifiers (std::string_view input);
+
+/** Set the Lua search path.
+    Does nothing if passed an empty string.
+    @param path A non empty Lua path string.
+*/
+void set_path (std::string_view path);
+
 /** Bootstrap the interpreter. */
 bool bootstrap();
 
+/** functions in this namespace call in to Lua to retrieve values
+    from the module. */
 namespace config {
+
+/** Returns the total number of port indexes. */
+int num_ports();
+
 /** Returns a port index by symbol. */
 int port (std::string_view symbol);
+
 /** Returns the team name. */
 std::string team_name();
+
 /** Returns the team number. */
 int team_number();
+
 } // namespace config
 
 } // namespace lua

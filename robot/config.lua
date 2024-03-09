@@ -27,6 +27,12 @@ local ports = {
 
 ----- End of Settings -----
 
+----- private init and helpers -----
+
+-- cache the total number of ports
+local total_ports = 0
+for _ in pairs (ports) do total_ports = total_ports + 1 end
+
 local function print_settings (title, cat)
     local space_for_key = 24
     print (title..":")
@@ -36,6 +42,7 @@ local function print_settings (title, cat)
     end
 end
 
+-- returns -1 when not found.
 local function lookup (cat, sym)
     if type(cat) ~= 'table' then return nil end
     sym = tostring (sym)
@@ -45,6 +52,8 @@ local function lookup (cat, sym)
     -- not found
     return -1
 end
+
+---- public interface -----
 
 --- General settings access.
 -- Do not modify these in other lua scripts.
@@ -83,14 +92,27 @@ function M.team_number()
     return general.team_number 
 end
 
---- Get a port, index, or channel of some hardware by symbol lookup.
--- @treturn mixed The setting value or nil if the symbol wasn't found.
-function M.get (symbol)
-    return lookup (general, symbol)
+--- Get a general setting by symbol lookup.
+-- @function get
+-- @tparam string symbol The symbol to lookup
+-- @tparam fallback a fallback value (defaults to nil)
+-- @treturn mixed The setting value, fallback, or nil.
+function M.get (symbol, fallback)
+    local res = lookup (general, symbol)
+    if res >= 0 then return res end
+    return nil
 end
 
+--- Get a port index by symbol lookup.
+-- @function port
+-- @treturn int The port index
 function M.port (symbol)
     return lookup (ports, symbol)
 end
+
+--- Get the total number of port configs
+-- @function num_ports
+-- @treturn int the number of ports
+function M.num_ports() return total_ports end
 
 return M

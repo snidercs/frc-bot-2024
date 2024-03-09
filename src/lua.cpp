@@ -15,6 +15,7 @@ namespace detail {
 
 static sol::state* _state { nullptr };
 static bool boostraped { false };
+static std::string path;
 
 static void init() {
     if (_state != nullptr)
@@ -29,6 +30,8 @@ static void destroy() {
     delete _state;
     _state = nullptr;
 }
+
+static bool has_custom_path() { return ! path.empty(); }
 
 static char separator() {
 #ifdef _WIN32
@@ -58,33 +61,52 @@ sol::state& state() {
     return *detail::_state;
 }
 
+std::string append_search_qualifiers (std::string_view input) {
+    std::stringstream out;
+    out << input << detail::separator() << "?.lua;"
+        << detail::separator() << "?" << detail::separator() << "init.lua";
+    return out.str();
+}
+
 void set_path (std::string_view path) {
-    auto& ls = lua::state();
+    if (path.empty())
+        return;
+    auto& ls     = lua::state();
+    detail::path = path;
+    detail::path.shrink_to_fit();
     sol::table package { ls["package"] };
-    package.set ("path", path);
+    package.set ("path", detail::path);
 }
 
 bool bootstrap() {
     if (detail::boostraped)
         return true;
 
-    set_path ([]() -> std::string {
-        std::stringstream out;
-        fs::path path;
+    if (! detail::has_custom_path()) {
+        set_path ([]() -> std::string {
+            fs::path path;
 
-#if __FRC_ROBORIO__
-        path = frc::filesystem::GetDeployDirectory();
-#else
-        path = frc::filesystem::GetOperatingDirectory();
-        path /= "robot";
-#endif
+            path = frc::filesystem::GetDeployDirectory();
 
-        path.make_preferred();
-        out << path.string() << detail::separator() << "?.lua;"
-            << detail::separator() << "?" << detail::separator() << "init.lua";
+            if (! fs::exists (path / "config.lua")) {
+                path = frc::filesystem::GetOperatingDirectory();
+                path /= "robot";
+            }
 
-        return out.str();
-    }());
+            if (! fs::exists (path / "config.lua")) {
+                path = frc::filesystem::GetLaunchDirectory();
+                path /= "robot";
+            }
+
+            path.make_preferred();
+
+            if (! fs::exists (path / "config.lua"))
+                return "";
+
+            std::clog << "[bot] bootstrap: lua path: " << path.string() << std::endl;
+            return append_search_qualifiers (path.string());
+        }());
+    }
 
     auto& ls = state();
     sol::safe_function_result result;
@@ -92,23 +114,15 @@ bool bootstrap() {
     try {
         result = ls.script (R"(
             config = require ('config')
-            print('')
-            config.print()
-            print('')
         )");
     } catch (const std::exception& e) {
         std::cerr << "[bot] " << e.what() << std::endl;
         return false;
     }
 
-    if (result.valid()) {
-        std::cout << "[bot] lua intiialized ok" << std::endl;
-        std::cout << "[bot] team: " << lua::config::team_name()
-                  << " (" << lua::config::team_number() << ")"
-                  << std::endl;
-    } else {
+    if (! result.valid()) {
         auto err = sol::error { result };
-        std::cerr << "[bot] error: " << err.what() << std::endl;
+        std::cerr << "[bot] " << err.what() << std::endl;
         return false;
     }
 
@@ -128,9 +142,14 @@ int team_number() {
     return general.get_or ("team_number", 0);
 }
 
+int num_ports() {
+    auto& ls = state();
+    return (int) ls["config"]["num_ports"]();
+}
+
 int port (std::string_view symbol) {
     auto& ls = state();
-    return (int) ls["config"]["port"](symbol);
+    return symbol.empty() ? -1 : (int) ls["config"]["port"](symbol);
 }
 
 } // namespace config
