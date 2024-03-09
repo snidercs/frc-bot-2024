@@ -4,6 +4,7 @@
 #include "../vendordeps/lua-5.4.6/src/lua.h"
 #include "../vendordeps/lua-5.4.6/src/lualib.h"
 
+#include <string>
 #include <string_view>
 
 namespace sol {
@@ -31,8 +32,13 @@ struct Lifecycle final {
 /** Returns the global Lua context. */
 sol::state& state();
 
-/** Append lua path qualifiers. e.g. ?.lua and /?/init.lua */
-std::string append_search_qualifiers (std::string_view input);
+/** Adds lua path qualifiers. e.g. ?.lua and /?/init.lua  to the input string.  
+    Input does not get modified.
+
+    @param input The input string to append qualifiers to
+    @returns The input path + lua qualifiers.
+*/
+std::string with_search_qualifiers (std::string_view input);
 
 /** Set the Lua search path.
     Does nothing if passed an empty string.
@@ -40,11 +46,16 @@ std::string append_search_qualifiers (std::string_view input);
 */
 void set_path (std::string_view path);
 
-/** Bootstrap the interpreter. */
+/** Bootstrap the interpreter (call once before robot init)
+    @returns true if Lua could be bootstrapped.
+*/
 bool bootstrap();
 
-/** functions in this namespace call in to Lua to retrieve values
-    from the module. */
+/** Lua to C++ config bindings.
+    
+    Functions in this namespace call in to Lua to retrieve values
+    from the module.
+ */
 namespace config {
 
 /** Returns the total number of port indexes. */

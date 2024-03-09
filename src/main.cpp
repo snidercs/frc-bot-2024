@@ -20,10 +20,19 @@
 #include "normalisablerange.hpp"
 #include "parameters.hpp"
 #include "shooter.hpp"
+#include "sol/sol.hpp"
 
 //==============================================================================
 class RobotMain : public frc::TimedRobot {
 public:
+    RobotMain() {
+        Parameters::bind (&params);
+    }
+
+    ~RobotMain() {
+        Parameters::bind (nullptr);
+    }
+
     void RobotInit() override {
         trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
             frc::Pose2d { 2_m, 2_m, 0_rad },
@@ -202,8 +211,16 @@ private:
 };
 
 #ifndef RUNNING_FRC_TESTS
+/** This is not ideal, but frc::StartRobot instantiates a singleton version
+    of Robot main with no explicit shutdown.  Our lua engine must exist before
+    and after the robot's ctor and dtor. Having lifecylce at the global scope
+    helps avoid crashes when the app exits.
+*/
+static lua::Lifecycle luaEngine;
+
 int main() {
-    lua::Lifecycle luaEngine;
-    return lua::bootstrap() ? frc::StartRobot<RobotMain>() : -1;
+    if (! lua::bootstrap())
+        throw std::runtime_error ("lua engine could not be bootstrapped");
+    return frc::StartRobot<RobotMain>();
 }
 #endif

@@ -1,6 +1,7 @@
 
 #include <filesystem>
 #include <memory>
+#include <sstream>
 
 #include <frc/Filesystem.h>
 
@@ -61,7 +62,7 @@ sol::state& state() {
     return *detail::_state;
 }
 
-std::string append_search_qualifiers (std::string_view input) {
+std::string with_search_qualifiers (std::string_view input) {
     std::stringstream out;
     out << input << detail::separator() << "?.lua;"
         << detail::separator() << "?" << detail::separator() << "init.lua";
@@ -104,7 +105,7 @@ bool bootstrap() {
                 return "";
 
             std::clog << "[bot] bootstrap: lua path: " << path.string() << std::endl;
-            return append_search_qualifiers (path.string());
+            return with_search_qualifiers (path.string());
         }());
     }
 
