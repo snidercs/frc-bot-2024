@@ -9,6 +9,18 @@ local general = {
     team_number             = 9431,
 }
 
+local drivetrain = {
+
+}
+
+local lifter = {
+
+}
+
+local shooter = {
+    duration                = 6000
+}
+
 local ports = {
     gamepad                 = 0,
     joystick                = 1,
@@ -44,13 +56,9 @@ end
 
 -- returns -1 when not found.
 local function lookup (cat, sym)
-    if type(cat) ~= 'table' then return nil end
     sym = tostring (sym)
-    for key, value in pairs (cat) do
-        if key == sym then return value end
-    end
-    -- not found
-    return -1
+    if #sym <= 0 or type(cat) ~= 'table' then return -1 end
+    return cat[sym] or -1
 end
 
 ---- public interface -----
