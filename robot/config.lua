@@ -57,6 +57,27 @@ local ports = {
     shooter_secondary       = 9
 }
 
+local trajectories = {
+    { -- 1 (Middle)
+        start       = { 2.0, 2.0, 0 },  -- x, y, rotation
+        waypoints   = {},
+        stop        = { 2.5, 2.0, 0 },  -- x, y, rotation
+        config      = { 0.75, 1.0 },    -- max speed, max accel
+    },
+    { -- 2 (Left)
+        start       = { 2.0, 2.0, 0 },  -- x, y, rotation
+        waypoints   = {},
+        stop        = { 10, 6.0, 0 },  -- x, y, rotation
+        config      = { 2.0, 2.0 },    -- max speed, max accel
+    },
+    { -- 3 (Right)
+        start       = { 2.0, 2.0, 0 },  -- x, y, rotation
+        waypoints   = {},
+        stop        = { 10, 6.0, 0 },  -- x, y, rotation
+        config      = { 2.0, 2.0 },    -- max speed, max accel
+    }
+}
+
 ----- End of Settings -----
 
 ----- private init and helpers -----
@@ -89,6 +110,7 @@ M.gamepad = gamepad
 M.drivetrain = drivetrain
 M.lifter = lifter
 M.shooter = shooter
+M.trajectories = trajectories
 
 --- Port settings access.
 -- Do not modify these in other lua scripts.

@@ -22,6 +22,36 @@
 #include "shooter.hpp"
 #include "sol/sol.hpp"
 
+namespace detail {
+
+frc::Pose2d makePose2d (sol::table tbl) {
+    std::clog << "table value = " << tbl[2].get<double>() << std::endl;
+    return frc::Pose2d (
+        units::meter_t (tbl[1].get<double>()),
+        units::meter_t (tbl[2].get<double>()),
+        frc::Rotation2d (units::radian_t (tbl[3].get<double>()))
+    );
+}
+
+frc::TrajectoryConfig makeTrajectoryConfig (sol::table tbl) {
+    return frc::TrajectoryConfig (
+        units::meters_per_second_t (tbl[1].get<double>()),
+        units::meters_per_second_squared_t (tbl[2].get<double>())
+    );
+}
+
+frc::Trajectory makeTrajectory (sol::table tbl) {
+    return frc::TrajectoryGenerator::GenerateTrajectory (
+        makePose2d (tbl["start"]),
+        {},
+        makePose2d (tbl["stop"]),
+        // frc::TrajectoryConfig (0.75_mps, 2_mps_sq)
+        makeTrajectoryConfig (tbl["config"])
+    );
+}
+
+}
+
 //==============================================================================
 class RobotMain : public frc::TimedRobot {
 public:
@@ -34,11 +64,22 @@ public:
     }
 
     void RobotInit() override {
-        trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
-            frc::Pose2d { 2_m, 2_m, 0_rad },
-            {},
-            frc::Pose2d { 2.5_m, 2_m, 0_rad },
-            frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
+        try {
+            const int indexInTable = 2; //This index relates to Lua autonomous start positions
+            sol::table tjs { lua::state()["config"]["trajectories"] };
+            std::clog << "num items = " << tjs.size() << std::endl;
+            trajectory = detail::makeTrajectory (tjs [indexInTable]);
+        } catch (const std::exception& e) {
+            std::clog << "Lua trajectory could not be parsed." << std::endl;
+            std::clog << e.what() << std::endl;
+            throw e;
+
+            trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
+                frc::Pose2d { 2_m, 2_m, 0_rad },
+                {},
+                frc::Pose2d { 2.5_m, 2_m, 0_rad },
+                frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
+        }
     }
 
     /** Called every 20 ms, no matter the mode. This RUNS AFTER the mode 
