@@ -7,20 +7,25 @@
 #include "sol/sol.hpp"
 
 namespace fs = std::filesystem;
-
-namespace detail {
-} // namespace detail
+namespace config = lua::config;
 
 class ConfigTest : public testing::Test {
 public:
     ConfigTest() {}
 };
 
+TEST_F (ConfigTest, GetDouble) {
+    EXPECT_EQ (config::gamepad_skew_factor(), 
+               config::get_double ("gamepad", "skew_factor"));
+    EXPECT_EQ (config::get_double ("gamepad", "fake", 1001.0), 1001.0);
+    EXPECT_EQ (config::get_double ("fake", "alsofake", -1002.0), -1002.0);
+}
+
 TEST_F (ConfigTest, Gamepad) {
-    
     const auto skew_factor = lua::config::gamepad_skew_factor();
     EXPECT_GE (skew_factor, 0.0);
     EXPECT_LE (skew_factor, 1.0);
+    EXPECT_EQ (skew_factor, lua::config::get_double ("gamepad", "skew_factor"));
 }
 
 TEST_F (ConfigTest, Ports) {

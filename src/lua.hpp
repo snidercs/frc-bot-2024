@@ -58,6 +58,9 @@ bool bootstrap();
  */
 namespace config {
 
+/** Return a doulbe by category and symbol. */
+double get_double (std::string_view cat, std::string_view sym, double fallback = 0.0);
+
 /** Returns the default gamepad skew factor. */
 double gamepad_skew_factor();
 

@@ -26,7 +26,7 @@ local gamepad = {
     -- controller mode to use.
     controller_mode         = 'standard',
     -- skew factor applied to speed control
-    skew_factor             = 0.5 
+    skew_factor             = 0.5
 }
 
 local drivetrain = {

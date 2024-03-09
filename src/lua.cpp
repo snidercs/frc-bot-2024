@@ -144,6 +144,19 @@ T get_or (std::string_view cat, std::string_view sym, T fallback) {
 }
 #endif
 
+double get_double (std::string_view cat, std::string_view sym, double fallback) {
+    if (cat.empty() || sym.empty())
+        return fallback;
+ 
+    auto obj = state()["config"][cat];
+    if (obj.is<sol::table>()) {
+        sol::table tbl = obj;
+        return tbl.get_or(sym, fallback);
+    }
+
+    return fallback;
+}
+
 double gamepad_skew_factor() {
     sol::table tbl = state()["config"]["gamepad"];
     return tbl.get_or ("skew_factor", 1.0);
