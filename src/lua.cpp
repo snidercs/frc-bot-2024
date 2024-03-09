@@ -133,6 +133,22 @@ bool bootstrap() {
 
 namespace config {
 
+#if 0
+// todo, implement this
+template<typename T>
+T get_or (std::string_view cat, std::string_view sym, T fallback) {
+    if (cat.empty() || sym.empty())
+        return fallback;
+    sol::table tbl = state()["config"][cat];
+    return (T) tbl.get_or (sym, fallback);
+}
+#endif
+
+double gamepad_skew_factor() {
+    sol::table tbl = state()["config"]["gamepad"];
+    return tbl.get_or ("skew_factor", 1.0);
+}
+
 std::string team_name() {
     sol::table general = state()["config"]["general"];
     return general.get_or ("team_name", std::string());

@@ -1,12 +1,32 @@
 --- Robot configuration.
+-- Manages categorized key/value pairs used in robot initialzation. It is loaded
+-- on the root Lua state during bootstrap and is always available.
+-- 
+-- The settings are directly accessible through the module table 
+-- e.g. `local val = config.gamepad.skew_factor`
+--
+-- It does not rely on any other module or frc runtime specific code and 
+-- therefore settings can be passed to c++ contructors without concern of static
+-- initialization
+-- problems.
+--
 -- @module config
 local M = { format_version = 0 }
 
 ----- Settings Begin -----
 
 local general = {
+    -- Team name
     team_name               = "The Gold Standard",
+    -- Team number
     team_number             = 9431,
+}
+
+local gamepad = {
+    -- controller mode to use.
+    controller_mode         = 'standard',
+    -- skew factor applied to speed control
+    skew_factor             = 0.5 
 }
 
 local drivetrain = {
@@ -63,10 +83,12 @@ end
 
 ---- public interface -----
 
---- General settings access.
--- Do not modify these in other lua scripts.
--- @field general
 M.general = general
+M.ports = ports
+M.gamepad = gamepad
+M.drivetrain = drivetrain
+M.lifter = lifter
+M.shooter = shooter
 
 --- Port settings access.
 -- Do not modify these in other lua scripts.
@@ -108,7 +130,7 @@ end
 function M.get (symbol, fallback)
     local res = lookup (general, symbol)
     if res >= 0 then return res end
-    return nil
+    return fallback
 end
 
 --- Get a port index by symbol lookup.

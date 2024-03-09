@@ -58,6 +58,9 @@ bool bootstrap();
  */
 namespace config {
 
+/** Returns the default gamepad skew factor. */
+double gamepad_skew_factor();
+
 /** Returns the total number of port indexes. */
 int num_ports();
 

@@ -129,7 +129,7 @@ private:
     /** Used to apply a logarithmic scale to speed inputs. */
     struct SpeedRange : public juce::NormalisableRange<double> {
         using range_type = juce::NormalisableRange<double>;
-        SpeedRange() : range_type (-1.0, 1.0, 0.0, 0.5, true) {}
+        SpeedRange() : range_type (-1.0, 1.0, 0.0, lua::config::gamepad_skew_factor(), true) {}
         ~SpeedRange() = default;
     } speedRange;
 
