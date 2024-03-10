@@ -46,7 +46,12 @@ static Parameters::Context randomContext() {
 }
 
 static bool axisUsesDeadZone (int a) {
-    return a == Parameters::LeftStickX || a == Parameters::LeftStickY || a == Parameters::RightStickX || a == Parameters::RightStickY;
+    // clang-format off
+    return a == Parameters::LeftStickX || 
+        a == Parameters::LeftStickY || 
+        a == Parameters::RightStickX || 
+        a == Parameters::RightStickY;
+    // clang-format on
 }
 
 } // namespace detail

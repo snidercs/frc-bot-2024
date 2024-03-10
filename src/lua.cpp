@@ -144,14 +144,33 @@ T get_or (std::string_view cat, std::string_view sym, T fallback) {
 }
 #endif
 
+sol::object get (std::string_view category, std::string_view symbol) {
+    if (category.empty() || symbol.empty())
+        return sol::object{};
+
+    auto& L { state() };
+    
+    sol::object obj = L["config"][category];
+    if (obj.is<sol::table>()) {
+        auto cat = obj.as<sol::table>();
+        return cat[symbol];
+    }
+
+    return {};
+}
+
+sol::object get (std::string_view symbol) {
+    return get ("general", symbol);
+}
+
 double get_double (std::string_view cat, std::string_view sym, double fallback) {
     if (cat.empty() || sym.empty())
         return fallback;
- 
+
     auto obj = state()["config"][cat];
     if (obj.is<sol::table>()) {
         sol::table tbl = obj;
-        return tbl.get_or(sym, fallback);
+        return tbl.get_or (sym, fallback);
     }
 
     return fallback;
@@ -170,6 +189,12 @@ std::string team_name() {
 int team_number() {
     sol::table general = state()["config"]["general"];
     return general.get_or ("team_number", 0);
+}
+
+/** Match start position. */
+std::string match_start_position() {
+    sol::table general = state()["config"]["general"];
+    return general.get_or ("match_start_position", std::string { "left" });
 }
 
 int num_ports() {

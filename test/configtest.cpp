@@ -14,6 +14,21 @@ public:
     ConfigTest() {}
 };
 
+TEST_F (ConfigTest, Get) {
+    EXPECT_TRUE (config::get ("team_name").valid());
+    EXPECT_FALSE (config::get ("general_fake", "fake_symbol").valid());
+    auto tn = config::get ("team_number");
+    EXPECT_EQ (tn.get_type(), sol::type::number);
+    EXPECT_EQ (tn.as<lua_Integer>(), 9431);
+    EXPECT_GT (config::get ("shooter", "duration").as<lua_Integer>(), 0);
+}
+
+TEST_F (ConfigTest, GetOr) {
+    // TODO: finish config::get_or.
+    // EXPECT_EQ (9431, config::get_or ("team_number", 0));
+    // EXPECT_EQ ("The Gold Standard", config::get_or ("team_name", ""));
+}
+
 TEST_F (ConfigTest, GetDouble) {
     EXPECT_EQ (config::gamepad_skew_factor(), 
                config::get_double ("gamepad", "skew_factor"));

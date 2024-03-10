@@ -1,11 +1,11 @@
+--- Access to bot Parameters.
+-- @module params
 local M = {}
 
---- reference the cxx functions to reduce table lookups in private code
-local speed = cxx.params.speed
-local rotation = cxx.params.rotation
+--- Returns the speed ranged from  -1.0 to 1.0
+function M.speed() return cxx.params.speed() end
 
--- "export" cxx fuctions to public api as well.
-M.speed = speed
-M.rotation = rotation
+--- Returns rotation ranged from -1.0 to 1.0
+function M.rotation() return cxx.params.rotation() end
 
 return M

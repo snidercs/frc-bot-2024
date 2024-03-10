@@ -7,6 +7,7 @@
 #include <rev/CANSparkMax.h>
 #include <rev/CANSparkMaxLowLevel.h>
 
+#include "lua.hpp"
 #include "types.hpp"
 
 class MechanicalArm {
@@ -18,6 +19,9 @@ public:
     }
 
     ~MechanicalArm() = default;
+
+    /** Bind to lua. See `bindings.cpp` */
+    static void bind (MechanicalArm*);
 
     void moveUp() {
         for (auto m : motors)

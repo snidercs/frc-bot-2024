@@ -26,6 +26,9 @@ public:
 
     ~Shooter() {}
 
+    /** Bind to lua. see bindings.cpp */
+    static void bind (Shooter*);
+
     /** State of this shooter. */
     enum State {
         Idle,     ///> Idle state. not shooting. not loading.

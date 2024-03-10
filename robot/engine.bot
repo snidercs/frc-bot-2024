@@ -1,0 +1,2 @@
+local params = require ('params')
+params.rotation()

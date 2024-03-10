@@ -7,9 +7,8 @@
 #include <string>
 #include <string_view>
 
-namespace sol {
-class state;
-}
+#include "sol/function.hpp"
+#include "sol/state.hpp"
 
 namespace lua {
 
@@ -58,7 +57,41 @@ bool bootstrap();
  */
 namespace config {
 
-/** Return a doulbe by category and symbol. */
+#if 0
+// TODO: finish this: works for numeric values.
+/** Get a value by symbol from the 'general' category in config.lua 
+    @param symbol The key to lookup
+    @param fallback the fallback value in case of lookup failure
+    @tparam T the value type to return
+    @tparam S string type
+    @returns T the config value
+*/
+template<typename T, typename S>
+T get_or (S&& symbol, T&& fallback) {
+    sol::function f = state()["config"]["get"];
+    sol::unsafe_function_result res = f(std::forward<S> (symbol), 
+                                        std::forward<T> (fallback));
+    std::clog << sol::type_name (state(), res.get_type()) << std::endl;
+    std::clog << res.get<T>(0) << std::endl;
+
+    return fallback; //res.valid() ? res.get<T>(0) : fallback;
+}
+#endif
+
+/** Get a value from the 'general' settings. See `robot/config.lua` 
+    @param symbol The symbol key to lookup.
+    @returns the value or an invalid object.
+*/
+sol::object get (std::string_view symbol);
+
+/** Get a value from any category
+    @param category The category to check
+    @param symbol The value key to get.
+    @returns The value or an invalid object.
+ */
+sol::object get (std::string_view category, std::string_view symbol);
+
+/** Return a double by category and symbol. */
 double get_double (std::string_view cat, std::string_view sym, double fallback = 0.0);
 
 /** Returns the default gamepad skew factor. */
@@ -75,6 +108,9 @@ std::string team_name();
 
 /** Returns the team number. */
 int team_number();
+
+/** Match start position. */
+std::string match_start_position();
 
 } // namespace config
 

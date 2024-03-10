@@ -25,54 +25,56 @@
 namespace detail {
 
 frc::Pose2d makePose2d (sol::table tbl) {
-    std::clog << "table value = " << tbl[2].get<double>() << std::endl;
     return frc::Pose2d (
         units::meter_t (tbl[1].get<double>()),
         units::meter_t (tbl[2].get<double>()),
-        frc::Rotation2d (units::radian_t (tbl[3].get<double>()))
-    );
+        frc::Rotation2d (units::radian_t (tbl[3].get<double>())));
 }
 
 frc::TrajectoryConfig makeTrajectoryConfig (sol::table tbl) {
     return frc::TrajectoryConfig (
         units::meters_per_second_t (tbl[1].get<double>()),
-        units::meters_per_second_squared_t (tbl[2].get<double>())
-    );
+        units::meters_per_second_squared_t (tbl[2].get<double>()));
 }
 
-frc::Trajectory makeTrajectory (sol::table tbl) {
+frc::Trajectory makeTrajectory (std::string_view symbol) {
+    sol::function trajectory { lua::state()["config"]["trajectory"] };
+    sol::table tbl = trajectory (symbol);
     return frc::TrajectoryGenerator::GenerateTrajectory (
         makePose2d (tbl["start"]),
         {},
         makePose2d (tbl["stop"]),
-        // frc::TrajectoryConfig (0.75_mps, 2_mps_sq)
-        makeTrajectoryConfig (tbl["config"])
-    );
+        makeTrajectoryConfig (tbl["config"]));
 }
 
-}
+} // namespace detail
 
 //==============================================================================
 class RobotMain : public frc::TimedRobot {
 public:
     RobotMain() {
+        // bind instances to Lua
         Parameters::bind (&params);
+        Shooter::bind (&shooter);
+        MechanicalArm::bind (&mechanicalArm);
     }
 
     ~RobotMain() {
+        // release instances from lua
         Parameters::bind (nullptr);
+        Shooter::bind (nullptr);
+        MechanicalArm::bind (nullptr);
     }
 
     void RobotInit() override {
+        std::clog << LUA_COPYRIGHT << std::endl;
+        
         try {
-            const int indexInTable = 2; //This index relates to Lua autonomous start positions
-            sol::table tjs { lua::state()["config"]["trajectories"] };
-            std::clog << "num items = " << tjs.size() << std::endl;
-            trajectory = detail::makeTrajectory (tjs [indexInTable]);
+            auto matchPos = lua::config::match_start_position();
+            trajectory    = detail::makeTrajectory (matchPos);
         } catch (const std::exception& e) {
-            std::clog << "Lua trajectory could not be parsed." << std::endl;
-            std::clog << e.what() << std::endl;
-            throw e;
+            std::cerr << "Lua trajectory could not be parsed." << std::endl;
+            std::cerr << e.what() << std::endl;
 
             trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
                 frc::Pose2d { 2_m, 2_m, 0_rad },
@@ -80,6 +82,9 @@ public:
                 frc::Pose2d { 2.5_m, 2_m, 0_rad },
                 frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
         }
+
+        auto& L = lua::state();
+        L.collect_garbage();
     }
 
     /** Called every 20 ms, no matter the mode. This RUNS AFTER the mode 
@@ -263,5 +268,11 @@ int main() {
     if (! lua::bootstrap())
         throw std::runtime_error ("lua engine could not be bootstrapped");
     return frc::StartRobot<RobotMain>();
+}
+#else
+frc::TimedRobot* instantiate_robot() {
+    auto bot = new RobotMain();
+    bot->RobotInit();
+    return bot;
 }
 #endif
