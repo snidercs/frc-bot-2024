@@ -100,7 +100,6 @@ void MechanicalArm::bind (MechanicalArm* self) {
 
         cxx["lifter"] = M;
     } else {
-        auto hi = { "hi", "there" };
         detail::clear_function_bindings (L, "lifter", {
             "move_up", "move_down" 
         });
