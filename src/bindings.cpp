@@ -7,7 +7,11 @@
 #include "shooter.hpp"
 
 namespace lua {
+
+using function_list = std::initializer_list<const char*>;
+
 namespace detail {
+
 
 /** Returns the 'cxx' module in the root Lua state. */
 sol::table cxx_table (sol::state& ls) {
@@ -18,6 +22,18 @@ sol::table cxx_table (sol::state& ls) {
     return (sol::table) G["cxx"];
 }
 
+template<typename Ls>
+void clear_function_bindings (Ls& L, std::string_view mod,
+                              function_list functions) {
+    auto cxx = cxx_table (L);
+    auto proxy = cxx[mod];
+    if (! proxy.valid())
+        return;
+    auto M = (sol::table) proxy;
+    for (const auto f :functions)
+        M.set (f, []() {});
+}
+
 } // namespace detail
 
 } // namespace lua
@@ -25,7 +41,8 @@ sol::table cxx_table (sol::state& ls) {
 using namespace lua;
 
 bool Parameters::bind (Parameters* self) {
-    auto cxx = detail::cxx_table (state());
+    auto& L = state();
+    auto cxx = detail::cxx_table (L);
 
     // bind/unbind 'params' module.  See also `robot/params.lua`
     if (self != nullptr) {
@@ -35,23 +52,21 @@ bool Parameters::bind (Parameters* self) {
         cxx["params"] = M;
 
     } else {
-        auto proxy = cxx["params"];
-        if (proxy.valid()) {
-            auto M = (sol::table) proxy;
-            for (const auto f : { "speed", "rotation" })
-                M.set (f, []() -> lua_Number { return 0.0; });
-        }
+        detail::clear_function_bindings (L, "params", {
+            "speed", "rotation" 
+        });
     }
 
     return true;
 }
 
 void Shooter::bind (Shooter* self) {
-    auto cxx = detail::cxx_table (lua::state());
+    auto& L  = lua::state();
+    auto cxx = detail::cxx_table (L);
 
     // bind/unbind 'robot' methods module.  See also `robot/params.lua`
     if (self != nullptr) {
-        auto M = lua::state().create_table();
+        auto M = L.create_table();
 
         M["shooting"] = [self]() { return self->isShooting(); };
         M["loading"]  = [self]() { return self->isLoading(); };
@@ -63,15 +78,31 @@ void Shooter::bind (Shooter* self) {
         cxx["shooter"] = M;
 
     } else {
-        auto proxy = cxx["shooter"];
-        if (proxy.valid()) {
-            auto M = (sol::table) proxy;
-            for (const auto f : { "shooting", "loading", "ready", "shoot", "load" })
-                M.set (f, []() {});
-        }
+        detail::clear_function_bindings (L, "shooter", {
+            "shooting", "loading", "ready", "shoot", "load" 
+        });
     }
 }
 
-void MechanicalArm::bind (MechanicalArm*) {
-    // noop
+void MechanicalArm::bind (MechanicalArm* self) {
+    auto& L  = lua::state();
+    auto cxx = detail::cxx_table (L);
+    if (self == nullptr) {
+        auto M = L.create_table();
+
+        M["move_up"] = [self]() {
+            self->moveUp();
+        };
+
+        M["move_down"] = [self]() {
+            self->moveDown();
+        };
+
+        cxx["lifter"] = M;
+    } else {
+        auto hi = { "hi", "there" };
+        detail::clear_function_bindings (L, "lifter", {
+            "move_up", "move_down" 
+        });
+    }
 }
