@@ -96,7 +96,14 @@
     "valarray": "cpp",
     "variant": "cpp",
     "*.inc": "cpp",
-    "*.ipp": "cpp"
+    "*.ipp": "cpp",
+    "*.bot": "lua"
   },
-  "editor.rulers": [80, 100]
+  "editor.rulers": [
+    80,
+    100
+  ],
+  "Lua.diagnostics.globals": [
+    "cxx"
+  ],
 }
