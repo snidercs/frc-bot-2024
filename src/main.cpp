@@ -81,8 +81,8 @@ public:
             trajectory    = detail::makeTrajectory (matchPos);
         } catch (const std::exception& e) {
             std::cerr 
-                << "[bot] lua trajectory could not be parsed." << std::endl
-                << "[bot] " << e.what() << std::endl
+                << "[bot] error: lua trajectory could not be parsed." << std::endl
+                << "[bot] what: " << e.what() << std::endl
                 << "[bot] loading fallback trajectory" << std::endl;
 
             trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
