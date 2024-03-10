@@ -67,14 +67,23 @@ public:
     }
 
     void RobotInit() override {
+        auto& L = lua::state();
+
+        // display engine and bot info.
         std::clog << LUA_COPYRIGHT << std::endl;
-        
+        L.script ("config.print()");
+        std::clog.flush();
+        std::cout.flush();
+        std::cerr.flush();
+
         try {
             auto matchPos = lua::config::match_start_position();
             trajectory    = detail::makeTrajectory (matchPos);
         } catch (const std::exception& e) {
-            std::cerr << "Lua trajectory could not be parsed." << std::endl;
-            std::cerr << e.what() << std::endl;
+            std::cerr 
+                << "[bot] lua trajectory could not be parsed." << std::endl
+                << "[bot] " << e.what() << std::endl
+                << "[bot] loading fallback trajectory" << std::endl;
 
             trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
                 frc::Pose2d { 2_m, 2_m, 0_rad },
@@ -83,7 +92,6 @@ public:
                 frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
         }
 
-        auto& L = lua::state();
         L.collect_garbage();
     }
 
