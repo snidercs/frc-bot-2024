@@ -16,8 +16,10 @@ public:
 
 TEST_F (EngineTest, RequireAll) {
     auto& L { lua::state() };
-    L.script (R"(
-        require ('params')
-        require ('robot')
-    )");
+    EXPECT_NO_THROW (
+        L.script (R"(
+            require ('params')
+            require ('robot')
+        )")
+    );
 }
