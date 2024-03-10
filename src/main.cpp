@@ -12,10 +12,10 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
 
+#include <cameraserver/CameraServer.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/core/types.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <cameraserver/CameraServer.h>
 
 #include "snider/padmode.hpp"
 
@@ -273,16 +273,22 @@ private:
     }
 
     static void visionThread() {
-        // Get the USB camera from CameraServer
-        cs::UsbCamera camera = frc::CameraServer::StartAutomaticCapture();
-        // Set the resolution
-        camera.SetResolution (640, 480);
+        const auto cameraName = "Camera 1";
+        const auto width      = 640;
+        const auto height     = 360;
+        const auto fps        = 20;
 
+        // Get the USB camera from CameraServer
+        cs::UsbCamera camera = frc::CameraServer::StartAutomaticCapture (cameraName, 0);
+        // Set the resolution
+        camera.SetResolution (width, height);
+        camera.SetFPS (fps);
+#if 0
         // Get a CvSink. This will capture Mats from the Camera
         cs::CvSink cvSink = frc::CameraServer::GetVideo();
         // Setup a CvSource. This will send images back to the Dashboard
         cs::CvSource outputStream =
-            frc::CameraServer::PutVideo ("Rectangle", 640, 480);
+            frc::CameraServer::PutVideo (cameraName, width, height);
 
         // Mats are very memory expensive. Lets reuse this Mat.
         cv::Mat mat;
@@ -298,13 +304,16 @@ private:
                 // skip the rest of the current iteration
                 continue;
             }
+#    if 0
             // Put a rectangle on the image
             rectangle (mat, cv::Point (100, 100), 
                             cv::Point (400, 400), 
                             cv::Scalar (255, 255, 255), 5);
             // Give the output stream a new image to display
             outputStream.PutFrame (mat);
+#    endif
         }
+#endif
     }
 };
 
