@@ -64,6 +64,12 @@ or
 * [Deployment Info](https://docs.wpilib.org/en/stable/docs/software/vscode-overview/deploying-robot-code.html#building-and-deploying-robot-code)
 * [Driver Station Best Practices](https://frcdocs.wpi.edu/en/2022/docs/software/driverstation/driver-station-best-practices.html)
 
+## Camera Example
+
+When CameraServer opens a camera, it creates a webpage that you can use to view the camera stream and view the effects of various camera settings. To connect to the web interface, use a web browser to navigate to [http://roboRIO-TEAM-frc.local:1181](http://roboRIO-TEAM-frc.local:1181). There is no additional code needed other then Simple CameraServer Program.  If running in the *simulator* navigate to [http://localhost:1181](http://localhost:1181)
+
+* [Example Code](https://docs.wpilib.org/en/stable/docs/software/vision-processing/roborio/using-the-cameraserver-on-the-roborio.html)
+
 ## Example Code
 
 FRC provides [several examples](https://github.com/wpilibsuite/allwpilib/tree/main/wpilibcExamples/src/main/cpp/examples) of how to utilize WPIlib on GitHub.  It is easier, and faster to copy and paste from these rather than generate new projects all the time.
