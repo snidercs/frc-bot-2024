@@ -1,7 +1,10 @@
 # Robot Specification
 
-## Gamepad Layout
-The table below is a general outline of what the gamepad controls do.
+## Gamepad Layouts
+The tables below is a general outline of what the gamepad controls do for each mode.
+
+# Standard
+
 |  Button/Stick |             Action                   |
 |---------------|:------------------------------------:|
 | Left Axis     | Controls forward and backward motion |
@@ -18,11 +21,11 @@ The table below is a general outline of what the gamepad controls do.
 | Back          | N/A |
 | D-pad         | N/A |
 
-## Motors
+## Motor Controllers
 The values in this table are probably wrong. They need verified -MRF
-| Label | PWM Port | Controller | For?              |
+| Label | CAN ID   | Controller | For?              |
 |-------|:--------:|:----------:|-------------------|
-| M1/M2 |  0       | SparkMax   | Left drive no. 1  |
+| M1    |  0       | SparkMax   | Left drive no. 1  |
 | M3/M4 |  1       | SparkMax   | Right drive no. 2 |
 | M3    |  2       | SparkMax   | Shooter intake    |
 | M4    |  3       | SparkMax   | Shooter           |

@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 
+#include <frc/Filesystem.h>
 #include <frc/TimedRobot.h>
 #include <frc/XboxController.h>
 #include <frc/controller/RamseteController.h>
@@ -11,24 +12,140 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
 
+#include <cameraserver/CameraServer.h>
+#if 0
+#    include <opencv2/core/core.hpp>
+#    include <opencv2/core/types.hpp>
+#    include <opencv2/imgproc/imgproc.hpp>
+#endif
+
 #include "snider/padmode.hpp"
 
 #include "drivetrain.hpp"
+#include "engine.hpp"
+#include "lua.hpp"
 #include "mechanicalarm.hpp"
 #include "normalisablerange.hpp"
 #include "parameters.hpp"
-#include "ports.hpp"
 #include "shooter.hpp"
+#include "sol/sol.hpp"
+
+namespace lua {
+extern void bind_xbox_controller (frc::XboxController*);
+}
+
+namespace detail {
+
+frc::Pose2d makePose2d (sol::table tbl) {
+    return frc::Pose2d (
+        units::meter_t (tbl[1].get<double>()),
+        units::meter_t (tbl[2].get<double>()),
+        frc::Rotation2d (units::radian_t (tbl[3].get<double>())));
+}
+
+frc::TrajectoryConfig makeTrajectoryConfig (sol::table tbl) {
+    return frc::TrajectoryConfig (
+        units::meters_per_second_t (tbl[1].get<double>()),
+        units::meters_per_second_squared_t (tbl[2].get<double>()));
+}
+
+frc::Trajectory makeTrajectory (std::string_view symbol) {
+    sol::function trajectory { lua::state()["config"]["trajectory"] };
+    sol::table tbl = trajectory (symbol);
+    return frc::TrajectoryGenerator::GenerateTrajectory (
+        makePose2d (tbl["start"]),
+        {},
+        makePose2d (tbl["stop"]),
+        makeTrajectoryConfig (tbl["config"]));
+}
+
+static void displayBanner() {
+    auto& L = lua::state();
+    // display engine and bot info.
+    std::clog << LUA_COPYRIGHT << std::endl;
+    L.script ("config.print()");
+    std::clog.flush();
+    std::cout.flush();
+    std::cerr.flush();
+}
+
+static std::string findLuaDir() {
+    return lua::search_directory();
+}
+
+/** Instantiate the robot. This could return a bot in error state. Be sure to
+    check with `Robot::have_error()` and `Robot::error()`.
+*/
+static EnginePtr instantiateRobot() {
+    auto& L = lua::state();
+    std::filesystem::path path (findLuaDir());
+    path /= "engine.bot";
+    path.make_preferred();
+    return Engine::instantiate (L.lua_state(), path.string());
+}
+
+} // namespace detail
 
 //==============================================================================
 class RobotMain : public frc::TimedRobot {
 public:
+    RobotMain()
+        : frc::TimedRobot (units::millisecond_t (
+            lua::config::get ("engine", "period").as<double>())) {
+        // bind instances to Lua
+        Parameters::bind (&params);
+        Shooter::bind (&shooter);
+        MechanicalArm::bind (&mechanicalArm);
+        Drivetrain::bind (&drivetrain);
+        lua::bind_xbox_controller (&gamepad);
+    }
+
+    ~RobotMain() {
+        // release instances from lua
+        Parameters::bind (nullptr);
+        Shooter::bind (nullptr);
+        MechanicalArm::bind (nullptr);
+        Drivetrain::bind (nullptr);
+        lua::bind_xbox_controller (nullptr);
+        engine.reset();
+    }
+
     void RobotInit() override {
-        trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
-            frc::Pose2d { 2_m, 2_m, 0_rad },
-            {},
-            frc::Pose2d { 2.5_m, 2_m, 0_rad },
-            frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
+        auto& L = lua::state();
+
+        detail::displayBanner();
+        engine = detail::instantiateRobot();
+
+        if (engine != nullptr) {
+            engine->init();
+            if (engine->have_error()) {
+                throw std::runtime_error (engine->error().data());
+            }
+        } else {
+            throw std::runtime_error ("Failed to instantiate Lua engine");
+        }
+
+        try {
+            auto matchPos = lua::config::match_start_position();
+            trajectory    = detail::makeTrajectory (matchPos);
+        } catch (const std::exception& e) {
+            std::cerr
+                << "[bot] error: lua trajectory could not be parsed." << std::endl
+                << "[bot] what: " << e.what() << std::endl
+                << "[bot] loading fallback trajectory" << std::endl;
+
+            trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
+                frc::Pose2d { 2_m, 2_m, 0_rad },
+                {},
+                frc::Pose2d { 2.5_m, 2_m, 0_rad },
+                frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
+        }
+
+        L.collect_garbage();
+#ifndef RUNNING_FRC_TESTS
+        std::thread vision (visionThread);
+        vision.detach();
+#endif
     }
 
     /** Called every 20 ms, no matter the mode. This RUNS AFTER the mode 
@@ -68,8 +185,7 @@ public:
 
         processParameters();
 
-        drivetrain.drive (calculateSpeed (params.getSpeed()),
-                          calculateAngularSpeed (params.getAngularSpeed()));
+        drivetrain.driveNormalized (params.getSpeed(), params.getAngularSpeed());
 
         if (params.getButtonValue (Parameters::ButtonA))
             mechanicalArm.moveDown();
@@ -101,7 +217,14 @@ public:
     }
 
     void TestPeriodic() override {
-        TeleopPeriodic();
+        if (! checkControllerConnection()) {
+            driveDisabled();
+            return;
+        }
+
+        processParameters();
+        engine->test();
+        shooter.process();
     }
 
     //==========================================================================
@@ -114,22 +237,10 @@ public:
     }
 
 private:
+    EnginePtr engine;
     Parameters params;
 
-    /** Used to apply a logarithmic scale to speed inputs. */
-    struct SpeedRange : public juce::NormalisableRange<double> {
-        using range_type = juce::NormalisableRange<double>;
-        SpeedRange() : range_type (-1.0, 1.0, 0.0, 0.5, true) {}
-        ~SpeedRange() = default;
-    } speedRange;
-
-    frc::XboxController gamepad { Port::DefaultGamepad };
-
-    // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0  to 1.
-    // This is also called parameter smoothing.
-    frc::SlewRateLimiter<units::scalar> speedLimiter { 3 / 1_s };
-    frc::SlewRateLimiter<units::scalar> rotLimiter { 3 / 1_s };
-
+    frc::XboxController gamepad { lua::config::port ("gamepad") };
     Drivetrain drivetrain;
     MechanicalArm mechanicalArm;
     Shooter shooter;
@@ -140,25 +251,6 @@ private:
 
     // keep track of controller connection state.
     bool gamepadConnected = false;
-
-    const units::meters_per_second_t calculateSpeed (double value) noexcept {
-        // clamp to valid -1 to 1 range.
-        value = speedRange.snapToLegalValue (value);
-        // convert to 0.0 - 1.0 range.
-        value = (value - speedRange.start) / (speedRange.end - speedRange.start);
-        // apply and re-scale using scale factor.
-        value = speedRange.convertFrom0to1 (value);
-        return -speedLimiter.Calculate (value) * Drivetrain::MaxSpeed;
-    }
-
-    const units::radians_per_second_t calculateAngularSpeed (double value) noexcept {
-        value *= 0.5; // throttle down sensitivity.
-        if (IsReal()) {
-            // if real bot, invert direction of rotation.
-            value *= -1.0;
-        }
-        return -rotLimiter.Calculate (value) * Drivetrain::MaxAngularSpeed;
-    }
 
     void driveDisabled() {
         drivetrain.drive (units::velocity::meters_per_second_t (0),
@@ -198,10 +290,69 @@ private:
 
         params.process (ctx);
     }
+
+    static void visionThread() {
+        const auto cameraName = "Camera 1";
+        const auto width      = 640;
+        const auto height     = 360;
+        const auto fps        = 20;
+
+        // Get the USB camera from CameraServer
+        cs::UsbCamera camera = frc::CameraServer::StartAutomaticCapture (cameraName, 0);
+        // Set the resolution
+        camera.SetResolution (width, height);
+        camera.SetFPS (fps);
+#if 0
+        // Get a CvSink. This will capture Mats from the Camera
+        cs::CvSink cvSink = frc::CameraServer::GetVideo();
+        // Setup a CvSource. This will send images back to the Dashboard
+        cs::CvSource outputStream =
+            frc::CameraServer::PutVideo (cameraName, width, height);
+
+        // Mats are very memory expensive. Lets reuse this Mat.
+        cv::Mat mat;
+
+        while (true) {
+            // Tell the CvSink to grab a frame from the camera and
+            // put it
+            // in the source mat.  If there is an error notify the
+            // output.
+            if (cvSink.GrabFrame (mat) == 0) {
+                // Send the output the error.
+                outputStream.NotifyError (cvSink.GetError());
+                // skip the rest of the current iteration
+                continue;
+            }
+#    if 0
+            // Put a rectangle on the image
+            rectangle (mat, cv::Point (100, 100), 
+                            cv::Point (400, 400), 
+                            cv::Scalar (255, 255, 255), 5);
+            // Give the output stream a new image to display
+            outputStream.PutFrame (mat);
+#    endif
+        }
+#endif
+    }
 };
 
 #ifndef RUNNING_FRC_TESTS
+/** This is not ideal, but frc::StartRobot instantiates a singleton version
+    of Robot main with no explicit shutdown.  Our lua engine must exist before
+    and after the robot's ctor and dtor. Having lifecylce at the global scope
+    helps avoid crashes when the app exits.
+*/
+static lua::Lifecycle luaEngine;
+
 int main() {
+    if (! lua::bootstrap())
+        throw std::runtime_error ("lua engine could not be bootstrapped");
     return frc::StartRobot<RobotMain>();
+}
+#else
+frc::TimedRobot* instantiate_robot() {
+    auto bot = new RobotMain();
+    bot->RobotInit();
+    return bot;
 }
 #endif
