@@ -1,14 +1,14 @@
---- Main robot.
---- Facilities for controlling the bot.
---- @name robot
+---Main robot.
+---Facilities for controlling the bot.
+---@name robot
 
 local M          = {}
 local shooter    = cxx.shooter;
 local lifter     = cxx.lifter;
 local drivetrain = cxx.drivetrain;
 
---- Returns true if the robot is shooting.
---- @return boolean
+---Returns true if the robot is shooting.
+---@return boolean
 function M.shooting() return shooter.shooting() end
 
 --- Returns true if the robot is loading.
@@ -28,7 +28,7 @@ function M.stop_shooter() return shooter.stop() end
 --- @param speed number Speed ranged -1 to 1
 --- @param rot number Rotation ranged -1 to 1
 function M.drive(speed, rot)
-    drivetrain.drive (speed, rot)
+    drivetrain.drive(speed, rot)
 end
 
 return M

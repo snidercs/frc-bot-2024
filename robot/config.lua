@@ -33,7 +33,7 @@ local gamepad = {
 
 local engine = {
     --- Periodic time out in milliseconds. Less than 1 will crash!!!
-    period = math.max (2.0, math.min (20.0, (1.0 / 60.0) * 1000.0))
+    period = math.max(2.0, math.min(20.0, (1.0 / 60.0) * 1000.0))
 }
 
 -- driving specific settings
@@ -165,7 +165,7 @@ function M.team_name()
     return general.team_name
 end
 
---- Get the team number. Convenience function that returns the team number 
+--- Get the team number. Convenience function that returns the team number
 --- setting.
 --- @return integer
 function M.team_number()
