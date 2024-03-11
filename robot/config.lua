@@ -13,8 +13,6 @@
 --
 --- @name config
 
-local M = { format_version = 0 }
-
 ----- Settings Begin -----
 
 local general = {
@@ -31,6 +29,11 @@ local gamepad = {
     controller_mode = 'standard',
     -- skew factor applied to speed control
     skew_factor     = 0.5
+}
+
+local engine = {
+    --- Periodic time out in milliseconds. Less than 1 will crash!!!
+    period = math.max (2.0, math.min (20.0, (1.0 / 60.0) * 1000.0))
 }
 
 -- driving specific settings
@@ -91,10 +94,9 @@ local trajectories = {
         config    = { 3.0, 2.0 },     -- max speed, max accel
     }
 }
-
 ----- End of Settings -----
 
------ private init and helpers -----
+----- Private implementation details -----
 
 -- cache the total number of ports
 local total_ports = 0
@@ -118,23 +120,42 @@ end
 
 ---- public interface -----
 
+local M = { format_version = 0 }
+
+--- General settings
 M.general = general
+
+--- Port indexes
 M.ports = ports
+
+--- Gamepad specific settings
 M.gamepad = gamepad
+
+--- Drivetrain settings
 M.drivetrain = drivetrain
+
+--- Lifter settings
 M.lifter = lifter
+
+--- Shooter settings
 M.shooter = shooter
+
+--- Trajectories used in auto mode
 M.trajectories = trajectories
-M.ports = ports
+
+--- Engine settings
+M.engine = engine
 
 --- Print all settings to the console.
 -- @function print
 function M.print()
-    print("Robot Configuration")
+    print("Configuration")
     print(string.rep('-', 40))
     print_settings("General", general)
     print("")
     print_settings("Ports", ports)
+    print("")
+    print_settings("Engine", engine)
     print(string.rep('-', 40))
 end
 

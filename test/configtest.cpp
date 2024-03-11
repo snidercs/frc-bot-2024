@@ -1,6 +1,8 @@
 
 #include <filesystem>
 
+#include <frc/TimedRobot.h>
+
 #include <gtest/gtest.h>
 
 #include "lua.hpp"

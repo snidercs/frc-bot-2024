@@ -30,6 +30,10 @@
 #include "shooter.hpp"
 #include "sol/sol.hpp"
 
+namespace lua {
+extern void bind_xbox_controller (frc::XboxController*);
+}
+
 namespace detail {
 
 frc::Pose2d makePose2d (sol::table tbl) {
@@ -85,11 +89,15 @@ static EnginePtr instantiateRobot() {
 //==============================================================================
 class RobotMain : public frc::TimedRobot {
 public:
-    RobotMain() {
+    RobotMain()
+        : frc::TimedRobot (units::millisecond_t (
+            lua::config::get ("engine", "period").as<double>())) {
         // bind instances to Lua
         Parameters::bind (&params);
         Shooter::bind (&shooter);
         MechanicalArm::bind (&mechanicalArm);
+        Drivetrain::bind (&drivetrain);
+        lua::bind_xbox_controller (&gamepad);
     }
 
     ~RobotMain() {
@@ -97,6 +105,8 @@ public:
         Parameters::bind (nullptr);
         Shooter::bind (nullptr);
         MechanicalArm::bind (nullptr);
+        Drivetrain::bind (nullptr);
+        lua::bind_xbox_controller (nullptr);
         engine.reset();
     }
 
@@ -107,9 +117,12 @@ public:
         engine = detail::instantiateRobot();
 
         if (engine != nullptr) {
+            engine->init();
             if (engine->have_error()) {
                 throw std::runtime_error (engine->error().data());
             }
+        } else {
+            throw std::runtime_error ("Failed to instantiate Lua engine");
         }
 
         try {
@@ -172,8 +185,7 @@ public:
 
         processParameters();
 
-        drivetrain.drive (calculateSpeed (params.getSpeed()),
-                          calculateAngularSpeed (params.getAngularSpeed()));
+        drivetrain.driveNormalized (params.getSpeed(), params.getAngularSpeed());
 
         if (params.getButtonValue (Parameters::ButtonA))
             mechanicalArm.moveDown();
@@ -205,7 +217,14 @@ public:
     }
 
     void TestPeriodic() override {
+        if (! checkControllerConnection()) {
+            driveDisabled();
+            return;
+        }
+
+        processParameters();
         engine->test();
+        shooter.process();
     }
 
     //==========================================================================
@@ -221,20 +240,7 @@ private:
     EnginePtr engine;
     Parameters params;
 
-    /** Used to apply a logarithmic scale to speed inputs. */
-    struct SpeedRange : public juce::NormalisableRange<double> {
-        using range_type = juce::NormalisableRange<double>;
-        SpeedRange() : range_type (-1.0, 1.0, 0.0, lua::config::gamepad_skew_factor(), true) {}
-        ~SpeedRange() = default;
-    } speedRange;
-
     frc::XboxController gamepad { lua::config::port ("gamepad") };
-
-    // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0  to 1.
-    // This is also called parameter smoothing.
-    frc::SlewRateLimiter<units::scalar> speedLimiter { 3 / 1_s };
-    frc::SlewRateLimiter<units::scalar> rotLimiter { 3 / 1_s };
-
     Drivetrain drivetrain;
     MechanicalArm mechanicalArm;
     Shooter shooter;
@@ -245,25 +251,6 @@ private:
 
     // keep track of controller connection state.
     bool gamepadConnected = false;
-
-    const units::meters_per_second_t calculateSpeed (double value) noexcept {
-        // clamp to valid -1 to 1 range.
-        value = speedRange.snapToLegalValue (value);
-        // convert to 0.0 - 1.0 range.
-        value = (value - speedRange.start) / (speedRange.end - speedRange.start);
-        // apply and re-scale using scale factor.
-        value = speedRange.convertFrom0to1 (value);
-        return -speedLimiter.Calculate (value) * Drivetrain::MaxSpeed;
-    }
-
-    const units::radians_per_second_t calculateAngularSpeed (double value) noexcept {
-        value *= 0.5; // throttle down sensitivity.
-        if (IsReal()) {
-            // if real bot, invert direction of rotation.
-            value *= -1.0;
-        }
-        return -rotLimiter.Calculate (value) * Drivetrain::MaxAngularSpeed;
-    }
 
     void driveDisabled() {
         drivetrain.drive (units::velocity::meters_per_second_t (0),

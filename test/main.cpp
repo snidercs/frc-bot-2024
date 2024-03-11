@@ -13,6 +13,7 @@
 static lua::Lifecycle engine;
 
 extern frc::TimedRobot* instantiate_robot();
+frc::TimedRobot* gTimedRobot = nullptr;
 
 int main (int argc, char** argv) {
     // clang-format off
@@ -29,8 +30,10 @@ int main (int argc, char** argv) {
     HAL_Initialize (500, 1);
     
     if (auto bot = std::unique_ptr<frc::TimedRobot> ( instantiate_robot() )) {
+        gTimedRobot = bot.get();
         ::testing::InitGoogleTest (&argc, argv);
         int ret = RUN_ALL_TESTS();
+        gTimedRobot = nullptr;
         bot.reset();
         return ret;
     }

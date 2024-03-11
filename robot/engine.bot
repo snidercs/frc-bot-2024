@@ -1,14 +1,24 @@
-local config = require('config')
-local params = require ('params')
-local robot = require ('robot')
+local config  = require('config')
+local gamepad = require('gamepad')
+local params  = require('params')
+local robot   = require('robot')
+
+local function update_shooter_v1()
+    if gamepad.left_bumper_pressed() then
+        robot.load()
+    elseif gamepad.right_bumper_pressed() then
+        robot.shoot()
+    end
+end
 
 local function engine_init()
-    local team = config.get ('team_name')
-    print (team .. " ready to roll")
+    local team = config.get('team_name')
+    print(team .. " ready to roll")
 end
 
 local function engine_test()
     robot.drive (params.speed(), params.rotation())
+    update_shooter_v1()
 end
 
 --- D for Descriptor.

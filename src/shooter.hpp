@@ -41,7 +41,7 @@ public:
         _state = lastState = Idle;
         loadDurationMs     = 600;
         shootDurationMs    = 5000;
-        periodMs           = 20;
+        periodMs           = lua::config::get ("engine", "period").as<int>();
     }
 
     /** Prepare motors to load if not loading or shooting. */
