@@ -1,2 +1,22 @@
+local config = require('config')
 local params = require ('params')
-params.rotation()
+local robot = require ('robot')
+
+local function engine_init()
+    local team = config.get ('team_name')
+    print (team .. " ready to roll")
+end
+
+local function engine_test()
+    robot.drive (params.speed(), params.rotation())
+end
+
+--- D for Descriptor.
+local D = {
+    init = engine_init,
+    teleop = false,
+    autonomous = false,
+    test = engine_test
+}
+
+return D

@@ -17,6 +17,7 @@ namespace detail {
 static sol::state* _state { nullptr };
 static bool boostraped { false };
 static std::string path;
+static std::string search_dir;
 
 static void init() {
     if (_state != nullptr)
@@ -42,6 +43,15 @@ static char separator() {
 #endif
 }
 
+/** Adds lua path qualifiers. e.g. ?.lua and /?/init.lua  to the input string.  
+    Input does not get modified.*/
+std::string with_search_qualifiers (std::string_view input) {
+    std::stringstream out;
+    out << input << detail::separator() << "?.lua;"
+        << detail::separator() << "?" << detail::separator() << "init.lua";
+    return out.str();
+}
+
 } // namespace detail
 
 //==============================================================================
@@ -62,21 +72,20 @@ sol::state& state() {
     return *detail::_state;
 }
 
-std::string with_search_qualifiers (std::string_view input) {
-    std::stringstream out;
-    out << input << detail::separator() << "?.lua;"
-        << detail::separator() << "?" << detail::separator() << "init.lua";
-    return out.str();
-}
-
 void set_path (std::string_view path) {
     if (path.empty())
         return;
-    auto& ls     = lua::state();
-    detail::path = path;
+    auto& L            = lua::state();
+    detail::search_dir = path;
+    detail::search_dir.shrink_to_fit();
+    detail::path = detail::with_search_qualifiers (path);
     detail::path.shrink_to_fit();
-    sol::table package { ls["package"] };
+    sol::table package { L["package"] };
     package.set ("path", detail::path);
+}
+
+const std::string& search_directory() {
+    return detail::search_dir;
 }
 
 bool bootstrap() {
@@ -105,7 +114,7 @@ bool bootstrap() {
                 return "";
 
             std::clog << "[bot] bootstrap: lua path: " << path.string() << std::endl;
-            return with_search_qualifiers (path.string());
+            return path.string();
         }());
     }
 
@@ -146,10 +155,10 @@ T get_or (std::string_view cat, std::string_view sym, T fallback) {
 
 sol::object get (std::string_view category, std::string_view symbol) {
     if (category.empty() || symbol.empty())
-        return sol::object{};
+        return sol::object {};
 
     auto& L { state() };
-    
+
     sol::object obj = L["config"][category];
     if (obj.is<sol::table>()) {
         auto cat = obj.as<sol::table>();

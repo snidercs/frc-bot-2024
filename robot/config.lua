@@ -11,7 +11,8 @@
 -- initialization
 -- problems.
 --
--- @module config
+--- @name config
+
 local M = { format_version = 0 }
 
 ----- Settings Begin -----
@@ -137,46 +138,41 @@ function M.print()
     print(string.rep('-', 40))
 end
 
---- Get the team name.
--- Convenience function that returns the team name setting.
--- @function team_name
--- @treturn string The team name
+--- Get the team name. Convenience function that returns the team name setting.
+--- @return string
 function M.team_name()
     return general.team_name
 end
 
---- Get the team number.
--- Convenience function that returns the team number setting.
--- @function team_name
--- @treturn int The team name
+--- Get the team number. Convenience function that returns the team number 
+--- setting.
+--- @return integer
 function M.team_number()
     return general.team_number
 end
 
 --- Get a general setting by symbol lookup.
--- @function get
--- @tparam string symbol The symbol to lookup
--- @tparam fallback a fallback value (defaults to nil)
--- @treturn mixed The setting value, fallback, or nil.
+--- @param symbol string The symbol to lookup
+--- @param fallback any A fallback value (defaults to nil)
+--- @return any
 function M.get(symbol, fallback)
     local res = lookup(general, symbol)
     if res == nil then return fallback end
     return res
 end
 
---- Get a port index by symbol lookup.
--- @function port
--- @treturn int The port index
+--- Get a port index by symbol lookup. Returns negative value on failure.
+--- @return integer
 function M.port(symbol)
     return lookup(ports, symbol) or -1
 end
 
---- Get the total number of port configs.
--- @function num_ports
--- @treturn int the number of ports
+--- Get the total number of port indexes used in the Robot
+--- @return integer
 function M.num_ports() return total_ports end
 
 --- Returns a trajectory table or nil when not found
+--- @return table
 function M.trajectory(symbol)
     return trajectories[symbol] or nil
 end

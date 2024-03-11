@@ -31,19 +31,14 @@ struct Lifecycle final {
 /** Returns the global Lua context. */
 sol::state& state();
 
-/** Adds lua path qualifiers. e.g. ?.lua and /?/init.lua  to the input string.  
-    Input does not get modified.
-
-    @param input The input string to append qualifiers to
-    @returns The input path + lua qualifiers.
-*/
-std::string with_search_qualifiers (std::string_view input);
-
 /** Set the Lua search path.
     Does nothing if passed an empty string.
     @param path A non empty Lua path string.
 */
 void set_path (std::string_view path);
+
+/** Returns the search directory for Lua. */
+const std::string& search_directory();
 
 /** Bootstrap the interpreter (call once before robot init)
     @returns true if Lua could be bootstrapped.

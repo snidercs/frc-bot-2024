@@ -22,7 +22,7 @@ int main (int argc, char** argv) {
         .make_preferred() / "robot";
     // clang-format on
 
-    lua::set_path (lua::with_search_qualifiers (robot_dir.string()));
+    lua::set_path (robot_dir.string());
     if (! lua::bootstrap())
         throw std::runtime_error ("lua could not be bootstrapped for unit testing");
      

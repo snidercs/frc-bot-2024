@@ -13,13 +13,16 @@
 #include <frc/trajectory/TrajectoryGenerator.h>
 
 #include <cameraserver/CameraServer.h>
-#include <opencv2/core/core.hpp>
-#include <opencv2/core/types.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+#if 0
+#    include <opencv2/core/core.hpp>
+#    include <opencv2/core/types.hpp>
+#    include <opencv2/imgproc/imgproc.hpp>
+#endif
 
 #include "snider/padmode.hpp"
 
 #include "drivetrain.hpp"
+#include "engine.hpp"
 #include "lua.hpp"
 #include "mechanicalarm.hpp"
 #include "normalisablerange.hpp"
@@ -52,6 +55,31 @@ frc::Trajectory makeTrajectory (std::string_view symbol) {
         makeTrajectoryConfig (tbl["config"]));
 }
 
+static void displayBanner() {
+    auto& L = lua::state();
+    // display engine and bot info.
+    std::clog << LUA_COPYRIGHT << std::endl;
+    L.script ("config.print()");
+    std::clog.flush();
+    std::cout.flush();
+    std::cerr.flush();
+}
+
+static std::string findLuaDir() {
+    return lua::search_directory();
+}
+
+/** Instantiate the robot. This could return a bot in error state. Be sure to
+    check with `Robot::have_error()` and `Robot::error()`.
+*/
+static EnginePtr instantiateRobot() {
+    auto& L = lua::state();
+    std::filesystem::path path (findLuaDir());
+    path /= "engine.bot";
+    path.make_preferred();
+    return Engine::instantiate (L.lua_state(), path.string());
+}
+
 } // namespace detail
 
 //==============================================================================
@@ -69,17 +97,20 @@ public:
         Parameters::bind (nullptr);
         Shooter::bind (nullptr);
         MechanicalArm::bind (nullptr);
+        engine.reset();
     }
 
     void RobotInit() override {
         auto& L = lua::state();
 
-        // display engine and bot info.
-        std::clog << LUA_COPYRIGHT << std::endl;
-        L.script ("config.print()");
-        std::clog.flush();
-        std::cout.flush();
-        std::cerr.flush();
+        detail::displayBanner();
+        engine = detail::instantiateRobot();
+
+        if (engine != nullptr) {
+            if (engine->have_error()) {
+                throw std::runtime_error (engine->error().data());
+            }
+        }
 
         try {
             auto matchPos = lua::config::match_start_position();
@@ -174,7 +205,7 @@ public:
     }
 
     void TestPeriodic() override {
-        TeleopPeriodic();
+        engine->test();
     }
 
     //==========================================================================
@@ -187,6 +218,7 @@ public:
     }
 
 private:
+    EnginePtr engine;
     Parameters params;
 
     /** Used to apply a logarithmic scale to speed inputs. */
