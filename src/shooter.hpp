@@ -6,7 +6,6 @@
 #include <rev/CANSparkMax.h>
 #include <rev/CANSparkMaxLowLevel.h>
 
-#include "ports.hpp"
 #include "types.hpp"
 
 /** The shooter interface.
@@ -27,6 +26,9 @@ public:
 
     ~Shooter() {}
 
+    /** Bind to lua. see bindings.cpp */
+    static void bind (Shooter*);
+
     /** State of this shooter. */
     enum State {
         Idle,     ///> Idle state. not shooting. not loading.
@@ -39,7 +41,7 @@ public:
         _state = lastState = Idle;
         loadDurationMs     = 600;
         shootDurationMs    = 5000;
-        periodMs           = 20;
+        periodMs           = lua::config::get ("engine", "period").as<int>();
     }
 
     /** Prepare motors to load if not loading or shooting. */
@@ -115,8 +117,16 @@ private:
     int delay      = 0;
     int delayTicks = 2; // delayTicks x 20ms = totalDelay
 
-    rev::CANSparkMax bottomMotor { Port::BottomShootingWheel, MotorType::kBrushed };
-    rev::CANSparkMax topMotor { Port::TopShootingWheel, MotorType::kBrushed };
+    rev::CANSparkMax topMotor {
+        lua::config::port ("shooter_primary"),
+        MotorType::kBrushed
+    };
+
+    rev::CANSparkMax bottomMotor {
+        lua::config::port ("shooter_secondary"),
+        MotorType::kBrushed
+    };
+
     std::array<rev::CANSparkMax*, 2> motors { &topMotor, &bottomMotor };
 
     std::string stateString() const noexcept {

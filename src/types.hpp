@@ -1,5 +1,10 @@
 #pragma once
 
+#include <units/angle.h>
+#include <units/angular_velocity.h>
+#include <units/length.h>
+#include <units/velocity.h>
+
 #include <rev/CANSparkBase.h>
 #include <rev/CANSparkLowLevel.h>
 

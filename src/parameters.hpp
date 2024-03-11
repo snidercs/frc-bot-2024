@@ -24,6 +24,9 @@ public:
     Parameters()  = default;
     ~Parameters() = default;
 
+    /** call once to bind to root Lua context. */
+    static bool bind (Parameters* self);
+
     Parameters (const Parameters& o) { operator= (o); }
     Parameters& operator= (const Parameters& o) {
         values     = o.values;

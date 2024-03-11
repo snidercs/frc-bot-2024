@@ -10,9 +10,11 @@
 
 #include <frc/AnalogGyro.h>
 #include <frc/Encoder.h>
+#include <frc/RobotBase.h>
 #include <frc/RobotController.h>
 #include <frc/controller/PIDController.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
+#include <frc/filter/SlewRateLimiter.h>
 #include <frc/kinematics/DifferentialDriveKinematics.h>
 #include <frc/kinematics/DifferentialDriveOdometry.h>
 #include <frc/simulation/AnalogGyroSim.h>
@@ -30,7 +32,8 @@
 #include <units/length.h>
 #include <units/velocity.h>
 
-#include "ports.hpp"
+#include "lua.hpp"
+#include "normalisablerange.hpp"
 #include "types.hpp"
 
 /**
@@ -43,6 +46,8 @@ public:
         simulation.reset();
     }
 
+    static void bind (Drivetrain*);
+
     /** 3 Meters per second */
     static constexpr MetersPerSecond MaxSpeed = 3.0_mps;
 
@@ -54,6 +59,11 @@ public:
     static constexpr int EncoderResolution     = 4096;
 
     void drive (units::meters_per_second_t xSpeed, units::radians_per_second_t rot);
+    void driveNormalized (double speed, double rotation) noexcept {
+        drive (units::meters_per_second_t (calculateSpeed (speed)),
+               units::radians_per_second_t (calculateAngularSpeed (rotation)));
+    }
+
     void updateSimulation();
     void postProcess();
     void resetOdometry (const frc::Pose2d& pose);
@@ -69,11 +79,12 @@ private:
     using IdleMode  = rev::CANSparkMax::IdleMode;
     using MotorType = rev::CANSparkLowLevel::MotorType;
 
-    rev::CANSparkMax leftLeader { Port::DriveLeftFront, MotorType::kBrushed };
-    rev::CANSparkMax leftFollower { Port::DriveLeftBack, MotorType::kBrushed };
-    rev::CANSparkMax rightLeader { Port::DriveRightFront, MotorType::kBrushed };
-    rev::CANSparkMax rightFollower { Port::DriveRightBack, MotorType::kBrushed };
+    rev::CANSparkMax leftLeader { lua::config::port ("drive_left_leader"), MotorType::kBrushed };
+    rev::CANSparkMax leftFollower { lua::config::port ("drive_left_follower"), MotorType::kBrushed };
+    rev::CANSparkMax rightLeader { lua::config::port ("drive_right_leader"), MotorType::kBrushed };
+    rev::CANSparkMax rightFollower { lua::config::port ("drive_right_follower"), MotorType::kBrushed };
     std::array<rev::CANSparkMax*, 4> motors { &leftLeader, &leftFollower, &rightLeader, &rightFollower };
+
     //==========================================================================
     frc::Encoder leftEncoder { 0, 1 };
     frc::Encoder rightEncoder { 2, 3 };
@@ -93,6 +104,36 @@ private:
     // Gains are for example purposes only: must be determined for your own bot!
     frc::SimpleMotorFeedforward<units::meters> feedforward { 1_V, 3_V / 1_mps };
 
+    struct SpeedRange : public juce::NormalisableRange<double> {
+        using range_type = juce::NormalisableRange<double>;
+        SpeedRange() : range_type (-1.0, 1.0, 0.0, lua::config::gamepad_skew_factor(), true) {}
+        ~SpeedRange() = default;
+    } speedRange;
+
+    // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0  to 1.
+    // This is also called parameter smoothing.
+    frc::SlewRateLimiter<units::scalar> speedLimiter { 3 / 1_s };
+    frc::SlewRateLimiter<units::scalar> rotLimiter { 3 / 1_s };
+
+    const units::meters_per_second_t calculateSpeed (double value) noexcept {
+        // clamp to valid -1 to 1 range.
+        value = speedRange.snapToLegalValue (value);
+        // convert to 0.0 - 1.0 range.
+        value = (value - speedRange.start) / (speedRange.end - speedRange.start);
+        // apply and re-scale using scale factor.
+        value = speedRange.convertFrom0to1 (value);
+        return -speedLimiter.Calculate (value) * Drivetrain::MaxSpeed;
+    }
+
+    const units::radians_per_second_t calculateAngularSpeed (double value) noexcept {
+        value *= 0.5; // throttle down sensitivity.
+        if (frc::RobotBase::IsReal()) {
+            // if real bot, invert direction of rotation.
+            value *= -1.0;
+        }
+        return -rotLimiter.Calculate (value) * Drivetrain::MaxAngularSpeed;
+    }
+
     //==========================================================================
     class Simulation {
     public:
@@ -110,7 +151,9 @@ private:
             drivetrainSimulator.SetInputs (
                 units::volt_t { owner.leftLeader.Get() } * frc::RobotController::GetInputVoltage(),
                 units::volt_t { owner.rightLeader.Get() } * frc::RobotController::GetInputVoltage());
-            drivetrainSimulator.Update (20_ms);
+
+            auto engineMillis = units::time::millisecond_t (enginePeriodMs);
+            drivetrainSimulator.Update (engineMillis);
 
             leftEncoderSim.SetDistance (drivetrainSimulator.GetLeftPosition().value());
             leftEncoderSim.SetRate (drivetrainSimulator.GetLeftVelocity().value());
@@ -131,6 +174,8 @@ private:
         }
 
     private:
+        const int enginePeriodMs { lua::config::get ("engine", "period").as<int>() };
+
         Drivetrain& owner;
         frc::sim::AnalogGyroSim gyroSim { owner.gyro };
         frc::sim::EncoderSim leftEncoderSim { owner.leftEncoder };
