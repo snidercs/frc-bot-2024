@@ -25,7 +25,7 @@ local general = {
 }
 
 local gamepad = {
-    -- controller mode to use.
+    -- controller mode to use (not in use)
     controller_mode = 'standard',
     -- skew factor applied to speed control
     skew_factor     = 0.5
@@ -111,7 +111,7 @@ local function print_settings(title, cat)
     end
 end
 
--- returns nil when not found.
+-- Returns nil when not found.
 local function lookup(cat, sym)
     sym = tostring(sym)
     if #sym <= 0 or type(cat) ~= 'table' then return nil end
@@ -122,32 +122,31 @@ end
 
 local M = { format_version = 0 }
 
---- General settings
+---General settings
 M.general = general
 
---- Port indexes
+---Port indexes
 M.ports = ports
 
---- Gamepad specific settings
+---Gamepad specific settings
 M.gamepad = gamepad
 
---- Drivetrain settings
+---Drivetrain settings
 M.drivetrain = drivetrain
 
---- Lifter settings
+---Lifter settings
 M.lifter = lifter
 
 --- Shooter settings
 M.shooter = shooter
 
---- Trajectories used in auto mode
+---Trajectories used in auto mode
 M.trajectories = trajectories
 
---- Engine settings
+---Engine settings
 M.engine = engine
 
---- Print all settings to the console.
--- @function print
+---Print all settings to the console.
 function M.print()
     print("Configuration")
     print(string.rep('-', 40))
@@ -159,8 +158,8 @@ function M.print()
     print(string.rep('-', 40))
 end
 
---- Get the team name. Convenience function that returns the team name setting.
---- @return string
+---Get the team name. Convenience function that returns the team name setting.
+---@return string
 function M.team_name()
     return general.team_name
 end
