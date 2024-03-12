@@ -13,8 +13,8 @@
 --
 --- @name config
 
------ Settings Begin -----
-
+------------------------------ SETTING BEGIN -----------------------------------
+---General settings.
 local general = {
     -- Team information
     team_name            = "The Gold Standard",
@@ -24,6 +24,7 @@ local general = {
     match_start_position = "left"
 }
 
+---The Gamepad
 local gamepad = {
     -- controller mode to use (not in use)
     controller_mode = 'standard',
@@ -31,23 +32,24 @@ local gamepad = {
     skew_factor     = 0.5
 }
 
+---Engine specific settings.
 local engine = {
-    --- Periodic time out in milliseconds. Less than 1 will crash!!!
+    ---Periodic time out in milliseconds. Less than 1 will crash!!!
     period = 14
 }
 
--- driving specific settings
+--- Driving specific settings
 local drivetrain = {}
 
 -- lifter specific settings
 local lifter = {}
 
--- shooter specific settings
+---Shooter specific settings
 local shooter = {
     duration = 6000
 }
 
--- ports, channels, indexes used in motor controllers, gamepads, etc...
+---Ports, channels, indexes used in motor controllers, gamepads, etc...
 local ports = {
     gamepad              = 0,
     joystick             = 1,
@@ -64,11 +66,11 @@ local ports = {
     shooter_secondary    = 9
 }
 
--- Trajectories to use for each match starting position.
+---Trajectories to use for each match starting position.
 local trajectories = {
     left = {
         start     = { 2.0, 2.0, 0.0 }, -- x, y, rotation
-        waypoints = {},
+        waypoints = {},                -- ??? research needed
         stop      = { 2.5, 2.0, 0.0 }, -- x, y, rotation
         config    = { 2.0, 2.0 },      -- max speed, max accel
     },
@@ -94,9 +96,7 @@ local trajectories = {
         config    = { 3.0, 2.0 },     -- max speed, max accel
     }
 }
------ End of Settings -----
-
------ Private implementation details -----
+------------------------------- SETTINGS END -----------------------------------
 
 -- cache the total number of ports
 local total_ports = 0
@@ -104,6 +104,7 @@ for _ in pairs(ports) do
     total_ports = total_ports + 1 
 end
 
+-- prints all settings in a category with Title lead-in
 local function print_settings(title, cat)
     local space_for_key = 24
     print(title .. ":")

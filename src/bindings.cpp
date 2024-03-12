@@ -129,8 +129,8 @@ void Shooter::bind (Shooter* self) {
         M["shooting"] = [self]() { return self->isShooting(); };
         M["loading"]  = [self]() { return self->isLoading(); };
         M["ready"]    = [self]() { return self->isIdle(); };
-        M["shoot"]    = [self]() { return self->shoot(); };
-        M["load"]     = [self]() { self->load(); };
+        M["intake"]   = [self]() { self->load(); };
+        M["shoot"]    = [self]() { self->shoot(); };       
         M["stop"]     = [self]() { self->stop(); };
 
         cxx["shooter"] = M;

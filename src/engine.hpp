@@ -42,6 +42,8 @@ public:
                 self->f_autonomous = self->M["autonomous"];
             if (self->M["test"].get_type() == sol::type::function)
                 self->f_test = self->M["test"];
+            if (self->M["test_init"].get_type() == sol::type::function)
+                self->f_test_init = self->M["test_init"];
         } catch (const std::exception& e) {
             self->_error = e.what();
         }
@@ -70,6 +72,13 @@ public:
         return (bool) f_autonomous;
     }
 
+    bool test_init() {
+        auto ok = (bool) f_test_init;
+        if (ok)
+            f_test_init();
+        return ok;
+    }
+
     bool test() {
         auto ok = (bool) f_test;
         if (ok)
@@ -86,7 +95,7 @@ private:
     sol::state_view L;
     sol::table M;
     std::string _error;
-    sol::function f_init, f_test, f_teleop, f_autonomous;
+    sol::function f_init, f_test_init, f_test, f_teleop, f_autonomous;
 };
 
 using EnginePtr = std::unique_ptr<Engine>;
