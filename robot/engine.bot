@@ -3,7 +3,7 @@ local gamepad = require('gamepad')
 local params  = require('params')
 local robot   = require('robot')
 
-local function update_shooter_v1()
+local function update_shooter_state()
     if gamepad.left_bumper_pressed() then
         robot.load()
     elseif gamepad.right_bumper_pressed() then
@@ -18,7 +18,7 @@ end
 
 local function engine_test()
     robot.drive (params.speed(), params.rotation())
-    update_shooter_v1()
+    update_shooter_state()
 end
 
 ---The engine descriptor.

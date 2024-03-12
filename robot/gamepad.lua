@@ -45,28 +45,28 @@ end
 ---Get the right trigger value (0.0 to 1.0)
 ---@return number
 function M.right_trigger()
-    return impl.raw_axis (M.TRIGGER_RIGHT)
+    return impl.raw_axis(M.TRIGGER_RIGHT)
 end
 
----Return true if the left bumper was pressed since the last check.
+---Returns true if the left bumper was pressed since the last check.
 ---@return boolean
 function M.left_bumper_pressed()
     return impl.raw_button_pressed(M.BUMPER_LEFT)
 end
 
----Return true if the left bumper is currently held down.
+---Returns true if the left bumper is currently held down.
 ---@return boolean
 function M.left_bumper()
     return impl.raw_button(M.BUMPER_LEFT)
 end
 
----Return true if the right bumper was pressed since the last check.
+---Returns true if the right bumper was pressed since the last check.
 ---@return boolean
 function M.right_bumper_pressed()
     return impl.raw_button_pressed(M.BUMPER_RIGHT)
 end
 
----Return true if the right bumper is currently held down.
+---Returns true if the right bumper is currently held down.
 ---@return boolean
 function M.right_bumper()
     return impl.raw_button(M.BUMPER_RIGHT)
