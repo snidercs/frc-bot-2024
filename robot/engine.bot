@@ -21,11 +21,19 @@ local function engine_test()
     update_shooter_v1()
 end
 
---- D for Descriptor.
+---The engine descriptor.
+-- The c++ TimedRobot will call these functions while running.
 local D = {
+    ---Called once during robot initialzation
     init = engine_init,
+
+    ---Called periodically when in telop mode
     teleop = false,
+
+    ---Called periodically when in autonomous mode
     autonomous = false,
+
+    ---Called periodically when in test mode
     test = engine_test
 }
 
