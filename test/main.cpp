@@ -29,13 +29,18 @@ int main (int argc, char** argv) {
      
     HAL_Initialize (500, 1);
     
-    if (auto bot = std::unique_ptr<frc::TimedRobot> ( instantiate_robot() )) {
-        gTimedRobot = bot.get();
-        ::testing::InitGoogleTest (&argc, argv);
-        int ret = RUN_ALL_TESTS();
-        gTimedRobot = nullptr;
-        bot.reset();
-        return ret;
+    try {
+        if (auto bot = std::unique_ptr<frc::TimedRobot> (instantiate_robot())) {
+            gTimedRobot = bot.get();
+            ::testing::InitGoogleTest (&argc, argv);
+            int ret = RUN_ALL_TESTS();
+            gTimedRobot = nullptr;
+            bot.reset();
+            return 0;
+        }
+    } catch (sol::error e) {
+        std::clog << e.what() << std::endl;
+        return -2000;
     }
 
     return -1000;
