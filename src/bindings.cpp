@@ -83,7 +83,8 @@ void bind_xbox_controller (frc::XboxController* self) {
     } else {
         // clang-format off
         detail::clear_function_bindings (L, "gamepad", { 
-            "raw_button", "raw_button_pressed", "raw_button_released" 
+            "raw_axis", "raw_button", "raw_button_pressed", 
+            "raw_button_released" 
         });
         // clang-format on
     }
@@ -102,9 +103,16 @@ bool Parameters::bind (Parameters* self) {
         auto M        = state().create_table();
         M["speed"]    = [self]() -> lua_Number { return self->getSpeed(); };
         M["rotation"] = [self]() -> lua_Number { return self->getAngularSpeed(); };
+        M["brake"]    = [self]() -> lua_Number { 
+            return self->getAxisValue (Parameters::TriggerRight);
+        };
         cxx["params"] = M;
     } else {
-        detail::clear_function_bindings (L, "params", { "speed", "rotation" });
+        // clang-format off
+        detail::clear_function_bindings (L, "params", { 
+            "speed", "rotation", "brake" 
+        });
+        // clang-format on
     }
 
     return true;
