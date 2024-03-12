@@ -100,7 +100,9 @@ local trajectories = {
 
 -- cache the total number of ports
 local total_ports = 0
-for _ in pairs(ports) do total_ports = total_ports + 1 end
+for _ in pairs(ports) do 
+    total_ports = total_ports + 1 
+end
 
 local function print_settings(title, cat)
     local space_for_key = 24
@@ -164,35 +166,35 @@ function M.team_name()
     return general.team_name
 end
 
---- Get the team number. Convenience function that returns the team number
---- setting.
---- @return integer
+---Get the team number. Convenience function that returns the team number
+---setting.
+---@return integer
 function M.team_number()
     return general.team_number
 end
 
---- Get a general setting by symbol lookup.
---- @param symbol string The symbol to lookup
---- @param fallback any A fallback value (defaults to nil)
---- @return any
+---Get a general setting by symbol lookup.
+---@param symbol string The symbol to lookup
+---@param fallback any A fallback value (defaults to nil)
+---@return any
 function M.get(symbol, fallback)
     local res = lookup(general, symbol)
     if res == nil then return fallback end
     return res
 end
 
---- Get a port index by symbol lookup. Returns negative value on failure.
---- @return integer
+---Get a port index by symbol lookup. Returns negative value on failure.
+---@return integer
 function M.port(symbol)
     return lookup(ports, symbol) or -1
 end
 
---- Get the total number of port indexes used in the Robot
---- @return integer
+---Get the total number of port indexes used in the Robot
+---@return integer
 function M.num_ports() return total_ports end
 
---- Returns a trajectory table or nil when not found
---- @return table
+---Returns a trajectory table or nil when not found
+---@return table
 function M.trajectory(symbol)
     return trajectories[symbol] or nil
 end
