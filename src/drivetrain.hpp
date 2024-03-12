@@ -174,7 +174,7 @@ private:
         }
 
     private:
-        const int enginePeriodMs { lua::config::get ("engine", "period").as<int>() };
+        const int enginePeriodMs { lua::config::get ("engine", "period").as<lua_Integer>() };
 
         Drivetrain& owner;
         frc::sim::AnalogGyroSim gyroSim { owner.gyro };
