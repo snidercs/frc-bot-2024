@@ -213,7 +213,7 @@ public:
 
     //==========================================================================
     void TestInit() override {
-        TeleopInit();
+        engine->test_init();
     }
 
     void TestPeriodic() override {
