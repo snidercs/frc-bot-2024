@@ -239,6 +239,18 @@ public:
         return val;
     }
 
+    /** Get the brake value. (0.0 to 1.0) */
+    double getBrake() const noexcept {
+        double val = 0.0;
+        
+        switch (padMode) {
+            case PadMode::Standard:
+                val = getTriggerLeft();
+                break;
+        }
+
+        return val;
+    }
 private:
     Context values;
     Context lastValues;

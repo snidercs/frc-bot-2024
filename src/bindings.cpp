@@ -101,11 +101,11 @@ bool Parameters::bind (Parameters* self) {
     // bind/unbind 'cxx.params' global module.
     if (self != nullptr) {
         auto M        = state().create_table();
+        
         M["speed"]    = [self]() -> lua_Number { return self->getSpeed(); };
         M["rotation"] = [self]() -> lua_Number { return self->getAngularSpeed(); };
-        M["brake"]    = [self]() -> lua_Number { 
-            return self->getAxisValue (Parameters::TriggerRight);
-        };
+        M["brake"]    = [self]() -> lua_Number { return self->getBrake(); };
+        
         cxx["params"] = M;
     } else {
         // clang-format off
