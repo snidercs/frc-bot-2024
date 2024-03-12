@@ -63,6 +63,10 @@ void bind_xbox_controller (frc::XboxController* self) {
         M["BUMPER_LEFT"]  = (int) Parameters::ButtonLeftBumper + 1;
         M["BUMPER_RIGHT"] = (int) Parameters::ButtonRightBumper + 1;
 
+        M["raw_axis"] = [self] (int index) {
+            return self->GetRawAxis (index);
+        };
+
         M["raw_button"] = [self] (int button) {
             return self->GetRawButton (button);
         };
