@@ -1,14 +1,27 @@
 ---Main robot.
 ---Facilities for controlling the bot.
----@name robot
-
-local M          = {}
+---@class robot
 
 local drivetrain = cxx.drivetrain;
 local lifter     = cxx.lifter;
 local shooter    = cxx.shooter;
 
-local config = require('config')
+---Drive the robot.
+---@param speed number Speed ranged -1 to 1
+---@param rot number Rotation ranged -1 to 1
+local function drive(speed, rot)
+    drivetrain.drive(speed, rot)
+end
+
+---Move arms up.
+local function raise_arms()
+    lifter.move_up()
+end
+
+---Move the arms down.
+local function lower_arms()
+    lifter.move_down()
+end
 
 ---Returns true if the robot is shooting.
 ---@return boolean
@@ -37,20 +50,15 @@ local function stop_shooter()
     return shooter.stop()
 end
 
----Drive the robot.
----@param speed number Speed ranged -1 to 1
----@param rot number Rotation ranged -1 to 1
-local function drive(speed, rot)
-    drivetrain.drive(speed, rot)
-end
-
--- Exports
-M.drive          = drive
-M.intake_running = intake_running
-M.intake         = intake
-M.shooting       = shooting
-M.shoot          = shoot
-
-M.stop_shooter = stop_shooter
+local M = {
+    drive          = drive,
+    raise_arms     = raise_arms,
+    lower_arms     = lower_arms,
+    intake_running = intake_running,
+    intake         = intake,
+    shooting       = shooting,
+    shoot          = shoot,
+    stop_shooter   = stop_shooter
+}
 
 return M
