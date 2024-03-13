@@ -21,10 +21,8 @@
 
 #include "snider/padmode.hpp"
 
-#include "drivetrain.hpp"
 #include "engine.hpp"
 #include "lua.hpp"
-#include "mechanicalarm.hpp"
 #include "normalisablerange.hpp"
 #include "parameters.hpp"
 
@@ -32,10 +30,20 @@
 #include "sol/table.hpp"
 
 namespace lua {
-extern void bind_xbox_controller (frc::XboxController*);
+extern void bind_gamepad (frc::XboxController*);
 }
 
 namespace detail {
+
+template <typename Obj>
+inline static void bind_object (Obj* obj) {
+    Obj::bind (obj);
+}
+
+template <typename Obj>
+inline static void bind_object (Obj& obj) {
+    Obj::bind (&obj);
+}
 
 frc::Pose2d makePose2d (sol::table tbl) {
     return frc::Pose2d (
@@ -96,18 +104,19 @@ public:
         // bind instances to Lua
         Parameters::bind (&params);
         Shooter::bind (&shooter);
-        MechanicalArm::bind (&mechanicalArm);
+        Lifter::bind (&mechanicalArm);
         Drivetrain::bind (&drivetrain);
-        lua::bind_xbox_controller (&gamepad);
+        lua::bind_gamepad (&gamepad);
     }
 
     ~RobotMain() {
         // release instances from lua
         Parameters::bind (nullptr);
         Shooter::bind (nullptr);
-        MechanicalArm::bind (nullptr);
+        Lifter::bind (nullptr);
         Drivetrain::bind (nullptr);
-        lua::bind_xbox_controller (nullptr);
+        lua::bind_gamepad (nullptr);
+
         engine.reset();
     }
 
@@ -165,7 +174,7 @@ public:
     void AutonomousPeriodic() override {
         auto elapsed   = timer.Get();
         auto reference = trajectory.Sample (elapsed);
-        auto speeds    = ramsete.Calculate (drivetrain.position2d(), reference);
+        auto speeds    = ramsete.Calculate (drivetrain.estimatedPosition(), reference);
         if (elapsed <= trajectory.TotalTime()) {
             drivetrain.drive (speeds.vx, speeds.omega);
         } else {
@@ -243,7 +252,7 @@ private:
 
     frc::XboxController gamepad { lua::config::port ("gamepad") };
     Drivetrain drivetrain;
-    MechanicalArm mechanicalArm;
+    Lifter mechanicalArm;
     Shooter shooter;
 
     frc::Trajectory trajectory;

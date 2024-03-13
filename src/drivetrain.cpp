@@ -1,10 +1,6 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
 
+#include "robot.hpp"
 #include <iostream>
-
-#include "drivetrain.hpp"
 
 Drivetrain::Drivetrain() {
     gyro.Reset();
@@ -30,9 +26,16 @@ Drivetrain::Drivetrain() {
 #endif
 }
 
-void Drivetrain::drive (units::meters_per_second_t xSpeed,
-                        units::radians_per_second_t rot) {
+Drivetrain::~Drivetrain() {
+    simulation.reset();
+}
+
+void Drivetrain::drive (MetersPerSecond xSpeed, RadiansPerSecond rot) {
     setSpeeds (kinematics.ToWheelSpeeds ({ xSpeed, 0_mps, rot }));
+}
+
+void Drivetrain::driveNormalized (double speed, double rotation) noexcept {
+    drive (calculateSpeed (speed), calculateRotation (rotation));
 }
 
 void Drivetrain::setSpeeds (const frc::DifferentialDriveWheelSpeeds& speeds) {
@@ -54,6 +57,25 @@ void Drivetrain::postProcess() {
         simulation->onPostProcess();
 }
 
+const MetersPerSecond Drivetrain::calculateSpeed (double value) noexcept {
+    // clamp to valid -1 to 1 range.
+    value = speedRange.snapToLegalValue (value);
+    // convert to 0.0 - 1.0 range.
+    value = (value - speedRange.start) / (speedRange.end - speedRange.start);
+    // apply and re-scale using scale factor.
+    value = speedRange.convertFrom0to1 (value);
+    return -speedLimiter.Calculate (value) * Drivetrain::MaxSpeed;
+}
+
+const RadiansPerSecond Drivetrain::calculateRotation (double value) noexcept {
+    value *= 0.5; // throttle down sensitivity.
+    if (frc::RobotBase::IsReal()) {
+        // if real bot, invert direction of rotation.
+        value *= -1.0;
+    }
+    return -rotLimiter.Calculate (value) * Drivetrain::MaxAngularSpeed;
+}
+
 void Drivetrain::updateOdometry() {
     odometry.Update (gyro.GetRotation2d(),
                      units::meter_t { leftEncoder.GetDistance() },
@@ -69,6 +91,12 @@ void Drivetrain::resetOdometry (const frc::Pose2d& pose) {
                             pose);
     if (simulation)
         simulation->onOdometryReset (pose);
+}
+
+void Drivetrain::initializeSimulation() {
+    if (simulation != nullptr)
+        return;
+    simulation = std::make_unique<Simulation> (*this);
 }
 
 void Drivetrain::updateSimulation() {
