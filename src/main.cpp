@@ -29,6 +29,9 @@
 #include "robot.hpp"
 #include "sol/table.hpp"
 
+
+#define SIM_CAMERA_DISABLED 1
+
 namespace lua {
 extern void bind_gamepad (frc::XboxController*);
 }
@@ -302,6 +305,10 @@ private:
     }
 
     static void visionThread() {
+#if SIM_CAMERA_DISABLED
+        if (RobotBase::IsSimulation())
+            return;
+#endif
         const auto cameraName = "Camera 1";
         const auto width      = 640;
         const auto height     = 360;

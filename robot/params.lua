@@ -1,5 +1,5 @@
 ---Access to bot Parameters.
----@name params
+---@class params
 local M = {}
 
 local impl = cxx.params

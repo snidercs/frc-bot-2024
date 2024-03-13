@@ -136,7 +136,7 @@ void Shooter::bind (Shooter* self) {
     } else {
         // clang-format off
         detail::clear_function_bindings (L, "shooter", { 
-            "shooting", "loading", "ready", "shoot", "load" 
+            "shooting", "loading", "ready", "shoot", "intake", "stop" 
         });
         // clang-format on
     }
