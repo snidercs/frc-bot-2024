@@ -8,6 +8,8 @@ local drivetrain = cxx.drivetrain;
 local lifter     = cxx.lifter;
 local shooter    = cxx.shooter;
 
+local config = require('config')
+
 ---Returns true if the robot is shooting.
 ---@return boolean
 local function shooting()

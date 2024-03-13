@@ -5,17 +5,25 @@ local robot   = require('robot')
 
 local function update_shooter_state()
     if gamepad.left_bumper_pressed() then
-        robot.load()
+        robot.intake()
     elseif gamepad.right_bumper_pressed() then
         robot.shoot()
     end
 end
 
+--------------------------------------------------------------------------------
 local function init()
     local team = config.get('team_name')
     print(team .. " ready to roll")
 end
 
+local function autonomous_init()
+end
+
+local function autonomous()
+end
+
+--------------------------------------------------------------------------------
 local function teleop_init()
     print("[engine] teleop mode statred")
 end
@@ -23,51 +31,39 @@ end
 local function teleop()
 end
 
+--------------------------------------------------------------------------------
 local function test_init()
     print("[engine] test mode started")
 end
 
 local function test()
-    robot.drive (params.speed(), params.rotation())
+    robot.drive(params.speed(), params.rotation())
     update_shooter_state()
 end
 
----The engine descriptor.
+---A Timed robot descriptor.
+---
 ---The c++ RomainMain will call these functions while running. Think of this file
 ---as a "Plugin" to the system with a common interface defined in this table.
----
----Using this interface more engine plugins can be written and swapped out 
+---Using this interface more engine plugins can be written and swapped out
 -- while the bot is running.
+---@meta
+---@see config.engine.period Engine timeout period (ms)
 ---@class Engine
 ---@field init function Robot initialization called once before anything else.
 ---@field teleop_init function Called once before starting teleop mode
 ---@field teleop function Called repeatedly for a defined period.
----@field autonomous function
----@field autonomous_init function
----@field test function
----@field test_init function
----@see config.engine.period
-local Engine = {
-    ---Called once during robot initialzation
+---@field autonomous_init function Called once before starting auto mode
+---@field autonomous function Called repeatedly for a defined period in config
+---@field test_init function Called once before starting test mode
+---@field test function Called repeatedly for a defined period in config
+
+return {
     init = init,
-
-    ---Called once when starting teleop mode
     teleop_init = teleop_init,
-
-    ---Called periodically when in telop mode
     teleop = teleop,
-
-    ---Called once when starting autonomous mode
-    autonomous_init = function() end,
-
-    ---Called periodically when in autonomous mode
-    autonomous = function() end,
-
-    ---Called once when starting test mode
+    autonomous_init = autonomous_init,
+    autonomous = autonomous,
     test_init = test_init,
-
-    ---Called periodically when in test mode
     test = test
 }
-
-return Engine

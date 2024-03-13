@@ -7,7 +7,7 @@
 #include "drivetrain.hpp"
 #include "mechanicalarm.hpp"
 #include "parameters.hpp"
-#include "shooter.hpp"
+#include "robot.hpp"
 
 namespace lua {
 
@@ -100,12 +100,12 @@ bool Parameters::bind (Parameters* self) {
 
     // bind/unbind 'cxx.params' global module.
     if (self != nullptr) {
-        auto M        = state().create_table();
-        
+        auto M = state().create_table();
+
         M["speed"]    = [self]() -> lua_Number { return self->getSpeed(); };
         M["rotation"] = [self]() -> lua_Number { return self->getAngularSpeed(); };
         M["brake"]    = [self]() -> lua_Number { return self->getBrake(); };
-        
+
         cxx["params"] = M;
     } else {
         // clang-format off
@@ -130,7 +130,7 @@ void Shooter::bind (Shooter* self) {
         M["loading"]  = [self]() { return self->isLoading(); };
         M["ready"]    = [self]() { return self->isIdle(); };
         M["intake"]   = [self]() { self->load(); };
-        M["shoot"]    = [self]() { self->shoot(); };       
+        M["shoot"]    = [self]() { self->shoot(); };
         M["stop"]     = [self]() { self->stop(); };
 
         cxx["shooter"] = M;
