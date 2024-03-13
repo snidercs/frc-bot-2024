@@ -34,12 +34,27 @@ local gamepad = {
 
 ---Engine specific settings.
 local engine = {
-    ---Periodic time out in milliseconds. Less than 1 will crash!!!
+    ---Periodic time out in milliseconds. Greater than 0
     period = 20
 }
 
---- Driving specific settings
-local drivetrain = {}
+---Driving specific settings
+local drivetrain = {
+    ---Max speed. 3 Meters per second.
+    max_speed = 3.0,
+
+    ---Max angular speed. 1/2 rotation per second
+    max_angular_speed = math.pi,
+
+    ---Distance between wheels?
+    track_width = 0.559;
+
+    ---Wheel radius in meters. */
+    wheel_radius = 0.076,
+
+    ---Encoder ticks per revolution.
+    encoder_resolution = 4096
+}
 
 -- lifter specific settings
 local lifter = {}
@@ -69,7 +84,7 @@ local ports = {
 
     shooter_primary      = 10,
     shooter_secondary    = 9,
-    shooter_support      = -1
+    shooter_support      = 12
 }
 
 ---Trajectories to use for each match starting position.

@@ -102,6 +102,7 @@ TEST_F (ConfigTest, Ports) {
 
         "shooter_primary",
         "shooter_secondary",
+        "shooter_support"
     };
 
     EXPECT_EQ (cfg::num_ports(), (int) symbols.size());
