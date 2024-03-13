@@ -38,16 +38,7 @@ extern void bind_gamepad (frc::XboxController*);
 
 namespace detail {
 
-template <typename Obj>
-inline static void bind_object (Obj* obj) {
-    Obj::bind (obj);
-}
-
-template <typename Obj>
-inline static void bind_object (Obj& obj) {
-    Obj::bind (&obj);
-}
-
+// make a pose2d from a lua table.
 frc::Pose2d makePose2d (sol::table tbl) {
     return frc::Pose2d (
         units::meter_t (tbl[1].get<double>()),
@@ -55,12 +46,14 @@ frc::Pose2d makePose2d (sol::table tbl) {
         frc::Rotation2d (units::radian_t (tbl[3].get<double>())));
 }
 
+// make a trajectory config from a lua table.
 frc::TrajectoryConfig makeTrajectoryConfig (sol::table tbl) {
     return frc::TrajectoryConfig (
         units::meters_per_second_t (tbl[1].get<double>()),
         units::meters_per_second_squared_t (tbl[2].get<double>()));
 }
 
+// compose a trajectory from lua configuration.
 frc::Trajectory makeTrajectory (std::string_view symbol) {
     sol::function trajectory { lua::state()["config"]["trajectory"] };
     sol::table tbl = trajectory (symbol);
@@ -75,7 +68,6 @@ static void displayBanner() {
     auto& L = lua::state();
     // display engine and bot info.
     std::clog << LUA_COPYRIGHT << std::endl;
-    L.script ("config.print()");
     std::clog.flush();
     std::cout.flush();
     std::cerr.flush();
@@ -88,10 +80,10 @@ static std::string findLuaDir() {
 /** Instantiate the robot. This could return a bot in error state. Be sure to
     check with `Robot::have_error()` and `Robot::error()`.
 */
-static EnginePtr instantiateRobot() {
+static EnginePtr instantiateRobot (std::string_view botfile = "engine.bot") {
     auto& L = lua::state();
     std::filesystem::path path (findLuaDir());
-    path /= "engine.bot";
+    path /= botfile;
     path.make_preferred();
     return Engine::instantiate (L.lua_state(), path.string());
 }
@@ -104,6 +96,7 @@ public:
     RobotMain()
         : frc::TimedRobot (units::millisecond_t (
             lua::config::get ("engine", "period").as<double>())) {
+        detail::displayBanner();
         // bind instances to Lua
         Parameters::bind (&params);
         Shooter::bind (&shooter);
@@ -125,8 +118,6 @@ public:
 
     void RobotInit() override {
         auto& L = lua::state();
-
-        detail::displayBanner();
         engine = detail::instantiateRobot();
 
         if (engine != nullptr) {
