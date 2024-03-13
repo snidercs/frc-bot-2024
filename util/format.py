@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 ## Make sure all code files are saved before running this script.  It does zero
 # checking of saved status.
