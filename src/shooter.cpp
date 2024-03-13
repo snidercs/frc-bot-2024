@@ -3,6 +3,14 @@
 
 namespace cfg = lua::config;
 
+#define DEBUG_SHOOTER 0 // change to 1 to enable debug logging.
+#if DEBUG_SHOOTER
+#    include <iostream>
+#    define SHOOTER_LOG(msg) std::clog << msg << std::endl;
+#else
+#    define SHOOTER_DBG(msg)
+#endif
+
 // clang-format off
 Shooter::Shooter()
     : intakeTimeMs { 1000.0 * cfg::get ("shooter", "intake_time").as<lua_Number>() },
@@ -18,7 +26,8 @@ Shooter::Shooter()
 
 void Shooter::reset() {
     _state = lastState = Idle;
-    periodMs           = (int) cfg::get ("engine", "period").as<lua_Number>();
+    periodMs           = static_cast<int> (
+        cfg::get ("engine", "period").as<lua_Number>());
 }
 
 void Shooter::load() {
@@ -32,11 +41,20 @@ void Shooter::load() {
 void Shooter::shoot() {
     if (_state != Idle)
         return;
+
     _state      = Shooting;
     totalTimeMs = warmTimeMs + shootTimeMs;
     tick        = std::max (periodMs, totalTimeMs / periodMs);
     delayTicks  = std::max (periodMs, warmTimeMs / periodMs);
     delay       = 0;
+
+    // clang-format off
+    SHOOTER_DBG ("shoot period=" << periodMs
+        << " warm=" << warmTimeMs
+        << " shoot=" << shootTimeMs
+        << " tick =" << tick
+        << " delayTicks=" << delayTicks);
+    // clang-format on
 }
 
 void Shooter::stop() {
@@ -51,11 +69,9 @@ void Shooter::process() noexcept {
             break;
         }
         case Shooting: {
-            // topMotor.SetVoltage (units::volt_t { 6.0 });
-            topMotor.Set (0.5);
+            topMotor.SetVoltage (units::volt_t { 6.0 });
             if (delay >= delayTicks)
-                bottomMotor.Set (0.5);
-            // bottomMotor.SetVoltage (units::volt_t { 6.0 });
+                bottomMotor.SetVoltage (units::volt_t { 6.0 });
             ++delay;
             break;
         }
