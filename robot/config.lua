@@ -35,7 +35,7 @@ local gamepad = {
 ---Engine specific settings.
 local engine = {
     ---Periodic time out in milliseconds. Less than 1 will crash!!!
-    period = 14
+    period = 20
 }
 
 --- Driving specific settings
@@ -46,7 +46,12 @@ local lifter = {}
 
 ---Shooter specific settings
 local shooter = {
-    duration = 6000
+    ---Time to run intake motor (seconds)
+    intake_time = 0.5,
+    ---Time to warm up before shooting (seconds)
+    warmup_time = 1.0,
+    ---Time taken to shoot the note (seconds)
+    shoot_time = 0.75
 }
 
 ---Ports, channels, indexes used in motor controllers, gamepads, etc...
@@ -63,7 +68,8 @@ local ports = {
     arm_right            = 11,
 
     shooter_primary      = 10,
-    shooter_secondary    = 9
+    shooter_secondary    = 9,
+    shooter_support      = -1
 }
 
 ---Trajectories to use for each match starting position.
@@ -100,8 +106,8 @@ local trajectories = {
 
 -- cache the total number of ports
 local total_ports = 0
-for _ in pairs(ports) do 
-    total_ports = total_ports + 1 
+for _ in pairs(ports) do
+    total_ports = total_ports + 1
 end
 
 -- prints all settings in a category with Title lead-in

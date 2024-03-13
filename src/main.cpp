@@ -27,8 +27,9 @@
 #include "mechanicalarm.hpp"
 #include "normalisablerange.hpp"
 #include "parameters.hpp"
-#include "shooter.hpp"
-#include "sol/sol.hpp"
+
+#include "robot.hpp"
+#include "sol/table.hpp"
 
 namespace lua {
 extern void bind_xbox_controller (frc::XboxController*);
