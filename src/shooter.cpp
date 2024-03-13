@@ -66,18 +66,22 @@ void Shooter::process() noexcept {
         case Loading: {
             topMotor.SetVoltage (units::volt_t { -6.0 });
             bottomMotor.SetVoltage (units::volt_t { -3.0 });
+            supportMotor.SetVoltage (units::volt_t { -3.0 });
             break;
         }
         case Shooting: {
             topMotor.SetVoltage (units::volt_t { 6.0 });
-            if (delay >= delayTicks)
+            supportMotor.SetVoltage (units::volt_t { 6.0 });
+            if (delay >= delayTicks) {
                 bottomMotor.SetVoltage (units::volt_t { 6.0 });
+            }
             ++delay;
             break;
         }
         case Idle: {
             topMotor.SetVoltage (units::volt_t { 0.0 });
             bottomMotor.SetVoltage (units::volt_t { 0.0 });
+            supportMotor.SetVoltage (units::volt_t { 0.0 });
             break;
         }
     }

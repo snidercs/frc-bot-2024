@@ -35,7 +35,7 @@ local gamepad = {
 ---Engine specific settings.
 local engine = {
     ---Periodic time out in milliseconds. Greater than 0
-    period = 20
+    period = 4
 }
 
 ---Driving specific settings

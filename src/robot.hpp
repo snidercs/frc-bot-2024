@@ -281,6 +281,11 @@ private:
         MotorType::kBrushed
     };
 
+    rev::CANSparkMax supportMotor {
+        lua::config::port ("shooter_support"),
+        MotorType::kBrushed
+    };
+
     std::array<rev::CANSparkMax*, 2> motors { &topMotor, &bottomMotor };
 
     std::string stateString() const noexcept;
