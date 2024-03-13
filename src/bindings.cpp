@@ -4,8 +4,6 @@
 #include "lua.hpp"
 #include "sol/sol.hpp"
 
-#include "drivetrain.hpp"
-#include "mechanicalarm.hpp"
 #include "parameters.hpp"
 #include "robot.hpp"
 
@@ -38,7 +36,7 @@ void clear_function_bindings (Ls& L, std::string_view mod,
 
 } // namespace detail
 
-void bind_xbox_controller (frc::XboxController* self) {
+void bind_gamepad (frc::XboxController* self) {
     auto& L  = state();
     auto cxx = detail::cxx_table (L);
 
@@ -144,7 +142,7 @@ void Shooter::bind (Shooter* self) {
     }
 }
 
-void MechanicalArm::bind (MechanicalArm* self) {
+void Lifter::bind (Lifter* self) {
     auto& L  = lua::state();
     auto cxx = detail::cxx_table (L);
 
