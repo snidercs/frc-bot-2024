@@ -63,7 +63,7 @@ model {
                     srcDir 'src'
                 }
             }
-
+        
             // Set deploy task to deploy this component
             deployArtifact.component = it
 
@@ -97,3 +97,86 @@ model {
         }
     }
 }
+
+String addLuaMakeTarget(String platform, String config, List<String> command) {
+    String target = "buildLua${platform}${config}"
+    String folder = "build/lib/${platform.toLowerCase()}/${config.toLowerCase()}"
+    String incDir = "build/include/${platform.toLowerCase()}/${config.toLowerCase()}"
+    String workDir = "vendordeps/luajit"
+    tasks.register(target) {
+        if (command.get(0) == 'make') {
+            doLast {
+                exec {
+                    workingDir workDir
+                    commandLine 'make', 'clean'
+                }
+                delete {
+                    delete fileTree('luajit') {
+                        include 'libluajit*a'
+                    }
+                }
+                exec {
+                    workingDir workDir
+                    commandLine command
+                }
+                copy {
+                    from(workDir + "/src") {
+                        include 'libluajit*a'
+                    }
+                    into folder
+                    rename '(.+)', 'libluajit.a'
+                }
+                copy {
+                    from(workDir + "/src") {
+                        include 'lua.h', 'luaconf.h', 'lualib.h', 'lauxlib.h'
+                    }
+                    into incDir
+                }
+            }
+        } else {
+            doLast {
+                exec {
+                    workingDir 'jni/luajit'
+                    commandLine command
+                }
+            }
+        }
+    }
+    return target
+}
+
+void buildLuaTargets(String... targets) {
+    tasks.register('buildLua') {
+        dependsOn targets
+    }
+    // disabling concurrency
+    for (int i = 0; i < targets.length - 1; ++i) {
+        for (int j = i + 1; j < targets.length; ++j) {
+            tasks.getByName(targets[j]).mustRunAfter(tasks.getByName(targets[i]))
+        }
+    }
+}
+
+buildLuaTargets(
+    addLuaMakeTarget('Linuxx86-64', "Debug",
+            ['make', 'CC=gcc -m64',
+             'CFLAGS=-fPIC',
+             'TARGET_SYS=Linux', 
+             'BUILDMODE=static', 'PREFIX=/','DESTDIR=build/dist']),
+    addLuaMakeTarget('Linuxx86-64', "Release",
+            ['make', 'CC=gcc -m64',
+             'CFLAGS=-fPIC',
+             'TARGET_SYS=Linux', 
+             'BUILDMODE=static', 'PREFIX=/','DESTDIR=build/dist'])
+    //  ,
+    // addLuaMakeTarget('Linuxathena', "Debug",
+    //         ['make', 'CC=gcc -m64',
+    //          'CFLAGS=-fPIC',
+    //          'TARGET_SYS=Linux', 
+    //          'BUILDMODE=static', 'PREFIX=/','DESTDIR=build/dist']),
+    // addLuaMakeTarget('Linuxathena', "Release",
+    //         ['make', 'CC=gcc -m64',
+    //          'CFLAGS=-fPIC',
+    //          'TARGET_SYS=Linux', 
+    //          'BUILDMODE=static', 'PREFIX=/','DESTDIR=build/dist'])
+)
