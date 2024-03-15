@@ -23,8 +23,8 @@
 #include <rev/CANSparkMax.h>
 #include <rev/CANSparkMaxLowLevel.h>
 
-#include "lua.hpp"
 #include "normalisablerange.hpp"
+#include "scripting.hpp"
 #include "types.hpp"
 
 /** Represents a differential drive style drivetrain. */

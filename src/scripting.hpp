@@ -1,11 +1,5 @@
 #pragma once
 
-extern "C" {
-#include "../vendordeps/lua-5.4.6/src/lauxlib.h"
-#include "../vendordeps/lua-5.4.6/src/lua.h"
-#include "../vendordeps/lua-5.4.6/src/lualib.h"
-}
-
 #include <string>
 #include <string_view>
 

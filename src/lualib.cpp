@@ -1,3 +1,4 @@
+#if 0
 extern "C" {
 #include "../vendordeps/lua-5.4.6/src/lapi.c"
 #include "../vendordeps/lua-5.4.6/src/lauxlib.c"
@@ -34,3 +35,4 @@ extern "C" {
 #include "../vendordeps/lua-5.4.6/src/lvm.c"
 #include "../vendordeps/lua-5.4.6/src/lzio.c"
 }
+#endif

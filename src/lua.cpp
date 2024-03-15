@@ -5,7 +5,7 @@
 
 #include <frc/Filesystem.h>
 
-#include "lua.hpp"
+#include "scripting.hpp"
 #include "sol/state.hpp"
 
 namespace fs = std::filesystem;

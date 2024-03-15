@@ -98,6 +98,39 @@ model {
     }
 }
 
+tasks.withType(CppCompile).configureEach {
+    includes {
+        'build/include'
+    }
+
+    compilerArgs.addAll toolChain.map { toolChain ->
+        if (toolChain in [ Gcc, Clang ]) {
+            return []
+        } else if (toolChain in VisualCpp) {
+            return []
+        }
+        return []
+    }
+}
+
+tasks.withType(LinkExecutable).configureEach {
+    String platform = targetPlatform.get().name
+    if (platform == 'linuxx86-64' || platform == 'linuxathena') {
+        linkerArgs.addAll '-L', projectDir.toString() + '/build/lib/' + platform + '/release', '-lluajit'
+    }
+}
+
+tasks.register('copyLuaHeaders') {
+    doLast {
+        copy {
+            from('./vendordeps/luajit/src') {
+                include 'lua.hpp', 'luajit.h', 'lua.h', 'luaconf.h', 'lualib.h', 'lauxlib.h'
+            }
+            into 'build/include'
+        }
+    }
+}
+
 String addLuaMakeTarget(String platform, String config, List<String> command) {
     String target = "buildLua${platform}${config}"
     String folder = "build/lib/${platform.toLowerCase()}/${config.toLowerCase()}"
@@ -147,7 +180,7 @@ String addLuaMakeTarget(String platform, String config, List<String> command) {
 
 void buildLuaTargets(String... targets) {
     tasks.register('buildLua') {
-        dependsOn targets
+        dependsOn 'copyLuaHeaders', targets
     }
     // disabling concurrency
     for (int i = 0; i < targets.length - 1; ++i) {
@@ -158,17 +191,18 @@ void buildLuaTargets(String... targets) {
 }
 
 buildLuaTargets(
-    addLuaMakeTarget('Linuxx86-64', "Debug",
-            ['make', 'CC=gcc -m64',
-             'CFLAGS=-fPIC',
-             'TARGET_SYS=Linux', 
-             'BUILDMODE=static', 'PREFIX=/','DESTDIR=build/dist']),
     addLuaMakeTarget('Linuxx86-64', "Release",
             ['make', 'CC=gcc -m64',
              'CFLAGS=-fPIC',
-             'TARGET_SYS=Linux', 
-             'BUILDMODE=static', 'PREFIX=/','DESTDIR=build/dist'])
-    //  ,
+             'TARGET_SYS=Linux',
+             'BUILDMODE=static', 'PREFIX=/','DESTDIR=build/dist']),
+    // addLuaMakeTarget('LinuxAthena', "Release",
+    //         ['make', 'CROSS=arm-nilrt-linux-gnueabi-',
+    //          'CFLAGS=-fPIC',
+    //          'TARGET_SYS=Linux',
+    //          'BUILDMODE=static', 
+    //          'PREFIX=/',
+    //          'DESTDIR=build/dist'])
     // addLuaMakeTarget('Linuxathena', "Debug",
     //         ['make', 'CC=gcc -m64',
     //          'CFLAGS=-fPIC',

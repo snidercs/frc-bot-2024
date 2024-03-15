@@ -24,6 +24,9 @@
 #ifndef SOL_CONFIG_HPP
 #define SOL_CONFIG_HPP
 
+#define SOL_USE_LUAJIT        1
+#define SOL_USE_CXX_LUAJIT    1
+
 /* Base, empty configuration file!
 
      To override, place a file in your include paths of the form:
