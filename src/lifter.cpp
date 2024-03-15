@@ -6,9 +6,6 @@ Lifter::Lifter() {
     resetEncoders();
 }
 
-/** Bind to lua. See `bindings.cpp` */
-static void bind (Lifter*);
-
 void Lifter::moveUp() {
     for (auto m : motors)
         m->SetVoltage (units::volt_t { 0.3 * 12.0 });
