@@ -65,7 +65,6 @@ frc::Trajectory makeTrajectory (std::string_view symbol) {
 }
 
 static void displayBanner() {
-    auto& L = lua::state();
     // display engine and bot info.
     std::clog << LUA_COPYRIGHT << std::endl;
     std::clog.flush();

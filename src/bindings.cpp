@@ -177,3 +177,46 @@ void Drivetrain::bind (Drivetrain* self) {
         detail::clear_function_bindings (L, "drivetrain", { "drive" });
     }
 }
+
+#include <frc/geometry/Pose2d.h>
+#include <frc/geometry/Rotation2d.h>
+namespace lua {
+
+inline static int frc_Rotation2d (lua_State* state) {
+    using frc::Rotation2d;
+    sol::state_view L (state);
+    auto T = L.create_table();
+
+    // clang-format off
+    T.new_usertype<Rotation2d> ("Rotation2d", sol::no_constructor,
+        "new", []() { return Rotation2d(); },
+        "rotateBy", &Rotation2d::RotateBy,
+        "cos", sol::readonly_property (&Rotation2d::Cos),
+        "sin", sol::readonly_property (&Rotation2d::Sin),
+        "tan", sol::readonly_property (&Rotation2d::Tan),
+        "degrees", sol::readonly_property ([](const Rotation2d& self) { return self.Degrees().value(); }),
+        "radians", sol::readonly_property ([](const Rotation2d& self) { return self.Radians().value(); })
+    );
+    // clang-format on
+
+    sol::stack::push (L, T["Rotation2d"]);
+    return 0;
+}
+
+inline static int frc_Pose2d (lua_State* state) {
+    using frc::Pose2d;
+    sol::state_view L (state);
+    auto T = L.create_table();
+    // clang-format off
+    T.new_usertype<Pose2d> ("Pose2d", sol::no_constructor,
+        "new", []() { return Pose2d(); },
+        "x", sol::readonly_property ([](Pose2d& self) { return self.X().value(); }),
+        "y", sol::readonly_property ([](Pose2d& self) { return self.Y().value(); }),
+        "rotation", sol::readonly_property(&Pose2d::Rotation)
+    );
+    // clang-format on
+    sol::stack::push (L, T["Pose2d"]);
+    return 1;
+}
+
+}
