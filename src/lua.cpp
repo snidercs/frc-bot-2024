@@ -80,7 +80,7 @@ void set_path (std::string_view path) {
     detail::search_dir.shrink_to_fit();
     detail::path = detail::with_search_qualifiers (path);
     detail::path.shrink_to_fit();
-    sol::table package { L["package"] };
+    sol::table package = L["package"];
     package.set ("path", detail::path);
 }
 
@@ -131,7 +131,7 @@ bool bootstrap() {
     }
 
     if (! result.valid()) {
-        auto err = sol::error { result };
+        sol::error err = result;
         std::cerr << "[bot] " << err.what() << std::endl;
         return false;
     }
