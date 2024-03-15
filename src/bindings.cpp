@@ -19,17 +19,18 @@ sol::table cxx_table (sol::state& ls) {
 
     if (G["cxx"].get_type() != sol::type::table)
         G["cxx"] = ls.create_table();
-    return (sol::table) G["cxx"];
+    sol::table tbl = G["cxx"];
+    return tbl;
 }
 
 template <typename Ls>
 void clear_function_bindings (Ls& L, std::string_view mod,
                               function_list functions) {
-    auto cxx   = cxx_table (L);
-    auto proxy = cxx[mod];
+    sol::table cxx   = cxx_table (L);
+    sol::object proxy = cxx[mod];
     if (! proxy.valid())
         return;
-    auto M = (sol::table) proxy;
+    sol::table M = proxy;
     for (const auto f : functions)
         M.set (f, []() {});
 }

@@ -13,9 +13,9 @@ namespace cfg = lua::config;
 
 // clang-format off
 Shooter::Shooter()
-    : intakeTimeMs { 1000.0 * cfg::get ("shooter", "intake_time").as<lua_Number>() },
-      warmTimeMs { 1000.0 * cfg::get ("shooter", "warmup_time").as<lua_Number>() },
-      shootTimeMs { 1000.0 * cfg::get ("shooter", "shoot_time").as<lua_Number>() } 
+    : intakeTimeMs { int(1000.0 * cfg::get ("shooter", "intake_time").as<lua_Number>()) },
+      warmTimeMs { int(1000.0 * cfg::get ("shooter", "warmup_time").as<lua_Number>()) },
+      shootTimeMs { int(1000.0 * cfg::get ("shooter", "shoot_time").as<lua_Number>()) }
 {
     reset();
     for (auto* const mt : motors) {
