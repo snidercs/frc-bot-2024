@@ -1,3 +1,4 @@
+extern "C" {
 #include "../vendordeps/lua-5.4.6/src/lapi.c"
 #include "../vendordeps/lua-5.4.6/src/lauxlib.c"
 #include "../vendordeps/lua-5.4.6/src/ldump.c"
@@ -32,3 +33,4 @@
 #include "../vendordeps/lua-5.4.6/src/lutf8lib.c"
 #include "../vendordeps/lua-5.4.6/src/lvm.c"
 #include "../vendordeps/lua-5.4.6/src/lzio.c"
+}
