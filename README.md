@@ -36,18 +36,16 @@ BUILD SUCCESSFUL in 36m 10s
 18 actionable tasks: 18 executed
 ```
 
-
-Build all targets, and run the simulator.
-```bash
-./gradlew build
-```
-
-Using docker:
+### Using docker
+See [On your own machine](#On_you_own_machine) if you have the entire build chain installed on you machine.
 ```bash
 docker run -it -v $(pwd):/root  wpilib/roborio-cross-ubuntu:2024-22.04
 cd /root
 ./gradlew build 
 ```
+
+### On your own machine 
+(if you are not using docker) `./gradlew build`
 
 Once, built:
 ```bash
