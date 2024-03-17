@@ -7,7 +7,7 @@
 - Ultra low latency performance.
 - Design is decoupled from wpilib making it portable to other robotics systems.
 
-## VScode Dommands
+## VScode Commands
 There are shortcuts to command line tasks.
 
 Press `shift + ctrl + p` to open a list of commands. Type `wpilib` to filter FRC specific actions.
@@ -36,7 +36,7 @@ BUILD SUCCESSFUL in 36m 10s
 18 actionable tasks: 18 executed
 ```
 
-### Using docker
+### Using Docker
 See [On your own machine](#On_you_own_machine) if you have the entire build chain installed on you machine.
 ```bash
 ./dockerbuild.sh
@@ -55,6 +55,7 @@ BUILD SUCCESSFUL in 19s
 Run all unit tests.
 ```bash
 ./gradlew check
+```
 
 ## Deployment
 Run the following command to deploy code to the roboRIO
@@ -73,9 +74,9 @@ If it gives problems, cleaning the project could help. The `--info` option could
 
 ### Docker
 ```bash
-./sudocker.sh    # Run a shell in the docker container
+./util/sudocker.sh    # Run a shell in the docker container
 ```
-- [./sudocker.sh](sudocker.sh) is a script that runs a shell in the docker container.  It's a good way to run commands in the docker container.
+[util/sudocker.sh](util/sudocker.sh) is a script that runs a shell in the docker container.  It's a good way to run commands in the docker container.
 
 ### Git
 
