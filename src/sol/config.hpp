@@ -24,8 +24,8 @@
 #ifndef SOL_CONFIG_HPP
 #define SOL_CONFIG_HPP
 
-#define SOL_USE_LUAJIT        1
-#define SOL_USE_CXX_LUAJIT    1
+#define SOL_LUAJIT          1
+#define SOL_USE_CXX_LUAJIT  0
 
 /* Base, empty configuration file!
 

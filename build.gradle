@@ -1,7 +1,7 @@
 plugins {
     id "cpp"
     id "google-test-test-suite"
-    id "edu.wpi.first.GradleRIO" version "2024.2.1"
+    id "edu.wpi.first.GradleRIO" version "2024.3.2"
 }
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -109,14 +109,7 @@ String botlibDir(String dir = "") {
 }
 
 tasks.withType(CppCompile).configureEach {
-    String nameLower = name.toLowerCase()
-    if (nameLower.contains ("linuxx86-64")) {
-        includes { botlibDir ('linux64/include/luajit-2.1') }
-    } else if (nameLower.contains("linuxathena")) {
-        includes { botlibDir ('roborio/include/luajit-2.1') }
-    } else {
-        includes { projectDir.toString() + "/vendordeps/luajit/src" }
-    }
+    includes { projectDir.toString() + "/vendordeps/luajit/src" }
 }
 
 tasks.withType(LinkExecutable).configureEach {
@@ -125,5 +118,7 @@ tasks.withType(LinkExecutable).configureEach {
         linkerArgs.addAll '-L', botlibDir('linux64/lib'), '-lluajit-5.1'
     } else if (platform == 'linuxathena') {
         linkerArgs.addAll '-L', botlibDir('roborio/lib'), '-lluajit-5.1'
+    } else {
+        linkerArgs.addAll 'vendordeps/luajit/src/lua51.lib'
     }
 }
