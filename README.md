@@ -39,9 +39,7 @@ BUILD SUCCESSFUL in 36m 10s
 ### Using docker
 See [On your own machine](#On_you_own_machine) if you have the entire build chain installed on you machine.
 ```bash
-docker run -it -v $(pwd):/root  wpilib/roborio-cross-ubuntu:2024-22.04
-cd /root
-./gradlew build 
+./dockerbuild.sh
 ```
 
 ### On your own machine 
@@ -72,6 +70,15 @@ If it gives problems, cleaning the project could help. The `--info` option could
 ```
 
 ## Other Useful Terminal Commands
+
+### Docker
+```bash
+./sudocker.sh    # Run a shell in the docker container
+```
+- [./sudocker.sh](sudocker.sh) is a script that runs a shell in the docker container.  It's a good way to run commands in the docker container.
+
+### Git
+
 Useful Commands to Understand
 ```bash
 git fetch        # Fetch changes from github (needed to check out new ones)
