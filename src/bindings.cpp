@@ -1,7 +1,7 @@
 
 #include <frc/XboxController.h>
 
-#include "lua.hpp"
+#include "scripting.hpp"
 #include "sol/sol.hpp"
 
 #include "parameters.hpp"

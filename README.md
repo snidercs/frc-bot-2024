@@ -1,5 +1,4 @@
-# Bot 2024
-
+# Robot Firmware FRC 2024
 ## Features
 - Built-in Lua interpreter.
 - Smart bot configuration with Lua bindings and negligible overhead.
@@ -7,7 +6,12 @@
 - Ultra low latency performance.
 - Design is decoupled from wpilib making it portable to other robotics systems.
 
-## VScode Commands
+## Clone
+```bash
+git clone --recursive git@github.com:snidercs/bot-2024.git
+```
+
+**VScode Commands**
 There are shortcuts to command line tasks.
 
 Press `shift + ctrl + p` to open a list of commands. Type `wpilib` to filter FRC specific actions.
@@ -15,14 +19,12 @@ Press `shift + ctrl + p` to open a list of commands. Type `wpilib` to filter FRC
 ## Requirements
 
 I recommend at least these two tools:
+- [Git](https://git-scm.com/downloads)
 - [VSCode](https://code.visualstudio.com/)
 - [Docker](https://www.docker.com/products/docker-desktop)
-    - Docker is used to build the code in a consistent environment. It is not required, but without it you'll have to install java, gradle, a comiler, and other tools on your computer, and good luck keeping it all up to date. 
-    - Make sure you give at least 4GB RAM and 4GB of swap space to docker.  Gradle build is a memory hog.
-
+   
 ### Optional Windows tools
 - wsl2 (Windows Subsystem for Linux)
-- [Git](https://git-scm.com/downloads)
 - consider choco.  It's the best package manager for windows.
 
 ### Optional Mac Tools
@@ -31,29 +33,70 @@ I recommend at least these two tools:
 ## Building
 
 If it's your first time, it takes a while.  So get some lunch for the first time.   On Mac M2:
-```
+```bash
 BUILD SUCCESSFUL in 36m 10s
 18 actionable tasks: 18 executed
 ```
 
-### Using Docker
-First build our image based on frc 2024 ubuntu. The commands and scripts below will not work without the image being built first.  If the `Dockerfile` changes, re-run this command.
+### Dependencies
+The `gradle build` and `gradle deploy` tasks both need roboRIO libraries and headers in place.  Most of them are handled by wpilib, but some need special attention.
+
+Note: For _Windows_ GitBash and the CMD prompt are both needed.
+
+#### Using Docker
+Docker is used to build and test the code in a consistent environment.  It is required if building dependencies yourself on a non-Linux machine.
+
+First build our image. Commands and scripts below all depend on it.  If the `Dockerfile` changes, re-run this command.
 ```bash
 docker build . -t snidercs/bot-2024
 ```
 
-See [On your own machine](#On_you_own_machine) if you have the entire build chain installed on you machine.
+Without it you'll have to install java, gradle, a comiler, and other tools on your computer, and good luck keeping it all up to date.  Make sure you give at least 4GB RAM and 4GB of swap space to docker.  Gradle build is a memory hog.
+
+#### LuaJIT
+**Linux**
 ```bash
-./dockerbuild.sh
+# multilib support is needed for cross building, install if needed
+sudo apt-get install gcc-multilib g++-multilib
+# Run the native/roborio build scripts
+util/build-luajit-linux64.sh
+util/build-luajit-roborio.sh
 ```
 
-### On your own machine 
-(if you are not using docker) `./gradlew build`
+**macOS**
 
-Once, built:
+The Mac build script can produce `arm64` or `x86_64` binaries.  It will select the system default if not specified.
 ```bash
-BUILD SUCCESSFUL in 19s
-18 actionable tasks: 18 up-to-date
+# Choose one of these...
+util/build-luajit-macos.sh # Use system default
+util/build-luajit-macos.sh arm64 # force arm64 (M1/M2/..) build
+util/build-luajit-macos.sh x86_64 # force an x86_64 (intel) build
+
+# If docker is isntalled and running...
+util/docker-run.sh util/build-luajit-roborio.sh
+```
+
+**Windows**
+The build script can be run from a **GitBash** terminal:
+```bash
+# In a bash emulator
+util/build-luajit-msvc.sh
+```
+
+The roboRIO binaries need docker to compile from Windows which _requires_ a regular **CMD prompt**:
+```
+util\docker-run.bat util/build-luajit-roborio.sh
+```
+
+### Firmware with WPIlib VSCode
+Open a terminal and do:
+```bash
+./gradlew build
+```
+
+### Firmware With Docker
+```bash
+./dockerbuild.sh
 ```
 
 ## Testing
@@ -80,9 +123,9 @@ If it gives problems, cleaning the project could help. The `--info` option could
 ### Docker
 
 ```bash
-./util/sudocker.sh    # Run a shell in the docker container
+./util/docker-run.sh  # Run a shell in the docker container
 ```
-[util/sudocker.sh](util/sudocker.sh) is a script that runs a shell in the docker container.  It's a good way to run commands in the docker container.
+[util/docker-run.sh](util/docker-run.sh) is a script that runs a shell in the docker container.  It's a good way to run commands in the docker container.
 
 ### Git
 

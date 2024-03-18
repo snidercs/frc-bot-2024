@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "test.hpp"
-#include "lua.hpp"
+#include "scripting.hpp"
 #include "sol/sol.hpp"
 
 namespace fs = std::filesystem;

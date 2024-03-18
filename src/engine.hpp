@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string>
 
-#include "lua.hpp"
+#include "scripting.hpp"
 #include "sol/sol.hpp"
 
 class Engine final {
