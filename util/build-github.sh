@@ -1,3 +1,5 @@
+#!/usr/bin/sh
+
 # Build run by GitHub actions.
 set -ex
 chmod +x gradlew
