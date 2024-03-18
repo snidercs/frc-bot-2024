@@ -15,7 +15,9 @@ cd "${here}"
 
 set -x
 
-./util/build-luajit-msvc.bat
+cd vendordeps/luajit/src
+../../../util/build-luajit-msvc.bat static
+cd "${here}"
 
 cp -f "${ljpath}/src/lua51.lib" "${prefix}/lib/"
 headers="lua.h lualib.h luajit.h lua.hpp lauxlib.h luaconf.h"

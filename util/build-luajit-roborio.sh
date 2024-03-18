@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ljdir="$(pwd)/vendordeps/luajit"
 sdkdir="$1"
