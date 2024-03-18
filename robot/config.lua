@@ -82,8 +82,8 @@ local ports = {
     arm_left             = 8,
     arm_right            = 11,
 
-    shooter_primary      = 10,
-    shooter_secondary    = 9,
+    shooter_primary      = 9,
+    shooter_secondary    = 10,
     shooter_support      = 12
 }
 
