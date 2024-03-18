@@ -8,19 +8,15 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    container: 
-      image: ghcr.io/snidercs/bot-2024:1.0
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+    # container: wpilib/roborio-cross-ubuntu:2024-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          submodules: true
       - name: Grant execute permission
         run: chmod +x gradlew
+      - name: Build Docker image
+        run: docker build . -t snidercs/bot-2024
       - name: Build Firmware
-        run: ./util/build-github.sh
+        run:  docker run -i -v $(pwd):/root -w /root snidercs/bot-2024 ./util/build-github.sh
         env:
           GENERATE_EMPTY_DRIVE_TRAJECTORIES: true
