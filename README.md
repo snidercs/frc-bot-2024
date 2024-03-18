@@ -7,21 +7,60 @@
 - Ultra low latency performance.
 - Design is decoupled from wpilib making it portable to other robotics systems.
 
-## VScode Dommands
+## VScode Commands
 There are shortcuts to command line tasks.
 
 Press `shift + ctrl + p` to open a list of commands. Type `wpilib` to filter FRC specific actions.
 
+## Requirements
+
+I recommend at least these two tools:
+- [VSCode](https://code.visualstudio.com/)
+- [Docker](https://www.docker.com/products/docker-desktop)
+    - Docker is used to build the code in a consistent environment. It is not required, but without it you'll have to install java, gradle, a comiler, and other tools on your computer, and good luck keeping it all up to date. 
+    - Make sure you give at least 4GB RAM and 4GB of swap space to docker.  Gradle build is a memory hog.
+
+### Optional Windows tools
+- wsl2 (Windows Subsystem for Linux)
+- [Git](https://git-scm.com/downloads)
+- consider choco.  It's the best package manager for windows.
+
+### Optional Mac Tools
+- use [brew]().  It's the best package manager for mac.
+
 ## Building
-Build all targets, and run the simulator.
+
+If it's your first time, it takes a while.  So get some lunch for the first time.   On Mac M2:
+```
+BUILD SUCCESSFUL in 36m 10s
+18 actionable tasks: 18 executed
+```
+
+### Using Docker
+First build our image based on frc 2024 ubuntu. The commands and scripts below will not work without the image being built first.  If the `Dockerfile` changes, re-run this command.
 ```bash
-./gradlew build
+docker build . -t snidercs/bot-2024
+```
+
+See [On your own machine](#On_you_own_machine) if you have the entire build chain installed on you machine.
+```bash
+./dockerbuild.sh
+```
+
+### On your own machine 
+(if you are not using docker) `./gradlew build`
+
+Once, built:
+```bash
+BUILD SUCCESSFUL in 19s
+18 actionable tasks: 18 up-to-date
 ```
 
 ## Testing
 Run all unit tests.
 ```bash
 ./gradlew check
+```
 
 ## Deployment
 Run the following command to deploy code to the roboRIO
@@ -37,6 +76,16 @@ If it gives problems, cleaning the project could help. The `--info` option could
 ```
 
 ## Other Useful Terminal Commands
+
+### Docker
+
+```bash
+./util/sudocker.sh    # Run a shell in the docker container
+```
+[util/sudocker.sh](util/sudocker.sh) is a script that runs a shell in the docker container.  It's a good way to run commands in the docker container.
+
+### Git
+
 Useful Commands to Understand
 ```bash
 git fetch        # Fetch changes from github (needed to check out new ones)
