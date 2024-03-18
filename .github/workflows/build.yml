@@ -8,13 +8,15 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    container: wpilib/roborio-cross-ubuntu:2024-22.04
+    # container: wpilib/roborio-cross-ubuntu:2024-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Grant execute permission
         run: chmod +x gradlew
+      - name: Build docker images
+        run: docker build . -t snidercs/bot-2024
       - name: Build robot code
-        run: ./gradlew build
+        run:  docker run -i -v $(pwd):/root -w /root snidercs/bot-2024 ./gradlew --no-watch-fs build
         env:
           GENERATE_EMPTY_DRIVE_TRAJECTORIES: true
