@@ -5,7 +5,7 @@
 #include <frc/TimedRobot.h>
 
 #include "gtest/gtest.h"
-#include "lua.hpp"
+#include "scripting.hpp"
 
 /** Same as the firmware: lua needs to be in global scope so it stays alive 
     when FRC is using a global static robot base with no shutdown system.

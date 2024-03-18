@@ -22,13 +22,12 @@
 #include "snider/padmode.hpp"
 
 #include "engine.hpp"
-#include "lua.hpp"
 #include "normalisablerange.hpp"
 #include "parameters.hpp"
+#include "scripting.hpp"
 
 #include "robot.hpp"
 #include "sol/table.hpp"
-
 
 #define SIM_CAMERA_DISABLED 1
 
@@ -117,7 +116,7 @@ public:
 
     void RobotInit() override {
         auto& L = lua::state();
-        engine = detail::instantiateRobot();
+        engine  = detail::instantiateRobot();
 
         if (engine != nullptr) {
             engine->init();
