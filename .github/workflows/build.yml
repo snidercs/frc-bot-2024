@@ -14,9 +14,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Grant execute permission
         run: chmod +x gradlew
-      - name: Build docker images
+      - name: Build Docker image
         run: docker build . -t snidercs/bot-2024
-      - name: Build robot code
-        run:  docker run -i -v $(pwd):/root -w /root snidercs/bot-2024 ./gradlew --no-watch-fs build
+      - name: Build Firmware
+        run:  docker run -i -v $(pwd):/root -w /root snidercs/bot-2024 ./util/build-github.sh
         env:
           GENERATE_EMPTY_DRIVE_TRAJECTORIES: true
