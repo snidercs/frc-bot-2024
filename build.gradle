@@ -128,7 +128,7 @@ String sdkSlugForTargetName (String name) {
 tasks.withType(CppCompile).configureEach {
     String sdkSlug = sdkSlugForTargetName(name)
     includes {
-        sdkDir (sdkSlug + "/include"),
+        sdkDir (sdkSlug + "/include")
         sdkDir (sdkSlug + "/include/luajit-2.1")
     }
 }
