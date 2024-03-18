@@ -44,7 +44,7 @@ The `gradle build` and `gradle deploy` tasks both need roboRIO libraries and hea
 Note: For _Windows_ GitBash and the CMD prompt are both needed.
 
 #### Using Docker
-Docker is used to build and test the code in a consistent environment.  It is required if building dependencies yourself on a non-Linux machine. 
+Docker is used to build and test the code in a consistent environment.  It is required if building dependencies yourself on a non-Linux machine.
 
 First build our image. Commands and scripts below all depend on it.  If the `Dockerfile` changes, re-run this command.
 ```bash
@@ -64,9 +64,14 @@ util/build-luajit-roborio.sh
 ```
 
 **macOS**
+
+The Mac build script can produce `arm64` or `x86_64` binaries.  It will select the system default if not specified.
 ```bash
-# Untested: may need TLC...
-util/build-luajit-macos.sh
+# Choose one of these...
+util/build-luajit-macos.sh # Use system default
+util/build-luajit-macos.sh arm64 # force arm64 (M1/M2/..) build
+util/build-luajit-macos.sh x86_64 # force an x86_64 (intel) build
+
 # If docker is isntalled and running...
 util/docker-run.sh util/build-luajit-roborio.sh
 ```

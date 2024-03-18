@@ -1,18 +1,21 @@
 #!/bin/bash
 
-ljdir="$(pwd)/vendordeps/luajit"
-sdkdir="$1"
+export MACOSX_DEPLOYMENT_TARGET=10.12
 
-if [ -z "$1" ]; then
-    sdkdir="$(pwd)/vendordeps/sdk"
+host_arch="$1"
+if [ -z "$host_arch" ]; then
+    host_arch=$(arch)
 fi
+
+ljdir="$(pwd)/vendordeps/luajit"
+sdkdir="$(pwd)/vendordeps/sdk"
 
 cd "$ljdir"
 set -ex
 
 ### Build for host machine
 make clean
-make amalg HOST_CC="gcc -m64 -std=c99" \
+make amalg CC="clang -arch $host_arch -std=c99" \
     BUILDMODE="static" \
     XCFLAGS="-DLUAJIT_ENABLE_LUA52COMPAT=1" \
     PREFIX="${sdkdir}/macos"
