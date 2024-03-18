@@ -37,6 +37,11 @@ BUILD SUCCESSFUL in 36m 10s
 ```
 
 ### Using Docker
+First build our image based on frc 2024 ubuntu. The commands and scripts below will not work without the image being built first.  If the `Dockerfile` changes, re-run this command.
+```bash
+docker build . -t snidercs/bot-2024
+```
+
 See [On your own machine](#On_you_own_machine) if you have the entire build chain installed on you machine.
 ```bash
 ./dockerbuild.sh
@@ -73,6 +78,7 @@ If it gives problems, cleaning the project could help. The `--info` option could
 ## Other Useful Terminal Commands
 
 ### Docker
+
 ```bash
 ./util/sudocker.sh    # Run a shell in the docker container
 ```
