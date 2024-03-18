@@ -99,25 +99,42 @@ model {
 }
 
 //==============================================================================
-// return a directory ABS path from a botlib installation.
-String botlibDir(String dir = "") {
-    String out = System.properties['user.home'];
-    out += "/SDKs/botlib"
+// returns a directory or file within the sdk dir.
+String sdkDir(String dir = "") {
+    String out = projectDir.toString()
+    out += "/vendordeps/sdk"
     if (! dir.isEmpty())
         out += "/" + dir
     return out
 }
 
+String sdkSlugForTargetName (String name) {
+    String lname = name.toLowerCase();
+    if (lname.contains ("linuxx86-64")) {
+        return "linux64"
+    } else if (lname.contains ("linuxathena")) {
+        return "roborio"
+    } else if (lname.contains ("windowsx86-64")) {
+        return "msvc"
+    }
+
+    return "unknown"
+}
+
 tasks.withType(CppCompile).configureEach {
-    includes { projectDir.toString() + "/vendordeps/luajit/src" }
+    String sdkSlug = sdkSlugForTargetName(name)
+    includes {
+        sdkDir (sdkSlug + "/include"),
+        sdkDir (sdkSlug + "/include/luajit-2.1")
+    }
 }
 
 tasks.withType(LinkExecutable).configureEach {
     String platform = targetPlatform.get().name
     if (platform == 'linuxx86-64') {
-        linkerArgs.addAll '-L', botlibDir('linux64/lib'), '-lluajit-5.1'
+        linkerArgs.addAll '-L', sdkDir('linux64/lib'), '-lluajit-5.1'
     } else if (platform == 'linuxathena') {
-        linkerArgs.addAll '-L', botlibDir('roborio/lib'), '-lluajit-5.1'
+        linkerArgs.addAll '-L', sdkDir('roborio/lib'), '-lluajit-5.1'
     } else {
         linkerArgs.addAll 'vendordeps/luajit/src/lua51.lib'
     }

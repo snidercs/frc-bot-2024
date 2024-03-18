@@ -1,13 +1,20 @@
+#!/bin/bash
 
-prefix="$1"
+ljdir="$(pwd)/vendordeps/luajit"
+sdkdir="$1"
+
 if [ -z "$1" ]; then
-    prefix="$HOME/SDKs/botlib/linux64"
+    sdkdir="$(pwd)/vendordeps/sdk"
 fi
 
-cd luajit
+cd "$ljdir"
+set -ex
+
+### Build for host machine
 make clean
 make amalg HOST_CC="gcc -m64 -std=c99" \
     BUILDMODE="static" \
     XCFLAGS="-DLUAJIT_ENABLE_LUA52COMPAT=1" \
-    PREFIX="${prefix}"
-make install PREFIX="${prefix}"
+    PREFIX="${sdkdir}/linux64"
+make install PREFIX="${sdkdir}/linux64"
+make clean
