@@ -12,7 +12,6 @@ jobs:
       image: ghcr.io/snidercs/bot-2024:1.0
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.DOCKER_PW }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
