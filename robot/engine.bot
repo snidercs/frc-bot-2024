@@ -35,7 +35,7 @@ local function test_init()
 end
 
 local function test()
-    robot.drive(params.speed(), params.rotation())
+    robot.drive(params.speed() * (1.0 - params.brake()), params.rotation())
     update_shooter()
 end
 
