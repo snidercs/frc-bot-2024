@@ -108,14 +108,18 @@ String sdkDir(String dir = "") {
     return out
 }
 
+// Guesses an sdk slug (linux64, roborio, msvc, darwin) for a given target name.
 String sdkSlugForTargetName (String name) {
     String lname = name.toLowerCase();
+    
     if (lname.contains ("linuxx86-64")) {
         return "linux64"
     } else if (lname.contains ("linuxathena")) {
         return "roborio"
     } else if (lname.contains ("windowsx86-64")) {
         return "msvc"
+    } else if (lname.contains ("darwin")) {
+        return "macos"
     }
 
     return "unknown"
