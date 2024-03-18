@@ -9,9 +9,9 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     container: ghcr.io/snidercs/bot-2024:1.0
-    credentials:
-      username: ${{ github.actor }}
-      password: ${{ secrets.ghcr_token }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.ghcr_token }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
