@@ -70,10 +70,10 @@ void Shooter::process() noexcept {
             break;
         }
         case Shooting: {
-            topMotor.SetVoltage (units::volt_t { 6.0 });
-            supportMotor.SetVoltage (units::volt_t { 6.0 });
+            topMotor.SetVoltage (units::volt_t { 12.0 });
+            supportMotor.SetVoltage (units::volt_t { 12.0 });
             if (delay >= delayTicks) {
-                bottomMotor.SetVoltage (units::volt_t { 6.0 });
+                bottomMotor.SetVoltage (units::volt_t { 12.0 });
             }
             ++delay;
             break;
