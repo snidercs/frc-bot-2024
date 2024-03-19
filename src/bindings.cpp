@@ -26,7 +26,7 @@ sol::table cxx_table (sol::state& ls) {
 template <typename Ls>
 void clear_function_bindings (Ls& L, std::string_view mod,
                               function_list functions) {
-    sol::table cxx   = cxx_table (L);
+    sol::table cxx    = cxx_table (L);
     sol::object proxy = cxx[mod];
     if (! proxy.valid())
         return;
@@ -219,4 +219,4 @@ inline static int frc_Pose2d (lua_State* state) {
     return 1;
 }
 
-}
+} // namespace lua

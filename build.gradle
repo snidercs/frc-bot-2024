@@ -150,3 +150,13 @@ tasks.withType(LinkExecutable).configureEach {
         linkerArgs.addAll  sdkDir('msvc/lib/lua51.lib')
     }
 }
+
+ task clangFormat {
+     doLast {
+         exec {
+             workingDir "${projectDir}"
+             executable 'python3'
+             args "${projectDir}/util/format.py"
+         }
+     }
+ }
