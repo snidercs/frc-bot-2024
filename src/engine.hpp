@@ -36,14 +36,24 @@ public:
 
             self->f_init = self->M["init"];
 
-            if (self->M["teleop"].get_type() == sol::type::function)
-                self->f_teleop = self->M["teleop"];
-            if (self->M["autonomous"].get_type() == sol::type::function)
-                self->f_autonomous = self->M["autonomous"];
-            if (self->M["test"].get_type() == sol::type::function)
-                self->f_test = self->M["test"];
-            if (self->M["test_init"].get_type() == sol::type::function)
-                self->f_test_init = self->M["test_init"];
+#define ASSIGN_F(name)                                    \
+    if (self->M[#name].get_type() == sol::type::function) \
+        self->f_##name = self->M[#name];
+
+            ASSIGN_F (teleop_init)
+            ASSIGN_F (teleop)
+            ASSIGN_F (teleop_exit)
+
+            ASSIGN_F (autonomous_init)
+            ASSIGN_F (autonomous)
+            ASSIGN_F (autonomous_exit)
+
+            ASSIGN_F (test_init)
+            ASSIGN_F (test)
+            ASSIGN_F (test_exit)
+
+#undef ASSIGN_F
+
         } catch (const std::exception& e) {
             self->_error = e.what();
         }
@@ -60,31 +70,26 @@ public:
         return (bool) f_init;
     }
 
-    bool teleop() {
-        if (f_teleop)
-            f_teleop();
-        return (bool) f_teleop;
+#define MEMBER_F(name)             \
+    bool name() {                  \
+        auto ok = (bool) f_##name; \
+        if (f_##name)              \
+            f_##name();            \
+        return ok;                 \
     }
 
-    bool autonomous() {
-        if (f_autonomous)
-            f_autonomous();
-        return (bool) f_autonomous;
-    }
+    MEMBER_F (teleop_init)
+    MEMBER_F (teleop)
+    MEMBER_F (teleop_exit)
 
-    bool test_init() {
-        auto ok = (bool) f_test_init;
-        if (ok)
-            f_test_init();
-        return ok;
-    }
+    MEMBER_F (autonomous_init)
+    MEMBER_F (autonomous)
+    MEMBER_F (autonomous_exit)
 
-    bool test() {
-        auto ok = (bool) f_test;
-        if (ok)
-            f_test();
-        return ok;
-    }
+    MEMBER_F (test_init)
+    MEMBER_F (test)
+    MEMBER_F (test_exit)
+#undef MEMBER_F
 
 private:
     Engine (lua_State* state)
@@ -95,7 +100,11 @@ private:
     sol::state_view L;
     sol::table M;
     std::string _error;
-    sol::function f_init, f_test_init, f_test, f_teleop, f_autonomous;
+    sol::function f_init,
+        f_test_init, f_test, f_test_exit,
+        f_teleop_init, f_teleop, f_teleop_exit,
+        f_autonomous_init, f_autonomous,
+        f_autonomous_exit;
 };
 
 using EnginePtr = std::unique_ptr<Engine>;

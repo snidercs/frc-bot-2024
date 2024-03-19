@@ -39,6 +39,10 @@ local function test()
     update_shooter()
 end
 
+local function test_exit()
+    print ("test mode exited")
+end
+
 ---A Timed robot descriptor.
 ---
 ---The c++ RomainMain will call these functions while running. Think of this file
@@ -63,5 +67,6 @@ return {
     autonomous_init = autonomous_init,
     autonomous = autonomous,
     test_init = test_init,
-    test = test
+    test = test,
+    test_exit = test_exit
 }
