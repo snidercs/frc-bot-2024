@@ -308,6 +308,7 @@ private:
         // Set the resolution
         camera.SetResolution (width, height);
         camera.SetFPS (fps);
+
 #if 0
         // Get a CvSink. This will capture Mats from the Camera
         cs::CvSink cvSink = frc::CameraServer::GetVideo();
