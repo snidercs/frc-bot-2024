@@ -271,6 +271,10 @@ private:
     int delay      = 0;
     int delayTicks = 2; // delayTicks x 20ms = totalDelay
 
+    double shootPower { -3.0 },
+        intakePrimaryPower { -6.0 },
+        intakeSecondaryPower { -3.0 };
+
     rev::CANSparkMax topMotor {
         lua::config::port ("shooter_primary"),
         MotorType::kBrushed

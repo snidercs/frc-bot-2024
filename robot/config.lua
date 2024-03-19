@@ -66,7 +66,13 @@ local shooter = {
     ---Time to warm up before shooting (seconds)
     warmup_time = 1.0,
     ---Time taken to shoot the note (seconds)
-    shoot_time = 0.75
+    shoot_time = 0.75,
+    ---Power while shooting (volts)
+    shoot_power = 12.0,
+    ---Power while intaking. Primary motor. (volts)
+    intake_primary_power = 6.0,
+    ---Power while intaking. Secondary motor. (volts)
+    intake_secondary_power = 3.0
 }
 
 ---Ports, channels, indexes used in motor controllers, gamepads, etc...
