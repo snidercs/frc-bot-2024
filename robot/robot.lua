@@ -23,6 +23,11 @@ local function lower_arms()
     lifter.move_down()
 end
 
+---Stop the arms from moving.
+local function stop_lifter()
+    lifter.stop()
+end
+
 ---Returns true if the robot is shooting.
 ---@return boolean
 local function shooting()
@@ -58,6 +63,7 @@ local M = {
     intake         = intake,
     shooting       = shooting,
     shoot          = shoot,
+    stop_lifter    = stop_lifter,
     stop_shooter   = stop_shooter
 }
 
