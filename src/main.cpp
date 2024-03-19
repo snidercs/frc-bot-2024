@@ -229,6 +229,10 @@ public:
         shooter.process();
     }
 
+    void TestExit() override {
+        engine->test_exit();
+    }
+
     //==========================================================================
     void SimulationInit() override {
         drivetrain.initializeSimulation();

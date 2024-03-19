@@ -12,10 +12,15 @@
 git clone --recursive git@github.com:snidercs/bot-2024.git
 ```
 
-**VScode Commands**
-There are shortcuts to command line tasks.
+## Clang Format
+The c++ code should be formatted before submitting pull requests. Do this with python or gradle.
 
-Press `shift + ctrl + p` to open a list of commands. Type `wpilib` to filter FRC specific actions.
+```bash
+# Run the python script directly
+python3 util/format.py
+# or do it wrapped in a gradle task
+./gradlew clangFormat
+```
 
 ## Requirements
 
@@ -119,7 +124,12 @@ If it gives problems, cleaning the project could help. The `--info` option could
 
 ```
 
-## Other Useful Terminal Commands
+## Other Useful Commands
+
+### VScode Shortcuts
+There are shortcuts to command line tasks.
+
+Press `shift + ctrl + p` to open a list of commands. Type `wpilib` to filter FRC specific actions.
 
 ### Docker
 
