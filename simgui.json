@@ -7,6 +7,11 @@
         },
         "name": "AnalogGyro[0] (sim)"
       },
+      "SPARK MAX [11]": {
+        "header": {
+          "open": true
+        }
+      },
       "window": {
         "visible": false
       }
@@ -80,7 +85,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 406,
+          "height": 153,
           "series": [
             {
               "color": [
@@ -113,7 +118,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 416,
+          "height": 375,
           "series": [
             {
               "color": [
@@ -150,6 +155,24 @@
                 1.0
               ],
               "id": "SPARK MAX [6]-Applied Output"
+            },
+            {
+              "color": [
+                0.5058823823928833,
+                0.44705885648727417,
+                0.7019608020782471,
+                1.0
+              ],
+              "id": "SPARK MAX [8]-Applied Output"
+            },
+            {
+              "color": [
+                0.5764706134796143,
+                0.4705882668495178,
+                0.3764706254005432,
+                1.0
+              ],
+              "id": "SPARK MAX [11]-Applied Output"
             }
           ]
         }
