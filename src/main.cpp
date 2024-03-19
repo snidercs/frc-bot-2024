@@ -55,7 +55,7 @@ frc::TrajectoryConfig makeTrajectoryConfig (sol::table tbl) {
 // compose a trajectory from lua configuration.
 frc::Trajectory makeTrajectory (std::string_view symbol) {
     sol::function trajectory = lua::state()["config"]["trajectory"];
-    sol::table tbl = trajectory (symbol);
+    sol::table tbl           = trajectory (symbol);
     return frc::TrajectoryGenerator::GenerateTrajectory (
         makePose2d (tbl["start"]),
         {},
