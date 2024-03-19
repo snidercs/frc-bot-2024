@@ -6,7 +6,7 @@ namespace cfg = lua::config;
 #define DEBUG_SHOOTER 0 // change to 1 to enable debug logging.
 #if DEBUG_SHOOTER
 #    include <iostream>
-#    define SHOOTER_LOG(msg) std::clog << "[shooter] " << msg << std::endl;
+#    define SHOOTER_DBG(msg) std::clog << "[shooter] " << msg << std::endl;
 #else
 #    define SHOOTER_DBG(msg)
 #endif
