@@ -6,7 +6,7 @@ namespace cfg = lua::config;
 #define DEBUG_SHOOTER 0 // change to 1 to enable debug logging.
 #if DEBUG_SHOOTER
 #    include <iostream>
-#    define SHOOTER_LOG(msg) std::clog << msg << std::endl;
+#    define SHOOTER_LOG(msg) std::clog << "[shooter] " << msg << std::endl;
 #else
 #    define SHOOTER_DBG(msg)
 #endif
@@ -28,6 +28,16 @@ void Shooter::reset() {
     _state = lastState = Idle;
     periodMs           = static_cast<int> (
         cfg::get ("engine", "period").as<lua_Number>());
+
+    shootPower           = std::max (1.0, cfg::get ("shooter", "shoot_power").as<double>());
+    intakePrimaryPower   = -1.0 * std::max (1.0, cfg::get ("shooter", "intake_primary_power").as<double>());
+    intakeSecondaryPower = -1.0 * std::max (1.0, cfg::get ("shooter", "intake_secondary_power").as<double>());
+
+    // clang-format off
+    SHOOTER_DBG("shootPower=" << shootPower 
+        << " intakePrimaryPower=" << intakePrimaryPower
+        << " intakeSecondaryPower=" << intakeSecondaryPower);
+    // clang-format on
 }
 
 void Shooter::load() {
@@ -49,10 +59,10 @@ void Shooter::shoot() {
     delay       = 0;
 
     // clang-format off
-    SHOOTER_DBG ("shoot period=" << periodMs
-        << " warm=" << warmTimeMs
-        << " shoot=" << shootTimeMs
-        << " tick =" << tick
+    SHOOTER_DBG ("shoot(): periodMs=" << periodMs
+        << " warmTime=" << warmTimeMs
+        << " shootTime=" << shootTimeMs
+        << " ticks=" << tick
         << " delayTicks=" << delayTicks);
     // clang-format on
 }
@@ -64,16 +74,17 @@ void Shooter::stop() {
 void Shooter::process() noexcept {
     switch (_state) {
         case Loading: {
-            topMotor.SetVoltage (units::volt_t { -6.0 });
-            bottomMotor.SetVoltage (units::volt_t { -3.0 });
-            supportMotor.SetVoltage (units::volt_t { -3.0 });
+            topMotor.SetVoltage (units::volt_t { intakePrimaryPower });
+            bottomMotor.SetVoltage (units::volt_t { intakeSecondaryPower });
+            supportMotor.SetVoltage (units::volt_t { intakeSecondaryPower });
             break;
         }
         case Shooting: {
-            topMotor.SetVoltage (units::volt_t { 12.0 });
-            supportMotor.SetVoltage (units::volt_t { 12.0 });
+            units::volt_t volts { shootPower };
+            topMotor.SetVoltage (volts);
+            supportMotor.SetVoltage (volts);
             if (delay >= delayTicks) {
-                bottomMotor.SetVoltage (units::volt_t { 12.0 });
+                bottomMotor.SetVoltage (volts);
             }
             ++delay;
             break;
