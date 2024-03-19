@@ -62,11 +62,11 @@ local lifter = {}
 ---Shooter specific settings
 local shooter = {
     ---Time to run intake motor (seconds)
-    intake_time = 0.5,
+    intake_time = 1.2,
     ---Time to warm up before shooting (seconds)
     warmup_time = 1.0,
     ---Time taken to shoot the note (seconds)
-    shoot_time = 0.75,
+    shoot_time = 2.0,
     ---Power while shooting (volts)
     shoot_power = 12.0,
     ---Power while intaking. Primary motor. (volts)
