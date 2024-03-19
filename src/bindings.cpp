@@ -153,10 +153,11 @@ void Lifter::bind (Lifter* self) {
 
         M["move_up"]   = [self]() { self->moveUp(); };
         M["move_down"] = [self]() { self->moveDown(); };
+        M["stop"]      = [self]() { self->stop(); };
 
         cxx["lifter"] = M;
     } else {
-        detail::clear_function_bindings (L, "lifter", { "move_up", "move_down" });
+        detail::clear_function_bindings (L, "lifter", { "move_up", "move_down", "stop" });
     }
 }
 

@@ -98,7 +98,7 @@ public:
         // bind instances to Lua
         Parameters::bind (&params);
         Shooter::bind (&shooter);
-        Lifter::bind (&mechanicalArm);
+        Lifter::bind (&lifter);
         Drivetrain::bind (&drivetrain);
         lua::bind_gamepad (&gamepad);
     }
@@ -189,12 +189,12 @@ public:
 
         drivetrain.driveNormalized (params.getSpeed(), params.getAngularSpeed());
 
-        if (params.getButtonValue (Parameters::ButtonA))
-            mechanicalArm.moveDown();
-        else if (params.getButtonValue (Parameters::ButtonY))
-            mechanicalArm.moveUp();
+        if (params.getButtonValue (Parameters::ButtonY))
+            lifter.moveUp();
+        else if (params.getButtonValue (Parameters::ButtonA))
+            lifter.moveDown();
         else
-            mechanicalArm.stop();
+            lifter.stop();
 
         if (gamepad.GetLeftBumperPressed()) {
             shooter.load();
@@ -215,6 +215,7 @@ public:
 
     //==========================================================================
     void TestInit() override {
+        shooter.reset();
         engine->test_init();
     }
 
@@ -248,7 +249,7 @@ private:
 
     frc::XboxController gamepad { lua::config::port ("gamepad") };
     Drivetrain drivetrain;
-    Lifter mechanicalArm;
+    Lifter lifter;
     Shooter shooter;
 
     frc::Trajectory trajectory;
