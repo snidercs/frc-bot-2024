@@ -1,3 +1,4 @@
+[![Build](https://github.com/snidercs/bot-2024/actions/workflows/build.yml/badge.svg)](https://github.com/snidercs/bot-2024/actions/workflows/build.yml)
 # Robot Firmware FRC 2024
 ## Features
 - Built-in Lua interpreter.
