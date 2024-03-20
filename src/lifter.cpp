@@ -1,8 +1,10 @@
 #include "robot.hpp"
 
 Lifter::Lifter() {
-    for (auto m : motors)
+    for (auto m : motors){
+        m->SetInverted (false);
         m->SetSmartCurrentLimit (40, 30);
+    }
     resetEncoders();
 }
 
