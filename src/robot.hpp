@@ -64,6 +64,10 @@ private:
     friend class RobotMain;
     static void bind (Drivetrain*);
 
+    const double rotationThrottle {
+        lua::config::get ("drivetrain", "rotation_throttle").as<double>()
+    };
+
     rev::CANSparkMax leftLeader {
         lua::config::port ("drive_left_leader"),
         MotorType::kBrushed

@@ -7,6 +7,9 @@
 
 #include "scripting.hpp"
 #include "sol/state.hpp"
+extern "C" {
+#include "luajit.h"
+}
 
 namespace fs = std::filesystem;
 
@@ -70,6 +73,28 @@ sol::state& state() {
     if (detail::_state == nullptr)
         throw std::runtime_error ("Lua state was not initialized");
     return *detail::_state;
+}
+
+void print_version() {
+    fputs (LUAJIT_VERSION " -- " LUAJIT_COPYRIGHT ". " LUAJIT_URL "\n", stdout);
+
+    auto L = state().lua_state();
+    int n;
+    const char* s;
+    lua_getfield (L, LUA_REGISTRYINDEX, "_LOADED");
+    lua_getfield (L, -1, "jit"); /* Get jit.* module table. */
+    lua_remove (L, -2);
+    lua_getfield (L, -1, "status");
+    lua_remove (L, -2);
+    n = lua_gettop (L);
+    lua_call (L, 0, LUA_MULTRET);
+    fputs (lua_toboolean (L, n) ? "JIT: ON" : "JIT: OFF", stdout);
+    for (n++; (s = lua_tostring (L, n)); n++) {
+        putc (' ', stdout);
+        fputs (s, stdout);
+    }
+    putc ('\n', stdout);
+    lua_settop (L, 0); /* clear stack */
 }
 
 void set_path (std::string_view path) {
