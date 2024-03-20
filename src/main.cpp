@@ -65,7 +65,7 @@ frc::Trajectory makeTrajectory (std::string_view symbol) {
 
 static void displayBanner() {
     // display engine and bot info.
-    std::clog << LUA_COPYRIGHT << std::endl;
+    lua::print_version();
     std::clog.flush();
     std::cout.flush();
     std::cerr.flush();
@@ -161,6 +161,7 @@ public:
     void AutonomousInit() override {
         timer.Restart();
         drivetrain.resetOdometry (trajectory.InitialPose());
+        lua::state().collect_garbage();
     }
 
     void AutonomousPeriodic() override {
@@ -177,6 +178,7 @@ public:
     //==========================================================================
     void TeleopInit() override {
         shooter.reset();
+        lua::state().collect_garbage();
     }
 
     void TeleopPeriodic() {
@@ -207,6 +209,7 @@ public:
 
     //==========================================================================
     void DisabledInit() override {
+        lua::state().collect_garbage();
     }
 
     void DisabledPeriodic() override {
@@ -217,6 +220,7 @@ public:
     void TestInit() override {
         shooter.reset();
         engine->test_init();
+        lua::state().collect_garbage();
     }
 
     void TestPeriodic() override {
@@ -232,6 +236,7 @@ public:
 
     void TestExit() override {
         engine->test_exit();
+        lua::state().collect_garbage();
     }
 
     //==========================================================================
