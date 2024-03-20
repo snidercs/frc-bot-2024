@@ -47,7 +47,7 @@ local drivetrain = {
     max_angular_speed = math.pi,
 
     ---Distance between wheels?
-    track_width = 0.559;
+    track_width = 0.559,
 
     ---Wheel radius in meters. */
     wheel_radius = 0.076,
