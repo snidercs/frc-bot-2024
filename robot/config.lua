@@ -53,7 +53,10 @@ local drivetrain = {
     wheel_radius = 0.076,
 
     ---Encoder ticks per revolution.
-    encoder_resolution = 4096
+    encoder_resolution = 4096,
+
+    -- Ratio applied to angular velocity. (0.0 to 1.0)
+    rotation_throttle = 0.54
 }
 
 -- lifter specific settings

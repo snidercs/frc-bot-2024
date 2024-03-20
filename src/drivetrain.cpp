@@ -68,7 +68,7 @@ const MetersPerSecond Drivetrain::calculateSpeed (double value) noexcept {
 }
 
 const RadiansPerSecond Drivetrain::calculateRotation (double value) noexcept {
-    value *= 0.5; // throttle down sensitivity.
+    value *= rotationThrottle;
     if (frc::RobotBase::IsReal()) {
         // if real bot, invert direction of rotation.
         value *= -1.0;
