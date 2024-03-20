@@ -28,6 +28,7 @@ local general = {
 local gamepad = {
     -- controller mode to use (not in use)
     controller_mode = 'standard',
+
     -- skew factor applied to speed control
     skew_factor     = 0.5
 }
@@ -49,7 +50,7 @@ local drivetrain = {
     ---Distance between wheels?
     track_width = 0.559,
 
-    ---Wheel radius in meters. */
+    ---Wheel radius in meters.
     wheel_radius = 0.076,
 
     ---Encoder ticks per revolution.
@@ -66,14 +67,19 @@ local lifter = {}
 local shooter = {
     ---Time to run intake motor (seconds)
     intake_time = 1.2,
+
     ---Time to warm up before shooting (seconds)
     warmup_time = 1.0,
+
     ---Time taken to shoot the note (seconds)
     shoot_time = 2.0,
+
     ---Power while shooting (volts)
     shoot_power = 12.0,
+
     ---Power while intaking. Primary motor. (volts)
     intake_primary_power = 6.0,
+
     ---Power while intaking. Secondary motor. (volts)
     intake_secondary_power = 3.0
 }
