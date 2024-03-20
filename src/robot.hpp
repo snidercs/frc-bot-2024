@@ -33,21 +33,6 @@ public:
     Drivetrain();
     ~Drivetrain();
 
-    /** Max speed. 3 Meters per second. */
-    static constexpr MetersPerSecond MaxSpeed = 3.0_mps;
-
-    /** Max angular speed. 1/2 rotation per second */
-    static constexpr RadiansPerSecond MaxAngularSpeed { std::numbers::pi };
-
-    /** Distance between wheels? */
-    static constexpr units::meter_t TrackWidth = 0.559_m;
-
-    /** Wheel radius in meters. */
-    static constexpr double WheelRadius = 0.076; // meters
-
-    /** Encoder ticks per revolution. */
-    static constexpr int EncoderResolution = 4096;
-
     /** Drive the bot by FRC units. */
     void drive (MetersPerSecond xSpeed, RadiansPerSecond rot);
 
@@ -63,6 +48,25 @@ public:
 private:
     friend class RobotMain;
     static void bind (Drivetrain*);
+
+    const MetersPerSecond maxSpeed {
+        lua::config::get ("drivetrain", "max_speed").as<double>()
+    };
+    const RadiansPerSecond maxAngularSpeed {
+        lua::config::get ("drivetrain", "max_angular_speed").as<double>()
+    };
+    const units::meter_t trackWidth {
+        lua::config::get ("drivetrain", "track_width").as<double>()
+    };
+    const double wheelRadius {
+        lua::config::get ("drivetrain", "wheel_radius").as<double>()
+    };
+    const int encoderResolution {
+        static_cast<int> (lua::config::get ("drivetrain", "encoder_resolution").as<double>())
+    };
+    const double rotationThrottle {
+        lua::config::get ("drivetrain", "rotation_throttle").as<double>()
+    };
 
     rev::CANSparkMax leftLeader {
         lua::config::port ("drive_left_leader"),
@@ -92,7 +96,7 @@ private:
 
     frc::AnalogGyro gyro { 0 };
 
-    frc::DifferentialDriveKinematics kinematics { TrackWidth };
+    frc::DifferentialDriveKinematics kinematics { trackWidth };
     frc::DifferentialDriveOdometry odometry {
         gyro.GetRotation2d(),
         units::meter_t { 0.0 },
@@ -170,7 +174,7 @@ private:
             frc::LinearSystemId::IdentifyDrivetrainSystem (
                 1.98_V / 1_mps, 0.2_V / 1_mps_sq, 1.5_V / 1_mps, 0.3_V / 1_mps_sq);
         frc::sim::DifferentialDrivetrainSim drivetrainSimulator {
-            drivetrainSystem, TrackWidth, frc::DCMotor::CIM (2), 8, 2_in
+            drivetrainSystem, owner.trackWidth, frc::DCMotor::CIM (2), 8, 2_in
         };
     };
 
