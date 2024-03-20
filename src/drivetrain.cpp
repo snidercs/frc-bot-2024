@@ -19,7 +19,7 @@ Drivetrain::Drivetrain() {
     // Set the distance per pulse for the drive encoders. We can simply use the
     // distance traveled for one rotation of the wheel divided by the encoder
     // resolution.
-    leftEncoder.SetDistancePerPulse (2 * std::numbers::pi * WheelRadius / EncoderResolution);
+    leftEncoder.SetDistancePerPulse (2 * std::numbers::pi * wheelRadius / encoderResolution);
     rightEncoder.SetDistancePerPulse (leftEncoder.GetDistancePerPulse());
     leftEncoder.Reset();
     rightEncoder.Reset();
@@ -64,16 +64,16 @@ const MetersPerSecond Drivetrain::calculateSpeed (double value) noexcept {
     value = (value - speedRange.start) / (speedRange.end - speedRange.start);
     // apply and re-scale using scale factor.
     value = speedRange.convertFrom0to1 (value);
-    return -speedLimiter.Calculate (value) * Drivetrain::MaxSpeed;
+    return -speedLimiter.Calculate (value) * maxSpeed;
 }
 
 const RadiansPerSecond Drivetrain::calculateRotation (double value) noexcept {
-    value *= 0.5; // throttle down sensitivity.
+    value *= rotationThrottle;
     if (frc::RobotBase::IsReal()) {
         // if real bot, invert direction of rotation.
         value *= -1.0;
     }
-    return -rotLimiter.Calculate (value) * Drivetrain::MaxAngularSpeed;
+    return -rotLimiter.Calculate (value) * maxAngularSpeed;
 }
 
 void Drivetrain::updateOdometry() {

@@ -27,6 +27,9 @@ struct Lifecycle final {
 /** Returns the global Lua context. */
 sol::state& state();
 
+/** Prints the Lua version to console. */
+void print_version();
+
 /** Set the Lua search path.
     Does nothing if passed an empty string.
     @param path A non empty Lua path string.
