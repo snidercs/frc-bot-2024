@@ -1,0 +1,48 @@
+local config  = require('config')
+local gamepad = require('gamepad')
+local params  = require('params')
+local robot   = require('robot')
+
+local function update_arms()
+    if gamepad.Y() then
+        robot.raise_arms()
+    elseif gamepad.A() then
+        robot.lower_arms()
+    else
+        robot.stop_lifter();
+    end
+end
+
+local function update_shooter()
+    if gamepad.left_bumper_pressed() then
+        robot.intake()
+    elseif gamepad.right_bumper_pressed() then
+        robot.shoot()
+    end
+end
+
+--------------------------------------------------------------------------------
+local function init()
+    local team = config.get('team_name')
+    print(team .. " ready to test.")
+end
+
+--------------------------------------------------------------------------------
+local function test_prepare()
+end
+
+local function test_run()
+    robot.drive(params.speed() * (1.0 - params.brake()), params.rotation())
+    update_arms()
+    update_shooter()
+end
+
+local function test_cleanup()
+end
+
+return {
+    init = init,
+    prepare = test_prepare,
+    run = test_run,
+    cleanup = test_cleanup
+}

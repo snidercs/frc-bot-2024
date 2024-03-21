@@ -40,18 +40,9 @@ public:
     if (self->M[#name].get_type() == sol::type::function) \
         self->f_##name = self->M[#name];
 
-            ASSIGN_F (teleop_init)
-            ASSIGN_F (teleop)
-            ASSIGN_F (teleop_exit)
-
-            ASSIGN_F (autonomous_init)
-            ASSIGN_F (autonomous)
-            ASSIGN_F (autonomous_exit)
-
-            ASSIGN_F (test_init)
-            ASSIGN_F (test)
-            ASSIGN_F (test_exit)
-
+            ASSIGN_F (prepare)
+            ASSIGN_F (run)
+            ASSIGN_F (cleanup)
 #undef ASSIGN_F
 
         } catch (const std::exception& e) {
@@ -70,26 +61,16 @@ public:
         return (bool) f_init;
     }
 
-#define MEMBER_F(name)             \
-    bool name() {                  \
-        auto ok = (bool) f_##name; \
-        if (f_##name)              \
-            f_##name();            \
-        return ok;                 \
+#define METHOD(name)    \
+    void name() {       \
+        if (f_##name)   \
+            f_##name(); \
     }
 
-    MEMBER_F (teleop_init)
-    MEMBER_F (teleop)
-    MEMBER_F (teleop_exit)
-
-    MEMBER_F (autonomous_init)
-    MEMBER_F (autonomous)
-    MEMBER_F (autonomous_exit)
-
-    MEMBER_F (test_init)
-    MEMBER_F (test)
-    MEMBER_F (test_exit)
-#undef MEMBER_F
+    METHOD (prepare)
+    METHOD (run)
+    METHOD (cleanup)
+#undef METHOD
 
 private:
     Engine (lua_State* state)
@@ -100,11 +81,7 @@ private:
     sol::state_view L;
     sol::table M;
     std::string _error;
-    sol::function f_init,
-        f_test_init, f_test, f_test_exit,
-        f_teleop_init, f_teleop, f_teleop_exit,
-        f_autonomous_init, f_autonomous,
-        f_autonomous_exit;
+    sol::function f_init, f_prepare, f_run, f_cleanup;
 };
 
 using EnginePtr = std::unique_ptr<Engine>;
