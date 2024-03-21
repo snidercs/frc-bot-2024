@@ -51,10 +51,11 @@ end
 ---@field init function Robot initialization called once before anything else.
 ---@field prepare function Called once before starting teleop mode.
 ---@field run function Called repeatedly for a defined period.
----@field cleanup function Called once when leaving this mode.
+---@field cleanup function Called once before unloading this bot program.
 return {
     init = init,
     prepare = teleop_prepare,
     run = teleop_run,
+    release = test_release,
     cleanup = teleop_cleanup
 }

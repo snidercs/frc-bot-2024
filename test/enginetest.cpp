@@ -36,6 +36,18 @@ TEST_F (EngineTest, RunAutonomous) {
     gTimedRobot->AutonomousExit();
 }
 
+TEST_F (EngineTest, RunTeleop) {
+    // run the bot in test mode for one second.
+    gTimedRobot->TeleopInit();
+    int period = std::max (1, static_cast<int> (units::time::millisecond_t (gTimedRobot->GetPeriod()).value()));
+    int ticks = 1000 / period;
+    while (--ticks >= 0) {
+        gTimedRobot->TeleopPeriodic();
+        gTimedRobot->RobotPeriodic();
+    }
+    gTimedRobot->TeleopExit();
+}
+
 TEST_F (EngineTest, RunTest) {
     // run the bot in test mode for one second.
     gTimedRobot->TestInit();
