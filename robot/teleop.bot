@@ -1,0 +1,60 @@
+local config  = require('config')
+local gamepad = require('gamepad')
+local params  = require('params')
+local robot   = require('robot')
+
+local function update_arms()
+    if gamepad.Y() then
+        robot.raise_arms()
+    elseif gamepad.A() then
+        robot.lower_arms()
+    else
+        robot.stop_lifter();
+    end
+end
+
+local function update_shooter()
+    if gamepad.left_bumper_pressed() then
+        robot.intake()
+    elseif gamepad.right_bumper_pressed() then
+        robot.shoot()
+    end
+end
+
+--------------------------------------------------------------------------------
+local function init()
+    -- local team = config.get('team_name')
+    -- print(team .. " ready to roll")
+end
+
+--------------------------------------------------------------------------------
+local function teleop_prepare()
+end
+
+local function teleop_run()
+    robot.drive(params.speed() * (1.0 - params.brake()), params.rotation())
+    update_arms()
+    update_shooter()
+end
+
+local function teleop_cleanup()
+end
+
+---A Timed robot descriptor.
+---
+---The c++ RomainMain will call these functions while running. Think of this file
+---as a "Plugin" to the system with a common interface defined in this table.
+---This allows us to change out robot implementations easily, or even on-the-fly.
+---@meta
+---@see config.engine Engine settings
+---@class EngineDescriptor
+---@field init function Robot initialization called once before anything else.
+---@field prepare function Called once before starting teleop mode.
+---@field run function Called repeatedly for a defined period.
+---@field cleanup function Called once when leaving this mode.
+return {
+    init = init,
+    prepare = teleop_prepare,
+    run = teleop_run,
+    cleanup = teleop_cleanup
+}

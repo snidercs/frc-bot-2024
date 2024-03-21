@@ -115,19 +115,28 @@ public:
         engine.reset();
     }
 
-    void RobotInit() override {
-        auto& L = lua::state();
-        engine  = detail::instantiateRobot();
+    void collectGarbage() {
+        lua::state().collect_garbage();
+    }
 
-        if (engine != nullptr) {
-            engine->init();
-            if (engine->have_error()) {
+    // load a bot file by name e.g. engine.bot or engine_test.bot
+    void loadEngine (std::string_view bot = "engine.bot") {
+        auto newEngine = detail::instantiateRobot (bot);
+
+        if (newEngine != nullptr) {
+            newEngine->init();
+            if (newEngine->have_error()) {
                 throw std::runtime_error (engine->error().data());
             }
+            std::swap (engine, newEngine);
+            newEngine.reset();
+            std::clog << "[bot] program loaded: " << bot << std::endl;
         } else {
             throw std::runtime_error ("Failed to instantiate Lua engine");
         }
+    }
 
+    void RobotInit() override {
         try {
             auto matchPos = lua::config::match_start_position();
             trajectory    = detail::makeTrajectory (matchPos);
@@ -144,7 +153,8 @@ public:
                 frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
         }
 
-        L.collect_garbage();
+        collectGarbage();
+
 #ifndef RUNNING_FRC_TESTS
         std::thread vision (visionThread);
         vision.detach();
@@ -178,7 +188,10 @@ public:
 
     //==========================================================================
 #if USE_LUA_ENGINE
-    void TeleopInit() override { luaInit(); }
+    void TeleopInit() override {
+        loadEngine ("teleop.bot");
+        luaPrepare();
+    }
     void TeleopPeriodic() override { luaPeriodic(); }
     void TeleopExit() override { luaExit(); }
 #else
@@ -194,7 +207,10 @@ public:
     }
 
     //==========================================================================
-    void TestInit() override { luaInit(); }
+    void TestInit() override {
+        loadEngine ("test.bot");
+        luaPrepare();
+    }
     void TestPeriodic() override { luaPeriodic(); }
     void TestExit() override { luaExit(); }
 
@@ -259,9 +275,9 @@ private:
     }
 
     //==========================================================================
-    void luaInit() {
+    void luaPrepare() {
         shooter.reset();
-        engine->test_init();
+        engine->prepare();
         lua::state().collect_garbage();
     }
 
@@ -272,12 +288,12 @@ private:
         }
 
         processParameters();
-        engine->test();
+        engine->run();
         shooter.process();
     }
 
     void luaExit() {
-        engine->test_exit();
+        engine->cleanup();
         lua::state().collect_garbage();
     }
 
