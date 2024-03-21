@@ -66,7 +66,7 @@ local lifter = {}
 ---Shooter specific settings
 local shooter = {
     ---Time to run intake motor (seconds)
-    intake_time = 1.2,
+    intake_time = 1.5,
 
     ---Time to warm up before shooting (seconds)
     warmup_time = 1.0,
@@ -75,10 +75,10 @@ local shooter = {
     shoot_time = 2.0,
 
     ---Power while shooting (volts)
-    shoot_power = 12.0,
+    shoot_power = 14.0,
 
     ---Power while intaking. Primary motor. (volts)
-    intake_primary_power = 6.0,
+    intake_primary_power = 8.0,
 
     ---Power while intaking. Secondary motor. (volts)
     intake_secondary_power = 3.0
