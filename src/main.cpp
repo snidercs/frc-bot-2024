@@ -30,6 +30,7 @@
 #include "sol/table.hpp"
 
 #define SIM_CAMERA_DISABLED 1
+#define USE_LUA_ENGINE      1
 
 namespace lua {
 extern void bind_gamepad (frc::XboxController*);
@@ -176,68 +177,26 @@ public:
     }
 
     //==========================================================================
-    void TeleopInit() override {
-        shooter.reset();
-        lua::state().collect_garbage();
-    }
+#if USE_LUA_ENGINE
+    void TeleopInit() override { luaInit(); }
+    void TeleopPeriodic() override { luaPeriodic(); }
+    void TeleopExit() override { luaExit(); }
+#else
+    void TeleopInit() override { cxxInit(); }
+    void TeleopPeriodic() override { cxxPeriodic(); }
+    void TeleopExit() override { cxxExit(); }
+#endif
 
-    void TeleopPeriodic() {
-        if (! checkControllerConnection()) {
-            driveDisabled();
-            return;
-        }
-
-        processParameters();
-
-        drivetrain.driveNormalized (params.getSpeed(), params.getAngularSpeed());
-
-        if (params.getButtonValue (Parameters::ButtonY))
-            lifter.moveUp();
-        else if (params.getButtonValue (Parameters::ButtonA))
-            lifter.moveDown();
-        else
-            lifter.stop();
-
-        if (gamepad.GetLeftBumperPressed()) {
-            shooter.load();
-        } else if (gamepad.GetRightBumperPressed()) {
-            shooter.shoot();
-        }
-
-        shooter.process();
+    //==========================================================================
+    void DisabledInit() override { lua::state().collect_garbage(); }
+    void DisabledPeriodic() override { driveDisabled(); }
+    void DisabledExit() override { /* noop */
     }
 
     //==========================================================================
-    void DisabledInit() override {
-        lua::state().collect_garbage();
-    }
-
-    void DisabledPeriodic() override {
-        driveDisabled();
-    }
-
-    //==========================================================================
-    void TestInit() override {
-        shooter.reset();
-        engine->test_init();
-        lua::state().collect_garbage();
-    }
-
-    void TestPeriodic() override {
-        if (! checkControllerConnection()) {
-            driveDisabled();
-            return;
-        }
-
-        processParameters();
-        engine->test();
-        shooter.process();
-    }
-
-    void TestExit() override {
-        engine->test_exit();
-        lua::state().collect_garbage();
-    }
+    void TestInit() override { luaInit(); }
+    void TestPeriodic() override { luaPeriodic(); }
+    void TestExit() override { luaExit(); }
 
     //==========================================================================
     void SimulationInit() override {
@@ -264,6 +223,65 @@ private:
     // keep track of controller connection state.
     bool gamepadConnected = false;
 
+    //==========================================================================
+    void cxxInit() {
+        shooter.reset();
+        lua::state().collect_garbage();
+    }
+
+    void cxxPeriodic() {
+        if (! checkControllerConnection()) {
+            driveDisabled();
+            return;
+        }
+
+        processParameters();
+
+        drivetrain.driveNormalized (params.getSpeed(), params.getAngularSpeed());
+
+        if (params.getButtonValue (Parameters::ButtonY))
+            lifter.moveUp();
+        else if (params.getButtonValue (Parameters::ButtonA))
+            lifter.moveDown();
+        else
+            lifter.stop();
+
+        if (gamepad.GetLeftBumperPressed()) {
+            shooter.load();
+        } else if (gamepad.GetRightBumperPressed()) {
+            shooter.shoot();
+        }
+
+        shooter.process();
+    }
+
+    void cxxExit() {
+    }
+
+    //==========================================================================
+    void luaInit() {
+        shooter.reset();
+        engine->test_init();
+        lua::state().collect_garbage();
+    }
+
+    void luaPeriodic() {
+        if (! checkControllerConnection()) {
+            driveDisabled();
+            return;
+        }
+
+        processParameters();
+        engine->test();
+        shooter.process();
+    }
+
+    void luaExit() {
+        engine->test_exit();
+        lua::state().collect_garbage();
+    }
+
+    //==========================================================================
     void driveDisabled() {
         drivetrain.drive (units::velocity::meters_per_second_t (0),
                           units::angular_velocity::radians_per_second_t (0));
