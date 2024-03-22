@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <regex>
 
 #include <frc/Filesystem.h>
 #include <frc/TimedRobot.h>
@@ -67,9 +68,9 @@ frc::Trajectory makeTrajectory (std::string_view symbol) {
 static void displayBanner() {
     // display engine and bot info.
     lua::print_version();
-    std::clog << "Engine running at " 
-        << lua::config::get ("engine", "period").as<double>() 
-        << " ms" << std::endl;
+    std::clog << "Engine running at "
+              << lua::config::get ("engine", "period").as<double>()
+              << " ms" << std::endl;
     std::clog.flush();
     std::cout.flush();
     std::cerr.flush();
@@ -91,6 +92,43 @@ static EnginePtr instantiateRobot (std::string_view botfile = "engine.bot") {
 }
 
 } // namespace detail
+
+//==============================================================================
+/** Choose which bot file to run in test mode. */
+class TestProgramChooser final {
+public:
+    TestProgramChooser() {
+        namespace fs = std::filesystem;
+        using Iter   = fs::directory_iterator;
+        const Iter end;
+        std::vector<std::string> files;
+        try {
+            auto path = fs::path (detail::findLuaDir());
+            for (Iter iter { path }; iter != end; iter++) {
+                const std::string ext = iter->path().extension().string();
+                if (fs::is_regular_file (*iter)) {
+                    if (std::regex_match (ext, std::regex ("\\.(?:bot)"))) {
+                        files.push_back ((*iter).path().filename().string());
+                    }
+                }
+            }
+            chooser.SetDefaultOption (defaultTest, defaultTest);
+            for (const auto& f : files)
+                chooser.AddOption (f, f);
+            frc::SmartDashboard::PutData ("Test Program", &chooser);
+        } catch (...) {
+            _valid = false;
+        }
+    }
+
+    std::string get() const { return valid() ? chooser.GetSelected() : defaultTest; }
+    bool valid() const noexcept { return _valid; }
+
+private:
+    frc::SendableChooser<std::string> chooser;
+    bool _valid { true };
+    const std::string defaultTest { "test_v1.bot" };
+};
 
 //==============================================================================
 class RobotMain : public frc::TimedRobot {
@@ -122,15 +160,16 @@ public:
         lua::state().collect_garbage();
     }
 
-    // load a bot file by name e.g. engine.bot or engine_test.bot
+    // Load a bot file by name e.g. engine.bot or engine_test.bot
+    // will throw a runtime error if the loaded engine is in error state.
     void loadEngine (std::string_view bot = "engine.bot") {
         auto newEngine = detail::instantiateRobot (bot);
-
         if (newEngine != nullptr) {
-            newEngine->init();
             if (newEngine->have_error()) {
-                throw std::runtime_error (engine->error().data());
+                throw std::runtime_error (newEngine->error());
             }
+
+            newEngine->init();
             std::swap (engine, newEngine);
             newEngine.reset();
             std::clog << "[bot] program loaded: " << bot << std::endl;
@@ -140,6 +179,8 @@ public:
     }
 
     void RobotInit() override {
+        testProgram = std::make_unique<TestProgramChooser>();
+
         try {
             auto matchPos = lua::config::match_start_position();
             trajectory    = detail::makeTrajectory (matchPos);
@@ -211,7 +252,7 @@ public:
 
     //==========================================================================
     void TestInit() override {
-        loadEngine ("test.bot");
+        loadEngine (testProgram->get());
         luaPrepare();
     }
     void TestPeriodic() override { luaPeriodic(); }
@@ -241,6 +282,8 @@ private:
 
     // keep track of controller connection state.
     bool gamepadConnected = false;
+
+    std::unique_ptr<TestProgramChooser> testProgram;
 
     //==========================================================================
     void cxxInit() {

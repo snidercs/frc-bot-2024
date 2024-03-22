@@ -1,4 +1,5 @@
-local config  = require('config')
+---Main bot program.  Runs when in teleop mode.
+
 local gamepad = require('gamepad')
 local params  = require('params')
 local robot   = require('robot')
