@@ -30,16 +30,28 @@ public:
                 self->_error   = err.what();
                 return self;
             }
-
+            
+            {
+                sol::object obj = res;
+                if (obj.get_type() != sol::type::function) {
+                    self->_error = "Did not get a factory function";
+                    return self;
+                }
+            }
+            
             Factory factory = res;
-            self->M         = factory();
+            sol::protected_function_result pr = factory();
+            if (! pr.valid() || pr.get_type() != sol::type::table) {
+                self->_error = "Did not get an engine descriptor table";
+                return self;
+            }
 
-            self->f_init = self->M["init"];
+            self->M = pr;
 
 #define ASSIGN_F(name)                                    \
     if (self->M[#name].get_type() == sol::type::function) \
         self->f_##name = self->M[#name];
-
+            ASSIGN_F (init)
             ASSIGN_F (prepare)
             ASSIGN_F (run)
             ASSIGN_F (cleanup)
@@ -52,7 +64,7 @@ public:
         return self;
     }
 
-    const std::string_view error() const noexcept { return _error; }
+    const std::string error() const noexcept { return _error; }
     bool have_error() const noexcept { return ! _error.empty(); }
 
     bool init() {
