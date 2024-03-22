@@ -186,6 +186,7 @@ private:
 
 //==============================================================================
 #define USE_LIFTER_ENCODERS 0
+
 class Lifter {
 public:
     Lifter();
@@ -197,17 +198,18 @@ public:
     void moveUp();
     void moveDown();
     void stop();
-    void resetEncoders();
-
+    
 private:
 #if USE_LIFTER_ENCODERS
-    std::unique_ptr<rev::SparkAbsoluteEncoder> encL, encR;
+    using EncoderType = rev::SparkRelativeEncoder;
+    std::unique_ptr<EncoderType> encL, encR;
 #endif
     rev::CANSparkMax leftArm { lua::config::port ("arm_left"), MotorType::kBrushless };
     rev::CANSparkMax rightArm { lua::config::port ("arm_right"), MotorType::kBrushless };
     std::array<rev::CANSparkMax*, 2> motors { &leftArm, &rightArm };
 
     void maybeInstantiateEncoders();
+    void resetEncoders();
 };
 
 //==============================================================================

@@ -12,7 +12,8 @@ void Lifter::moveUp() {
     for (auto m : motors)
         m->SetVoltage (units::volt_t { 0.3 * 12.0 });
 #if USE_LIFTER_ENCODERS
-    std::clog << "pos: " << encL->GetPosition() << std::endl;
+    std::clog << "[lifter] pos: " << encL->GetPosition()
+        << " - " << encR->GetPosition() << std::endl;
 #endif
 }
 
@@ -20,6 +21,10 @@ void Lifter::moveDown() {
     maybeInstantiateEncoders();
     for (auto m : motors)
         m->SetVoltage (units::volt_t { 0.3 * -12.0 });
+#if USE_LIFTER_ENCODERS
+    std::clog << "[lifter] pos: " << encL->GetPosition()
+        << " - " << encR->GetPosition() << std::endl;
+#endif
 }
 
 void Lifter::stop() {
@@ -33,11 +38,15 @@ void Lifter::resetEncoders() {
     static bool hasInit = false;
     if (hasInit)
         return;
-    std::array<rev::SparkAbsoluteEncoder*, 2> encs { encL.get(), encR.get() };
-    constexpr auto wheelRadius = 0.1;
+    std::array<EncoderType*, 2> encs { encL.get(), encR.get() };
+    [[maybe_unused]] constexpr auto wheelRadius = 0.1;
 
     for (auto e : encs) {
         e->SetPositionConversionFactor (2 * std::numbers::pi * wheelRadius / 4096);
+        e->SetAverageDepth (8);
+        e->SetMeasurementPeriod (15);
+        e->SetPosition(0);
+        // e->SetInverted (false);
     }
 
     hasInit = true;
@@ -46,11 +55,12 @@ void Lifter::resetEncoders() {
 
 void Lifter::maybeInstantiateEncoders() {
 #if USE_LIFTER_ENCODERS
-
-    if (encL == nullptr)
-        encL = std::make_unique<rev::SparkAbsoluteEncoder> (leftArm.GetAbsoluteEncoder());
-    if (encR == nullptr)
-        encR = std::make_unique<rev::SparkAbsoluteEncoder> (rightArm.GetAbsoluteEncoder());
-    resetEncoders();
+    if (encL == nullptr || encR == nullptr) {
+        encL = std::make_unique<EncoderType> (
+            leftArm.GetEncoder (EncoderType::Type::kHallSensor, 42));
+        encR = std::make_unique<EncoderType> (
+            rightArm.GetEncoder (EncoderType::Type::kHallSensor, 42));
+        resetEncoders();
+    }
 #endif
 }
