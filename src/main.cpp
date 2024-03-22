@@ -67,6 +67,9 @@ frc::Trajectory makeTrajectory (std::string_view symbol) {
 static void displayBanner() {
     // display engine and bot info.
     lua::print_version();
+    std::clog << "Engine running at " 
+        << lua::config::get ("engine", "period").as<double>() 
+        << " ms" << std::endl;
     std::clog.flush();
     std::cout.flush();
     std::cerr.flush();
