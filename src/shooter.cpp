@@ -67,6 +67,11 @@ void Shooter::shoot() {
     // clang-format on
 }
 
+// getting rid of the middle man.
+void Shooter::new_intake(){
+    _state = Loading;
+}
+
 void Shooter::stop() {
     _state = Idle;
 }
@@ -97,7 +102,7 @@ void Shooter::process() noexcept {
         }
     }
 
-    if (! isIdle() && --tick <= 0) {
+    if (isShooting() && --tick <= 0) {
         // shoot load seq. finished. transition back to Idle.
         _state = Idle;
     }
