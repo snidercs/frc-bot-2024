@@ -129,6 +129,7 @@ void Shooter::bind (Shooter* self) {
         M["loading"]  = [self]() { return self->isLoading(); };
         M["ready"]    = [self]() { return self->isIdle(); };
         M["intake"]   = [self]() { self->load(); };
+        M["new_intake"]   = [self]() { self->new_intake(); };
         M["shoot"]    = [self]() { self->shoot(); };
         M["stop"]     = [self]() { self->stop(); };
 

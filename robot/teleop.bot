@@ -15,8 +15,10 @@ local function update_arms()
 end
 
 local function update_shooter()
-    if gamepad.left_bumper_pressed() then
-        robot.intake()
+    if gamepad.left_bumper() then
+        robot.new_intake()
+    elseif gamepad.left_bumper_released() then
+        robot.stop_shooter()
     elseif gamepad.right_bumper_pressed() then
         robot.shoot()
     end
