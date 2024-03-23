@@ -3,12 +3,17 @@
 local gamepad = require('gamepad')
 local params  = require('params')
 local robot   = require('robot')
+local has_gone_up = false
 
 local function update_arms()
     if gamepad.Y() then
         robot.raise_arms()
+        has_gone_up = true
     elseif gamepad.A() then
-        robot.lower_arms()
+        if has_gone_up then
+
+            robot.lower_arms()
+        end
     else
         robot.stop_lifter();
     end
