@@ -239,6 +239,9 @@ public:
     /** Prepare motors to load if not loading or shooting. */
     void load();
 
+    /** Plainfield add, MC*/
+    void new_intake();
+
     /** Prepare motors to shoot if not already loading or shooting. */
     void shoot();
 
