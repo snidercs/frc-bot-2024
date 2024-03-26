@@ -1,0 +1,38 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/vendordeps/sdk/linux64/include/luajit-2.1/**",
+                "${workspaceFolder}/src/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64",
+            "configurationProvider": "vscode-wpilib",
+            "mergeConfigurations": true
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/vendordeps/sdk/msvc/include/luajit-2.1/**",
+                "${workspaceFolder}/src/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.19041.0",
+            "compilerPath": "cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "windows-msvc-x64",
+            "configurationProvider": "vscode-wpilib",
+            "mergeConfigurations": true
+        }
+    ],
+    "version": 4
+}

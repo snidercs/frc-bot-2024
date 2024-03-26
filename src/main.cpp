@@ -102,16 +102,18 @@ public:
         using Iter   = fs::directory_iterator;
         const Iter end;
         std::vector<std::string> files;
+
         try {
             auto path = fs::path (detail::findLuaDir());
             for (Iter iter { path }; iter != end; iter++) {
+                if (! fs::is_regular_file (*iter))
+                    continue;
+
                 const std::string ext = iter->path().extension().string();
-                if (fs::is_regular_file (*iter)) {
-                    if (std::regex_match (ext, std::regex ("\\.(?:bot)"))) {
-                        files.push_back ((*iter).path().filename().string());
-                    }
-                }
+                if (std::regex_match (ext, std::regex ("\\.(?:bot)")))
+                    files.push_back ((*iter).path().filename().string());
             }
+
             chooser.SetDefaultOption (defaultTest, defaultTest);
             for (const auto& f : files)
                 chooser.AddOption (f, f);
