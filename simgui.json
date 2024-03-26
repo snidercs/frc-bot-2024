@@ -26,7 +26,8 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Auto Modes": "String Chooser",
-      "/SmartDashboard/Field": "Field2d"
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Test Program": "String Chooser"
     },
     "windows": {
       "/FMSInfo": {
@@ -85,7 +86,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 153,
+          "height": 0,
           "series": [
             {
               "color": [
@@ -118,7 +119,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 375,
+          "height": 433,
           "series": [
             {
               "color": [

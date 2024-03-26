@@ -40,12 +40,10 @@ void Shooter::reset() {
     // clang-format on
 }
 
-void Shooter::load() {
+void Shooter::intake() {
     if (_state != Idle)
         return;
-    _state      = Loading;
-    totalTimeMs = intakeTimeMs;
-    tick        = std::max (periodMs, intakeTimeMs / periodMs);
+    _state = Loading;
 }
 
 void Shooter::shoot() {
@@ -97,7 +95,7 @@ void Shooter::process() noexcept {
         }
     }
 
-    if (! isIdle() && --tick <= 0) {
+    if (isShooting() && --tick <= 0) {
         // shoot load seq. finished. transition back to Idle.
         _state = Idle;
     }

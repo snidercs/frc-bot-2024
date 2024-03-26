@@ -13,7 +13,7 @@ void Lifter::moveUp() {
         m->SetVoltage (units::volt_t { 0.3 * 12.0 });
 #if USE_LIFTER_ENCODERS
     std::clog << "[lifter] pos: " << encL->GetPosition()
-        << " - " << encR->GetPosition() << std::endl;
+              << " - " << encR->GetPosition() << std::endl;
 #endif
 }
 
@@ -23,7 +23,7 @@ void Lifter::moveDown() {
         m->SetVoltage (units::volt_t { 0.3 * -12.0 });
 #if USE_LIFTER_ENCODERS
     std::clog << "[lifter] pos: " << encL->GetPosition()
-        << " - " << encR->GetPosition() << std::endl;
+              << " - " << encR->GetPosition() << std::endl;
 #endif
 }
 
@@ -45,7 +45,7 @@ void Lifter::resetEncoders() {
         e->SetPositionConversionFactor (2 * std::numbers::pi * wheelRadius / 4096);
         e->SetAverageDepth (8);
         e->SetMeasurementPeriod (15);
-        e->SetPosition(0);
+        e->SetPosition (0);
         // e->SetInverted (false);
     }
 
