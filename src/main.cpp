@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
-#include <string>
 #include <regex>
+#include <string>
 
 #include <frc/Filesystem.h>
 #include <frc/TimedRobot.h>
@@ -324,8 +324,10 @@ private:
         else
             lifter.stop();
 
-        if (gamepad.GetLeftBumperPressed()) {
-            shooter.load();
+        if (gamepad.GetLeftBumper()) {
+            shooter.intake();
+        } else if (gamepad.GetLeftBumperReleased()) {
+            shooter.stop();
         } else if (gamepad.GetRightBumperPressed()) {
             shooter.shoot();
         }
