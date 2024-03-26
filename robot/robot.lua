@@ -45,10 +45,6 @@ local function intake()
     return shooter.intake()
 end
 
-local function new_intake()
-    return shooter.new_intake()
-end
-
 --- Shoots a note if not loading and not already shooting.
 local function shoot()
     return shooter.shoot()
@@ -69,7 +65,6 @@ local M = {
     shoot          = shoot,
     stop_lifter    = stop_lifter,
     stop_shooter   = stop_shooter,
-    new_intake     = new_intake
 }
 
 return M
