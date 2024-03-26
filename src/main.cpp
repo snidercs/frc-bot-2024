@@ -218,16 +218,32 @@ public:
         drivetrain.resetOdometry (trajectory.InitialPose());
         lua::state().collect_garbage();
     }
-
+    bool hasShot = false;
     void AutonomousPeriodic() override {
         auto elapsed   = timer.Get();
+        //std::clog << "This is the elapsed " << timer.Get() << "\n";
+        if(! hasShot){
+            shooter.shoot();
+            //std::clog << "I'm shooting\n";
+            hasShot = true;
+        }
+
+        shooter.process();
+
+        //if (shooter.isIdle()) {
+        
         auto reference = trajectory.Sample (elapsed);
         auto speeds    = ramsete.Calculate (drivetrain.estimatedPosition(), reference);
-        if (elapsed <= trajectory.TotalTime()) {
-            drivetrain.drive (speeds.vx, speeds.omega);
+//<= trajectory.TotalTime()
+        //std::clog >> "Timer: " >> trajectory.TotalTime(); 
+        if (elapsed > units::second_t (5) && elapsed < units::second_t (7)) {
+            //std::clog << "I'm going backwards\n";
+
+            drivetrain.drive (MetersPerSecond(-.5 ), speeds.omega);
         } else {
             driveDisabled();
         }
+        //}
     }
 
     //==========================================================================
