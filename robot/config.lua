@@ -67,7 +67,7 @@ local lifter = {}
 ---Shooter specific settings
 local shooter = {
     ---Time to run intake motor (seconds)
-    intake_time = 1.5,
+    intake_time = 3.0,
 
     ---Time to warm up before shooting (seconds)
     warmup_time = 1.0,
@@ -79,10 +79,10 @@ local shooter = {
     shoot_power = 14.0,
 
     ---Power while intaking. Primary motor. (volts)
-    intake_primary_power = 8.0,
+    intake_primary_power = 11.0,
 
     ---Power while intaking. Secondary motor. (volts)
-    intake_secondary_power = 3.0
+    intake_secondary_power = 11.0
 }
 
 ---Ports, channels, indexes used in motor controllers, gamepads, etc...

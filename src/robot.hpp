@@ -198,7 +198,7 @@ public:
     void moveUp();
     void moveDown();
     void stop();
-    
+
 private:
 #if USE_LIFTER_ENCODERS
     using EncoderType = rev::SparkRelativeEncoder;
@@ -236,11 +236,8 @@ public:
     /** Reset to default values. */
     void reset();
 
-    /** Prepare motors to load if not loading or shooting. */
-    void load();
-
-    /** Plainfield add, MC*/
-    void new_intake();
+    /** Run motors for intake if not loading or shooting. */
+    void intake();
 
     /** Prepare motors to shoot if not already loading or shooting. */
     void shoot();
