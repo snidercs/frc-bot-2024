@@ -30,7 +30,7 @@ public:
                 self->_error   = err.what();
                 return self;
             }
-            
+
             {
                 sol::object obj = res;
                 if (obj.get_type() != sol::type::function) {
@@ -38,8 +38,8 @@ public:
                     return self;
                 }
             }
-            
-            Factory factory = res;
+
+            Factory factory                   = res;
             sol::protected_function_result pr = factory();
             if (! pr.valid() || pr.get_type() != sol::type::table) {
                 self->_error = "Did not get an engine descriptor table";
