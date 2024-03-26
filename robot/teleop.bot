@@ -21,7 +21,7 @@ end
 
 local function update_shooter()
     if gamepad.left_bumper() then
-        robot.new_intake()
+        robot.intake()
     elseif gamepad.left_bumper_released() then
         robot.stop_shooter()
     elseif gamepad.right_bumper_pressed() then
@@ -64,6 +64,5 @@ return {
     init = init,
     prepare = teleop_prepare,
     run = teleop_run,
-    release = test_release,
     cleanup = teleop_cleanup
 }

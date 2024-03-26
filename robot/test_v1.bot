@@ -1,4 +1,5 @@
-local config  = require('config')
+---Main bot program.  Runs when in teleop mode.
+
 local gamepad = require('gamepad')
 local params  = require('params')
 local robot   = require('robot')
@@ -14,8 +15,10 @@ local function update_arms()
 end
 
 local function update_shooter()
-    if gamepad.left_bumper_pressed() then
+    if gamepad.left_bumper() then
         robot.intake()
+    elseif gamepad.left_bumper_released() then
+        robot.stop_shooter()
     elseif gamepad.right_bumper_pressed() then
         robot.shoot()
     end
@@ -23,8 +26,8 @@ end
 
 --------------------------------------------------------------------------------
 local function init()
-    local team = config.get('team_name')
-    print(team .. " ready to test.")
+    -- local team = config.get('team_name')
+    -- print(team .. " ready to roll")
 end
 
 --------------------------------------------------------------------------------

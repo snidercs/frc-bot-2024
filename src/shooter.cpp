@@ -40,12 +40,10 @@ void Shooter::reset() {
     // clang-format on
 }
 
-void Shooter::load() {
+void Shooter::intake() {
     if (_state != Idle)
         return;
-    _state      = Loading;
-    totalTimeMs = intakeTimeMs;
-    tick        = std::max (periodMs, intakeTimeMs / periodMs);
+    _state = Loading;
 }
 
 void Shooter::shoot() {
@@ -65,11 +63,6 @@ void Shooter::shoot() {
         << " ticks=" << tick
         << " delayTicks=" << delayTicks);
     // clang-format on
-}
-
-// getting rid of the middle man.
-void Shooter::new_intake(){
-    _state = Loading;
 }
 
 void Shooter::stop() {
