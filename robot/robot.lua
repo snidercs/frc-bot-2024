@@ -64,7 +64,7 @@ local M = {
     shooting       = shooting,
     shoot          = shoot,
     stop_lifter    = stop_lifter,
-    stop_shooter   = stop_shooter
+    stop_shooter   = stop_shooter,
 }
 
 return M

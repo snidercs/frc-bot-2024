@@ -25,6 +25,7 @@ local impl = cxx.gamepad
 local raw_axis = impl.raw_axis
 local raw_button = impl.raw_button
 local raw_button_pressed = impl.raw_button_pressed
+local raw_button_released = impl.raw_button_released
 
 -- Copy constants from c++ bindings
 for k, v in pairs(impl) do
@@ -80,6 +81,10 @@ end
 ---@return boolean
 function M.left_bumper_pressed()
     return raw_button_pressed(M.BUMPER_LEFT)
+end
+
+function M.left_bumper_released()
+    return raw_button_released(M.BUMPER_LEFT)
 end
 
 ---Returns true if the left bumper is currently held down.
