@@ -220,32 +220,29 @@ public:
         drivetrain.resetOdometry (trajectory.InitialPose());
         lua::state().collect_garbage();
     }
-    bool hasShot = false;
+    bool hasStartedMoving = false;
     void AutonomousPeriodic() override {
-        auto elapsed   = timer.Get();
-        //std::clog << "This is the elapsed " << timer.Get() << "\n";
+        // This is so you only shoot once. 
         if(! hasShot){
             shooter.shoot();
-            //std::clog << "I'm shooting\n";
+            // Restart the timer so we can count how many seconds have passed since shooting. 
+            std::clog << "Shooting\n";
+            timer.Restart();
             hasShot = true;
+
         }
-
         shooter.process();
-
-        //if (shooter.isIdle()) {
-        
+        auto elapsed   = timer.Get();
         auto reference = trajectory.Sample (elapsed);
         auto speeds    = ramsete.Calculate (drivetrain.estimatedPosition(), reference);
-//<= trajectory.TotalTime()
-        //std::clog >> "Timer: " >> trajectory.TotalTime(); 
-        if (elapsed > units::second_t (5) && elapsed < units::second_t (7)) {
-            //std::clog << "I'm going backwards\n";
-
-            drivetrain.drive (MetersPerSecond(-.5 ), speeds.omega);
+//trajectory.TotalTime()
+        if (units::second_t(2) < elapsed && elapsed < units::second_t(5) ) {
+            std::clog << "Drive bakcward\n";
+            drivetrain.drive (units::meters_per_second_t(-.5) , speeds.omega);
+            hasStartedMoving = true;
         } else {
             driveDisabled();
         }
-        //}
     }
 
     //==========================================================================
@@ -298,8 +295,11 @@ private:
     frc::RamseteController ramsete;
     frc::Timer timer;
 
-    // keep track of controller connection state.
+    // Keep track of controller connection state.
     bool gamepadConnected = false;
+
+    // Keep track of state of if we have already shot during auto. 
+    bool hasShot = false;
 
     std::unique_ptr<TestProgramChooser> testProgram;
 
