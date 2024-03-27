@@ -227,7 +227,7 @@ public:
             hasShot = true;
         }
         shooter.process();
-
+        driveDisabled();
         if (shooter.isShooting()){
             return;
         }
@@ -241,8 +241,8 @@ public:
         auto reference = trajectory.Sample (elapsed);
         auto speeds    = ramsete.Calculate (drivetrain.estimatedPosition(), reference);
 
-        if (units::second_t(2) < elapsed && elapsed < units::second_t(5) ) {
-            drivetrain.drive (units::meters_per_second_t(-.5) , speeds.omega);
+        if (elapsed <= trajectory.TotalTime()) {
+            drivetrain.drive (-speeds.vx, speeds.omega);
         } else {
             driveDisabled();
         }
