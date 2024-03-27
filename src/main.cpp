@@ -220,26 +220,29 @@ public:
         drivetrain.resetOdometry (trajectory.InitialPose());
         lua::state().collect_garbage();
     }
-    bool hasStartedMoving = false;
     void AutonomousPeriodic() override {
         // This is so you only shoot once. 
         if(! hasShot){
             shooter.shoot();
-            // Restart the timer so we can count how many seconds have passed since shooting. 
-            std::clog << "Shooting\n";
-            timer.Restart();
             hasShot = true;
-
         }
         shooter.process();
+
+        if (shooter.isShooting()){
+            return;
+        }
+        // then, you can 
+        if (! hasStartedMoving) {
+            hasStartedMoving = true;
+            // Restart the timer so we can count how many seconds have passed since shooting. 
+            timer.Restart();
+        }
         auto elapsed   = timer.Get();
         auto reference = trajectory.Sample (elapsed);
         auto speeds    = ramsete.Calculate (drivetrain.estimatedPosition(), reference);
-//trajectory.TotalTime()
+
         if (units::second_t(2) < elapsed && elapsed < units::second_t(5) ) {
-            std::clog << "Drive bakcward\n";
             drivetrain.drive (units::meters_per_second_t(-.5) , speeds.omega);
-            hasStartedMoving = true;
         } else {
             driveDisabled();
         }
@@ -300,6 +303,9 @@ private:
 
     // Keep track of state of if we have already shot during auto. 
     bool hasShot = false;
+
+    // Keep track of state of if bot has started movement. 
+    bool hasStartedMoving = false;
 
     std::unique_ptr<TestProgramChooser> testProgram;
 
