@@ -227,8 +227,9 @@ public:
             hasShot = true;
         }
         shooter.process();
-        driveDisabled();
+        
         if (shooter.isShooting()){
+            driveDisabled();
             return;
         }
         // then, you can 
