@@ -54,6 +54,18 @@ frc::TrajectoryConfig makeTrajectoryConfig (sol::table tbl) {
         units::meters_per_second_squared_t (tbl[2].get<double>()));
 }
 
+static bool trajectoryShouldShoot (std::string_view symbol, bool otherwise = true) {
+    sol::function trajectory = lua::state()["config"]["trajectory"];
+    sol::table tbl           = trajectory (symbol);
+    return tbl.get_or ("shoot", otherwise);
+}
+
+static bool trajectoryIsReverse (std::string_view symbol, bool otherwise = true) {
+    sol::function trajectory = lua::state()["config"]["trajectory"];
+    sol::table tbl           = trajectory (symbol);
+    return tbl.get_or ("reverse", otherwise);
+}
+
 // compose a trajectory from lua configuration.
 frc::Trajectory makeTrajectory (std::string_view symbol) {
     sol::function trajectory = lua::state()["config"]["trajectory"];
@@ -133,72 +145,95 @@ private:
 };
 
 //==============================================================================
+/** Auto mode settings to use during operation. see config.lua */
+struct AutoModeInfo {
+    std::string name;
+    bool reverse { true };
+    bool shoot { false };
+    frc::Trajectory trajectory;
+};
+
+/** Choose which auto mode to use in Autonomous. */
+class AutoModeChooser final {
+public:
+    AutoModeChooser() {
+        // setup the dashboard chooser.
+        for (const auto& m : lua::config::trajectory_names())
+            chooser.AddOption (m, m);
+        chooser.SetDefaultOption (defaultMatchStart, defaultMatchStart);
+        frc::SmartDashboard::PutData ("Auto Mode", &chooser);
+    }
+
+    /**
+     * Returns an AutoModeInfo representation of this chooser.
+     * @returns the AutoModeInfo structure
+    */
+    AutoModeInfo info() const {
+        AutoModeInfo info;
+        info.name       = get();
+        info.shoot      = detail::trajectoryShouldShoot (info.name, info.shoot);
+        info.reverse    = detail::trajectoryIsReverse (info.name, info.reverse);
+        info.trajectory = detail::makeTrajectory (info.name);
+        return info;
+    }
+
+    /** Returns the auto mode to use by key identifier. */
+    std::string get() const {
+        auto val = chooser.GetSelected();
+        if (val.empty())
+            val = defaultMatchStart;
+        return val;
+    }
+
+    /** 
+     * Returns true if the shot should be fired before moving. The default is 
+     * true when the value can't be read from the dashboard.
+     */
+    constexpr bool shouldShoot() const noexcept { return _shouldShoot; }
+
+    /**
+     * Returns true if the bot should move in reverse.
+     */
+    constexpr bool reverse() const noexcept { return _reverse; }
+
+private:
+    frc::SendableChooser<std::string> chooser;
+    const std::string defaultMatchStart { lua::config::match_start_position() };
+    bool _shouldShoot { true };
+    bool _reverse { true };
+};
+
+//==============================================================================
 class RobotMain : public frc::TimedRobot {
 public:
     RobotMain()
         : frc::TimedRobot (units::millisecond_t (
             lua::config::get ("engine", "period").as<double>())) {
-        detail::displayBanner();
         // bind instances to Lua
         Parameters::bind (&params);
         Shooter::bind (&shooter);
         Lifter::bind (&lifter);
         Drivetrain::bind (&drivetrain);
         lua::bind_gamepad (&gamepad);
+
+        detail::displayBanner();
     }
 
     ~RobotMain() {
+        engine.reset();
+
         // release instances from lua
         Parameters::bind (nullptr);
         Shooter::bind (nullptr);
         Lifter::bind (nullptr);
         Drivetrain::bind (nullptr);
         lua::bind_gamepad (nullptr);
-
-        engine.reset();
-    }
-
-    void collectGarbage() {
-        lua::state().collect_garbage();
-    }
-
-    // Load a bot file by name e.g. engine.bot or engine_test.bot
-    // will throw a runtime error if the loaded engine is in error state.
-    void loadEngine (std::string_view bot = "engine.bot") {
-        auto newEngine = detail::instantiateRobot (bot);
-        if (newEngine != nullptr) {
-            if (newEngine->have_error()) {
-                throw std::runtime_error (newEngine->error());
-            }
-
-            newEngine->init();
-            std::swap (engine, newEngine);
-            newEngine.reset();
-            std::clog << "[bot] program loaded: " << bot << std::endl;
-        } else {
-            throw std::runtime_error ("Failed to instantiate Lua engine");
-        }
     }
 
     void RobotInit() override {
         testProgram = std::make_unique<TestProgramChooser>();
-
-        try {
-            auto matchPos = lua::config::match_start_position();
-            trajectory    = detail::makeTrajectory (matchPos);
-        } catch (const std::exception& e) {
-            std::cerr
-                << "[bot] error: lua trajectory could not be parsed." << std::endl
-                << "[bot] what: " << e.what() << std::endl
-                << "[bot] loading fallback trajectory" << std::endl;
-
-            trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
-                frc::Pose2d { 2_m, 2_m, 0_rad },
-                {},
-                frc::Pose2d { 2.5_m, 2_m, 0_rad },
-                frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
-        }
-
+        autoMode    = std::make_unique<AutoModeChooser>();
+        reloadTrajectory();
         collectGarbage();
 
 #ifndef RUNNING_FRC_TESTS
@@ -207,7 +242,7 @@ public:
 #endif
     }
 
-    /** Called every 20 ms, no matter the mode. This RUNS AFTER the mode 
+    /** Called periodically no matter the mode. This RUNS AFTER the mode 
         specific periodic functions, but before LiveWindow and SmartDashboard 
         integrated updating.
      */
@@ -216,37 +251,50 @@ public:
     }
 
     void AutonomousInit() override {
+        reloadTrajectory();
+
         timer.Restart();
-        drivetrain.resetOdometry (trajectory.InitialPose());
-        lua::state().collect_garbage();
+        drivetrain.resetOdometry (autoInfo.trajectory.InitialPose());
+        collectGarbage();
     }
+
     void AutonomousPeriodic() override {
-        // This is so you only shoot once. 
-        if(! hasShot){
+        // This is so you only shoot once.
+        if (! hasShot) {
             shooter.shoot();
             hasShot = true;
         }
         shooter.process();
-        
-        if (shooter.isShooting()){
+
+        if (shooter.isShooting()) {
             driveDisabled();
             return;
         }
-        // then, you can 
+
+        // begin motion.
         if (! hasStartedMoving) {
             hasStartedMoving = true;
-            // Restart the timer so we can count how many seconds have passed since shooting. 
+            // Restart the timer so we can count how many seconds have passed since shooting.
             timer.Restart();
         }
-        auto elapsed   = timer.Get();
-        auto reference = trajectory.Sample (elapsed);
-        auto speeds    = ramsete.Calculate (drivetrain.estimatedPosition(), reference);
+
+        const auto& trajectory = autoInfo.trajectory;
+        auto elapsed           = timer.Get();
+        auto reference         = trajectory.Sample (elapsed);
+        auto speeds            = ramsete.Calculate (drivetrain.estimatedPosition(), reference);
+
+        if (autoInfo.reverse)
+            speeds.vx *= -1.0;
 
         if (elapsed <= trajectory.TotalTime()) {
-            drivetrain.drive (-speeds.vx, speeds.omega);
+            drivetrain.drive (speeds.vx, speeds.omega);
         } else {
             driveDisabled();
         }
+    }
+
+    void AutonomousExit() override {
+        collectGarbage();
     }
 
     //==========================================================================
@@ -264,10 +312,9 @@ public:
 #endif
 
     //==========================================================================
-    void DisabledInit() override { lua::state().collect_garbage(); }
+    void DisabledInit() override { collectGarbage(); }
     void DisabledPeriodic() override { driveDisabled(); }
-    void DisabledExit() override { /* noop */
-    }
+    void DisabledExit() override { collectGarbage(); }
 
     //==========================================================================
     void TestInit() override {
@@ -295,25 +342,65 @@ private:
     Lifter lifter;
     Shooter shooter;
 
-    frc::Trajectory trajectory;
-    frc::RamseteController ramsete;
-    frc::Timer timer;
-
-    // Keep track of controller connection state.
-    bool gamepadConnected = false;
-
-    // Keep track of state of if we have already shot during auto. 
-    bool hasShot = false;
-
-    // Keep track of state of if bot has started movement. 
-    bool hasStartedMoving = false;
+    bool gamepadConnected = false; // Track controller connection state.
 
     std::unique_ptr<TestProgramChooser> testProgram;
+
+    std::unique_ptr<AutoModeChooser> autoMode;
+    AutoModeInfo autoInfo;
+    frc::RamseteController ramsete;
+    frc::Timer timer;
+    bool hasShot          = false; // Track auto bot shoot started
+    bool hasStartedMoving = false; // track auto bot movement started
+
+    //==========================================================================
+    void collectGarbage() {
+        lua::state().collect_garbage();
+    }
+
+    // Load a bot file by name e.g. engine.bot or engine_test.bot
+    // will throw a runtime error if the loaded engine is in error state.
+    void loadEngine (std::string_view bot = "engine.bot") {
+        auto newEngine = detail::instantiateRobot (bot);
+        if (newEngine != nullptr) {
+            if (newEngine->have_error()) {
+                throw std::runtime_error (newEngine->error());
+            }
+
+            newEngine->init();
+            std::swap (engine, newEngine);
+            newEngine.reset();
+            std::clog << "[bot] program loaded: " << bot << std::endl;
+        } else {
+            throw std::runtime_error ("Failed to instantiate Lua engine");
+        }
+    }
+
+    // reloads/resets the currently selected AutoMode info.
+    void reloadTrajectory() {
+        try {
+            autoInfo         = autoMode->info();
+            hasShot          = ! detail::trajectoryShouldShoot (autoMode->get());
+            hasStartedMoving = false;
+        } catch (const std::exception& e) {
+            std::cerr
+                << "[bot] error: lua trajectory could not be parsed." << std::endl
+                << "[bot] what: " << e.what() << std::endl
+                << "[bot] loading fallback trajectory" << std::endl;
+            autoInfo            = {};
+            autoInfo.name       = "Fallback";
+            autoInfo.trajectory = frc::TrajectoryGenerator::GenerateTrajectory (
+                frc::Pose2d { 2_m, 2_m, 0_rad },
+                {},
+                frc::Pose2d { 2.5_m, 2_m, 0_rad },
+                frc::TrajectoryConfig (0.75_mps, 2_mps_sq));
+        }
+    }
 
     //==========================================================================
     void cxxInit() {
         shooter.reset();
-        lua::state().collect_garbage();
+        collectGarbage();
     }
 
     void cxxPeriodic() {
@@ -351,7 +438,7 @@ private:
     void luaPrepare() {
         shooter.reset();
         engine->prepare();
-        lua::state().collect_garbage();
+        collectGarbage();
     }
 
     void luaPeriodic() {
@@ -367,7 +454,7 @@ private:
 
     void luaExit() {
         engine->cleanup();
-        lua::state().collect_garbage();
+        collectGarbage();
     }
 
     //==========================================================================
