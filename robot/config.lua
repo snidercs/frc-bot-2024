@@ -21,7 +21,8 @@ local general = {
     team_number          = 9431,
 
     -- Physical starting position (left, middle, right)
-    match_start_position = "left"
+    -- This option is secondary to the Dashboard selection.
+    match_start_position = "Left"
 }
 
 ---The Gamepad
@@ -105,32 +106,58 @@ local ports = {
 
 ---Trajectories to use for each match starting position.
 local trajectories = {
-    left = {
+    ["Left"] = {
+        shoot     = false,
+        reverse   = true,
         start     = { 2.0, 2.0, 0.0 }, -- x, y, rotation
         waypoints = {},                -- ??? research needed
         stop      = { 2.5, 2.0, 0.0 }, -- x, y, rotation
         config    = { 2.0, 2.0 },      -- max speed, max accel
     },
 
-    middle = {
+    ["Left (shoot)"] = {
+        shoot     = true,
+        reverse   = true,
+        start     = { 2.0, 2.0, 0.0 }, -- x, y, rotation
+        waypoints = {},                -- ??? research needed
+        stop      = { 2.5, 2.0, 0.0 }, -- x, y, rotation
+        config    = { 2.0, 2.0 },      -- max speed, max accel
+    },
+
+    ["Middle"] = {
+        shoot     = false,
+        reverse   = true,
         start     = { 2.0, 4.0, 0 }, -- x meters, y meters, rotation degrees
         waypoints = {},
         stop      = { 2.5, 4.0, 0 }, -- x meters, y meters, rotation degrees
         config    = { 1.0, 1.0 },    -- max speed, max accel
     },
 
-    right = {
+    ["Middle (shoot)"] = {
+        shoot     = true,
+        reverse   = true,
+        start     = { 2.0, 4.0, 0 }, -- x meters, y meters, rotation degrees
+        waypoints = {},
+        stop      = { 2.5, 4.0, 0 }, -- x meters, y meters, rotation degrees
+        config    = { 1.0, 1.0 },    -- max speed, max accel
+    },
+
+    ["Right"] = {
+        shoot     = false,
+        reverse   = false,
         start     = { 2.0, 7.0, 0 }, -- x meters, y meters, rotation degrees
         waypoints = {},
         stop      = { 2.5, 7.0, 0 }, -- x meters, y meters, rotation degrees
         config    = { 1.0, 1.0 },    -- max speed, max accel
     },
 
-    fisher = {
-        start     = { 3.0, 7.0, 0 },  -- x, y, rotation
+    ["Right (shoot)"] = {
+        shoot     = true,
+        reverse   = true,
+        start     = { 2.0, 7.0, 0 }, -- x meters, y meters, rotation degrees
         waypoints = {},
-        stop      = { 12.5, 1.0, 0 }, -- x, y, rotation
-        config    = { 3.0, 2.0 },     -- max speed, max accel
+        stop      = { 2.5, 7.0, 0 }, -- x meters, y meters, rotation degrees
+        config    = { 1.0, 1.0 },    -- max speed, max accel
     }
 }
 ------------------------------- SETTINGS END -----------------------------------
