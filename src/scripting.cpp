@@ -228,7 +228,18 @@ int team_number() {
 /** Match start position. */
 std::string match_start_position() {
     sol::table general = state()["config"]["general"];
-    return general.get_or ("match_start_position", std::string { "left" });
+    return general.get_or ("match_start_position", std::string { "Left" });
+}
+
+std::vector<std::string> trajectory_names() {
+    std::vector<std::string> out;
+    const sol::table trajectories = state()["config"]["trajectories"];
+
+    for (const auto& i : trajectories)
+        if (i.first.is<std::string>())
+            out.push_back (i.first.as<std::string>());
+
+    return out;
 }
 
 int num_ports() {
