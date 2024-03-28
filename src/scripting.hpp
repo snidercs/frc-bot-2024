@@ -106,6 +106,9 @@ int team_number();
 /** Match start position. */
 std::string match_start_position();
 
+/** Trajectory names */
+std::vector<std::string> trajectory_names();
+
 } // namespace config
 
 } // namespace lua
