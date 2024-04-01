@@ -21,6 +21,7 @@ Shooter::Shooter()
     for (auto* const mt : motors) {
         mt->SetInverted (true);
     }
+    supportMotor2.SetInverted (true);
 }
 // clang-format on
 
@@ -75,12 +76,14 @@ void Shooter::process() noexcept {
             topMotor.SetVoltage (units::volt_t { intakePrimaryPower });
             bottomMotor.SetVoltage (units::volt_t { intakeSecondaryPower });
             supportMotor.SetVoltage (units::volt_t { intakeSecondaryPower });
+            supportMotor2.SetVoltage (units::volt_t { intakePrimaryPower });
             break;
         }
         case Shooting: {
             units::volt_t volts { shootPower };
             topMotor.SetVoltage (volts);
             supportMotor.SetVoltage (volts);
+            supportMotor2.SetVoltage (volts);
             if (delay >= delayTicks) {
                 bottomMotor.SetVoltage (volts);
             }
@@ -91,6 +94,7 @@ void Shooter::process() noexcept {
             topMotor.SetVoltage (units::volt_t { 0.0 });
             bottomMotor.SetVoltage (units::volt_t { 0.0 });
             supportMotor.SetVoltage (units::volt_t { 0.0 });
+            supportMotor2.SetVoltage (units::volt_t { 0.0 });
             break;
         }
     }
