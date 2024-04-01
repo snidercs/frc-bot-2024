@@ -20,11 +20,23 @@ local function update_arms()
 end
 
 local function update_shooter()
-    if gamepad.left_bumper() then
-        robot.intake()
-    elseif gamepad.left_bumper_released() then
-        robot.stop_shooter()
-    elseif gamepad.right_bumper_pressed() then
+    if gamepad.left_bumper() or gamepad.left_bumper_released() then
+        if gamepad.left_bumper() then
+            robot.intake()
+        else
+            robot.stop_shooter()
+        end
+
+        -- Cancel right bumper check, no "clear" state in FRC library.
+        gamepad.right_bumper_pressed()
+        return
+    end
+
+    if robot.intake_running() then 
+        return 
+    end
+
+    if gamepad.right_bumper_pressed() then
         robot.shoot()
     end
 end
