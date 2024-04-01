@@ -80,10 +80,10 @@ local shooter = {
     shoot_power = 14.0,
 
     ---Power while intaking. Primary motor. (volts)
-    intake_primary_power = 11.0,
+    intake_primary_power = 5.0,
 
     ---Power while intaking. Secondary motor. (volts)
-    intake_secondary_power = 11.0
+    intake_secondary_power = 5.0
 }
 
 ---Ports, channels, indexes used in motor controllers, gamepads, etc...
@@ -99,9 +99,10 @@ local ports = {
     arm_left             = 8,
     arm_right            = 11,
 
-    shooter_primary      = 9,
-    shooter_secondary    = 10,
-    shooter_support      = 12
+    shooter_primary      = 9,  -- top green
+    shooter_secondary    = 10, -- bottom green
+    shooter_support      = 12, -- top roller
+    shooter_support_2    = 13  -- bottom roller
 }
 
 ---Trajectories to use for each match starting position.

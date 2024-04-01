@@ -298,6 +298,11 @@ private:
         MotorType::kBrushless
     };
 
+    rev::CANSparkMax supportMotor2 {
+        lua::config::port ("shooter_support_2"),
+        MotorType::kBrushless
+    };
+
     std::array<rev::CANSparkMax*, 2> motors { &topMotor, &bottomMotor };
 
     std::string stateString() const noexcept;
