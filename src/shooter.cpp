@@ -18,9 +18,13 @@ Shooter::Shooter()
       shootTimeMs { int(1000.0 * cfg::get ("shooter", "shoot_time").as<lua_Number>()) }
 {
     reset();
-    for (auto* const mt : motors) {
+
+    for (auto* const mt : secondaryMotors) {
         mt->SetInverted (true);
     }
+
+    primaryTop.SetInverted (false);
+    primaryBottom.SetInverted (true);
 }
 // clang-format on
 
@@ -72,25 +76,28 @@ void Shooter::stop() {
 void Shooter::process() noexcept {
     switch (_state) {
         case Loading: {
-            topMotor.SetVoltage (units::volt_t { intakePrimaryPower });
-            bottomMotor.SetVoltage (units::volt_t { intakeSecondaryPower });
-            supportMotor.SetVoltage (units::volt_t { intakeSecondaryPower });
+            secondaryTop.SetVoltage (units::volt_t { intakeSecondaryPower });
+            secondaryBottom.SetVoltage (units::volt_t { intakeSecondaryPower });
+            primaryTop.SetVoltage (units::volt_t { intakePrimaryPower });
+            primaryBottom.SetVoltage (units::volt_t { intakePrimaryPower });
             break;
         }
         case Shooting: {
             units::volt_t volts { shootPower };
-            topMotor.SetVoltage (volts);
-            supportMotor.SetVoltage (volts);
+            for (auto* m : primaryMotors)
+                m->SetVoltage (volts);
+
             if (delay >= delayTicks) {
-                bottomMotor.SetVoltage (volts);
+                for (auto* m : secondaryMotors)
+                    m->SetVoltage (volts);
             }
+
             ++delay;
             break;
         }
         case Idle: {
-            topMotor.SetVoltage (units::volt_t { 0.0 });
-            bottomMotor.SetVoltage (units::volt_t { 0.0 });
-            supportMotor.SetVoltage (units::volt_t { 0.0 });
+            for (auto* m : motors)
+                m->SetVoltage (units::volt_t { 0.0 });
             break;
         }
     }

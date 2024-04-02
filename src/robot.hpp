@@ -283,22 +283,31 @@ private:
         intakePrimaryPower { -6.0 },
         intakeSecondaryPower { -3.0 };
 
-    rev::CANSparkMax topMotor {
-        lua::config::port ("shooter_primary"),
+    rev::CANSparkMax secondaryTop {
+        lua::config::port ("shooter_secondary_top"),
         MotorType::kBrushed
     };
 
-    rev::CANSparkMax bottomMotor {
-        lua::config::port ("shooter_secondary"),
+    rev::CANSparkMax secondaryBottom {
+        lua::config::port ("shooter_secondary_bottom"),
         MotorType::kBrushed
     };
 
-    rev::CANSparkMax supportMotor {
-        lua::config::port ("shooter_support"),
+    rev::CANSparkMax primaryTop {
+        lua::config::port ("shooter_primary_top"),
         MotorType::kBrushless
     };
 
-    std::array<rev::CANSparkMax*, 2> motors { &topMotor, &bottomMotor };
+    rev::CANSparkMax primaryBottom {
+        lua::config::port ("shooter_primary_bottom"),
+        MotorType::kBrushless
+    };
+
+    std::array<rev::CANSparkMax*, 4> motors {
+        &primaryTop, &primaryBottom, &secondaryTop, &secondaryBottom
+    };
+    std::array<rev::CANSparkMax*, 2> primaryMotors { &primaryTop, &primaryBottom };
+    std::array<rev::CANSparkMax*, 2> secondaryMotors { &secondaryTop, &secondaryBottom };
 
     std::string stateString() const noexcept;
 };

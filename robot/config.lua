@@ -37,7 +37,7 @@ local gamepad = {
 ---Engine specific settings.
 local engine = {
     ---Periodic time out in milliseconds. Greater than 0
-    period = math.max (1.0, math.floor ((1.0 / 60.0) * 1000.0)) -- 60fps
+    period = math.max(1.0, math.floor((1.0 / 60.0) * 1000.0))   -- 60fps
     -- period = 4
 }
 
@@ -67,7 +67,7 @@ local lifter = {}
 
 ---Shooter specific settings
 local shooter = {
-    ---Time to run intake motor (seconds)
+    ---(deprecated) Time to run intake motor (seconds) 
     intake_time = 3.0,
 
     ---Time to warm up before shooting (seconds)
@@ -77,31 +77,32 @@ local shooter = {
     shoot_time = 2.0,
 
     ---Power while shooting (volts)
-    shoot_power = 14.0,
+    shoot_power = 12.0,
 
     ---Power while intaking. Primary motor. (volts)
-    intake_primary_power = 11.0,
+    intake_primary_power = 5.0,
 
     ---Power while intaking. Secondary motor. (volts)
-    intake_secondary_power = 11.0
+    intake_secondary_power = 4.0
 }
 
 ---Ports, channels, indexes used in motor controllers, gamepads, etc...
 local ports = {
-    gamepad              = 0,
-    joystick             = 1,
+    gamepad                  = 0,
+    joystick                 = 1,
 
-    drive_left_leader    = 7,
-    drive_left_follower  = 3,
-    drive_right_leader   = 6,
-    drive_right_follower = 5,
+    drive_left_leader        = 7,
+    drive_left_follower      = 3,
+    drive_right_leader       = 6,
+    drive_right_follower     = 5,
 
-    arm_left             = 8,
-    arm_right            = 11,
+    arm_left                 = 8,
+    arm_right                = 11,
 
-    shooter_primary      = 9,
-    shooter_secondary    = 10,
-    shooter_support      = 12
+    shooter_secondary_top    = 9,     -- top green
+    shooter_secondary_bottom = 10,    -- bottom green
+    shooter_primary_top      = 12,    -- top roller
+    shooter_primary_bottom   = 13     -- bottom roller
 }
 
 ---Trajectories to use for each match starting position.

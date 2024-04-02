@@ -100,9 +100,10 @@ TEST_F (ConfigTest, Ports) {
         "arm_left",
         "arm_right",
 
-        "shooter_primary",
-        "shooter_secondary",
-        "shooter_support"
+        "shooter_secondary_top",
+        "shooter_secondary_bottom",
+        "shooter_primary_top",
+        "shooter_primary_bottom"
     };
 
     EXPECT_EQ (cfg::num_ports(), (int) symbols.size());
