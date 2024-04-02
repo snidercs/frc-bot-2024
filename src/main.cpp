@@ -286,8 +286,14 @@ public:
         if (autoInfo.reverse)
             speeds.vx *= -1.0;
 
+        const double speedAdjustment    = 0.5;
+        const double rotationAdjustment = 0.6;
+
         if (elapsed <= trajectory.TotalTime()) {
-            drivetrain.drive (speeds.vx, speeds.omega);
+            drivetrain.drive (speeds.vx * speedAdjustment, speeds.omega);
+        } else if (elapsed < trajectory.TotalTime() + units::time::second_t (3)) {
+            drivetrain.drive (MetersPerSecond (0),
+                              DegreesPerSecond (60.0 * rotationAdjustment));
         } else {
             driveDisabled();
         }
