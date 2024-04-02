@@ -34,6 +34,12 @@ for k, v in pairs(impl) do
     end
 end
 
+--[[
+-- Uncomment when using regular keyboard as a gamepad in the sim.
+M.BUMPER_LEFT = 2
+M.BUMPER_RIGHT = 3
+--]]
+
 ---Return an axis value by index.
 ---@param index integer Index of the axis control
 ---@return number
@@ -97,6 +103,12 @@ end
 ---@return boolean
 function M.right_bumper_pressed()
     return raw_button_pressed(M.BUMPER_RIGHT)
+end
+
+---Returns true if the right bumper was pressed since the last check.
+---@return boolean
+function M.right_bumper_released()
+    return raw_button_released(M.BUMPER_RIGHT)
 end
 
 ---Returns true if the right bumper is currently held down.

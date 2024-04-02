@@ -3,7 +3,26 @@
 local gamepad = require('gamepad')
 local params  = require('params')
 local robot   = require('robot')
+
+-- Lifter state vars
 local has_gone_up = false
+
+-- Shooter state vars
+local shoot_pressed = false
+local shoot_released = false
+local shoot_down = false
+local intake_pressed = false
+local intake_released = false
+local intake_down = false
+
+local function update_gamepad_state()
+    shoot_pressed = gamepad.right_bumper_pressed()
+    shoot_released = gamepad.right_bumper_released()
+    shoot_down = gamepad.right_bumper()
+    intake_pressed = gamepad.left_bumper_pressed()
+    intake_released = gamepad.left_bumper_released()
+    intake_down = gamepad.left_bumper()
+end
 
 local function update_arms()
     if gamepad.Y() then
@@ -19,11 +38,22 @@ local function update_arms()
 end
 
 local function update_shooter()
-    if gamepad.left_bumper() then
-        robot.intake()
-    elseif gamepad.left_bumper_released() then
-        robot.stop_shooter()
-    elseif gamepad.right_bumper_pressed() then
+    if robot.shooting() or shoot_released then return end
+
+    if intake_pressed or intake_released or intake_down then
+        if intake_pressed or intake_down then
+            robot.intake()
+        else
+            robot.stop_shooter()
+        end
+        return
+    end
+
+    if robot.intake_running() then
+        return
+    end
+
+    if shoot_down or shoot_pressed then
         robot.shoot()
     end
 end
@@ -39,6 +69,7 @@ local function teleop_prepare()
 end
 
 local function teleop_run()
+    update_gamepad_state()
     robot.drive(params.speed() * (1.0 - params.brake()), params.rotation())
     update_arms()
     update_shooter()
@@ -49,7 +80,7 @@ end
 
 ---A Timed robot descriptor.
 ---
----The c++ RomainMain will call these functions while running. Think of this file
+---The c++ RobotMain will call these functions while running. Think of this file
 ---as a "Plugin" to the system with a common interface defined in this table.
 ---This allows us to change out robot implementations easily, or even on-the-fly.
 ---@meta

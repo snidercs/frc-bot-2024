@@ -19,12 +19,11 @@ Shooter::Shooter()
 {
     reset();
 
+    primaryTop.SetInverted (false);
+    primaryBottom.SetInverted (! primaryTop.GetInverted());
     for (auto* const mt : secondaryMotors) {
         mt->SetInverted (true);
     }
-
-    primaryTop.SetInverted (false);
-    primaryBottom.SetInverted (true);
 }
 // clang-format on
 
@@ -76,10 +75,10 @@ void Shooter::stop() {
 void Shooter::process() noexcept {
     switch (_state) {
         case Loading: {
-            secondaryTop.SetVoltage (units::volt_t { intakeSecondaryPower });
-            secondaryBottom.SetVoltage (units::volt_t { intakeSecondaryPower });
             primaryTop.SetVoltage (units::volt_t { intakePrimaryPower });
             primaryBottom.SetVoltage (units::volt_t { intakePrimaryPower });
+            secondaryTop.SetVoltage (units::volt_t { intakeSecondaryPower });
+            secondaryBottom.SetVoltage (units::volt_t { intakeSecondaryPower });
             break;
         }
         case Shooting: {
