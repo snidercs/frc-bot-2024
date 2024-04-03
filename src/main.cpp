@@ -466,8 +466,7 @@ private:
 
     //==========================================================================
     void driveDisabled() {
-        drivetrain.drive (units::velocity::meters_per_second_t (0),
-                          units::angular_velocity::radians_per_second_t (0));
+        drivetrain.drive (MetersPerSecond (0), RadiansPerSecond (0));
     }
 
     // updates controller connection status, returns true if currently connected
