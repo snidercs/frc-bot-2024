@@ -22,6 +22,7 @@
 
 #include "snider/padmode.hpp"
 
+#include "config.hpp"
 #include "engine.hpp"
 #include "normalisablerange.hpp"
 #include "parameters.hpp"
@@ -158,7 +159,7 @@ class AutoModeChooser final {
 public:
     AutoModeChooser() {
         // setup the dashboard chooser.
-        for (const auto& m : lua::config::trajectory_names())
+        for (const auto& m : config::trajectory_names())
             chooser.AddOption (m, m);
         chooser.SetDefaultOption (defaultMatchStart, defaultMatchStart);
         frc::SmartDashboard::PutData ("Auto Mode", &chooser);
@@ -198,7 +199,7 @@ public:
 
 private:
     frc::SendableChooser<std::string> chooser;
-    const std::string defaultMatchStart { lua::config::match_start_position() };
+    const std::string defaultMatchStart { config::match_start_position() };
     bool _shouldShoot { true };
     bool _reverse { true };
 };
@@ -343,7 +344,7 @@ private:
     EnginePtr engine;
     Parameters params;
 
-    frc::XboxController gamepad { lua::config::port ("gamepad") };
+    frc::XboxController gamepad { config::port ("gamepad") };
     Drivetrain drivetrain;
     Lifter lifter;
     Shooter shooter;

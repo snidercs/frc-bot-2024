@@ -23,8 +23,8 @@
 #include <rev/CANSparkMax.h>
 #include <rev/CANSparkMaxLowLevel.h>
 
+#include "config.hpp"
 #include "normalisablerange.hpp"
-#include "scripting.hpp"
 #include "types.hpp"
 
 /** Represents a differential drive style drivetrain. */
@@ -50,39 +50,39 @@ private:
     static void bind (Drivetrain*);
 
     const MetersPerSecond maxSpeed {
-        lua::config::get ("drivetrain", "max_speed").as<double>()
+        config::number ("drivetrain", "max_speed")
     };
     const RadiansPerSecond maxAngularSpeed {
-        lua::config::get ("drivetrain", "max_angular_speed").as<double>()
+        config::number ("drivetrain", "max_angular_speed")
     };
     const units::meter_t trackWidth {
-        lua::config::get ("drivetrain", "track_width").as<double>()
+        config::number ("drivetrain", "track_width")
     };
     const double wheelRadius {
-        lua::config::get ("drivetrain", "wheel_radius").as<double>()
+        config::number ("drivetrain", "wheel_radius")
     };
     const int encoderResolution {
-        static_cast<int> (lua::config::get ("drivetrain", "encoder_resolution").as<double>())
+        static_cast<int> (config::number ("drivetrain", "encoder_resolution"))
     };
     const double rotationThrottle {
-        lua::config::get ("drivetrain", "rotation_throttle").as<double>()
+        config::number ("drivetrain", "rotation_throttle")
     };
 
     rev::CANSparkMax leftLeader {
-        lua::config::port ("drive_left_leader"),
+        config::port ("drive_left_leader"),
         MotorType::kBrushed
     };
     rev::CANSparkMax leftFollower {
-        lua::config::port ("drive_left_follower"),
+        config::port ("drive_left_follower"),
         MotorType::kBrushed
     };
 
     rev::CANSparkMax rightLeader {
-        lua::config::port ("drive_right_leader"),
+        config::port ("drive_right_leader"),
         MotorType::kBrushed
     };
     rev::CANSparkMax rightFollower {
-        lua::config::port ("drive_right_follower"),
+        config::port ("drive_right_follower"),
         MotorType::kBrushed
     };
     std::array<rev::CANSparkMax*, 4> motors { &leftLeader, &leftFollower, &rightLeader, &rightFollower };
@@ -108,7 +108,7 @@ private:
 
     struct SpeedRange : public juce::NormalisableRange<double> {
         using range_type = juce::NormalisableRange<double>;
-        SpeedRange() : range_type (-1.0, 1.0, 0.0, lua::config::gamepad_skew_factor(), true) {}
+        SpeedRange() : range_type (-1.0, 1.0, 0.0, config::gamepad_skew_factor(), true) {}
         ~SpeedRange() = default;
     } speedRange;
 
@@ -163,7 +163,7 @@ private:
         }
 
     private:
-        const int enginePeriodMs { lua::config::get ("engine", "period").as<int>() };
+        const int enginePeriodMs { static_cast<int> (config::number ("engine", "period")) };
 
         Drivetrain& owner;
         frc::sim::AnalogGyroSim gyroSim { owner.gyro };
@@ -204,8 +204,8 @@ private:
     using EncoderType = rev::SparkRelativeEncoder;
     std::unique_ptr<EncoderType> encL, encR;
 #endif
-    rev::CANSparkMax leftArm { lua::config::port ("arm_left"), MotorType::kBrushless };
-    rev::CANSparkMax rightArm { lua::config::port ("arm_right"), MotorType::kBrushless };
+    rev::CANSparkMax leftArm { config::port ("arm_left"), MotorType::kBrushless };
+    rev::CANSparkMax rightArm { config::port ("arm_right"), MotorType::kBrushless };
     std::array<rev::CANSparkMax*, 2> motors { &leftArm, &rightArm };
 
     void maybeInstantiateEncoders();
@@ -284,22 +284,22 @@ private:
         intakeSecondaryPower { -3.0 };
 
     rev::CANSparkMax secondaryTop {
-        lua::config::port ("shooter_secondary_top"),
+        config::port ("shooter_secondary_top"),
         MotorType::kBrushed
     };
 
     rev::CANSparkMax secondaryBottom {
-        lua::config::port ("shooter_secondary_bottom"),
+        config::port ("shooter_secondary_bottom"),
         MotorType::kBrushed
     };
 
     rev::CANSparkMax primaryTop {
-        lua::config::port ("shooter_primary_top"),
+        config::port ("shooter_primary_top"),
         MotorType::kBrushless
     };
 
     rev::CANSparkMax primaryBottom {
-        lua::config::port ("shooter_primary_bottom"),
+        config::port ("shooter_primary_bottom"),
         MotorType::kBrushless
     };
 

@@ -5,6 +5,7 @@
 
 #include <gtest/gtest.h>
 
+#include "config.hpp"
 #include "scripting.hpp"
 #include "sol/sol.hpp"
 
@@ -74,17 +75,17 @@ TEST_F (ConfigTest, GetOr) {
 }
 
 TEST_F (ConfigTest, GetDouble) {
-    EXPECT_EQ (cfg::gamepad_skew_factor(),
-               cfg::get_double ("gamepad", "skew_factor"));
-    EXPECT_EQ (cfg::get_double ("gamepad", "fake", 1001.0), 1001.0);
-    EXPECT_EQ (cfg::get_double ("fake", "alsofake", -1002.0), -1002.0);
+    EXPECT_EQ (config::gamepad_skew_factor(),
+               config::number ("gamepad", "skew_factor"));
+    EXPECT_EQ (config::number ("gamepad", "fake", 1001.0), 1001.0);
+    EXPECT_EQ (config::number ("fake", "alsofake", -1002.0), -1002.0);
 }
 
 TEST_F (ConfigTest, Gamepad) {
-    const auto skew_factor = cfg::gamepad_skew_factor();
+    const auto skew_factor = config::gamepad_skew_factor();
     EXPECT_GE (skew_factor, 0.0);
     EXPECT_LE (skew_factor, 1.0);
-    EXPECT_EQ (skew_factor, cfg::get_double ("gamepad", "skew_factor"));
+    EXPECT_EQ (skew_factor, config::number ("gamepad", "skew_factor"));
 }
 
 TEST_F (ConfigTest, Ports) {
@@ -106,19 +107,19 @@ TEST_F (ConfigTest, Ports) {
         "shooter_primary_bottom"
     };
 
-    EXPECT_EQ (cfg::num_ports(), (int) symbols.size());
+    EXPECT_EQ (config::num_ports(), (int) symbols.size());
     for (const auto& sym : symbols) {
         expectValidInt ("ports", sym);
-        EXPECT_GE (cfg::port (sym), 0);
+        EXPECT_GE (config::port (sym), 0);
     }
 }
 
 TEST_F (ConfigTest, NoExceptions) {
     try {
-        EXPECT_LT (cfg::port (""), 0);
-        EXPECT_LT (cfg::port ("invalid_____index____not_good"), 0);
-        EXPECT_EQ (cfg::team_name(), "The Gold Standard");
-        EXPECT_EQ (cfg::team_number(), 9431);
+        EXPECT_LT (config::port (""), 0);
+        EXPECT_LT (config::port ("invalid_____index____not_good"), 0);
+        EXPECT_EQ (config::team_name(), "The Gold Standard");
+        EXPECT_EQ (config::team_number(), 9431);
     } catch (...) {
         std::cerr << "exception in: " << __FILE__ << std::endl;
         EXPECT_TRUE (false);
