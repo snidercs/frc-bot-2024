@@ -82,7 +82,7 @@ static void displayBanner() {
     // display engine and bot info.
     lua::print_version();
     std::clog << "Engine running at "
-              << lua::config::get ("engine", "period").as<double>()
+              << config::number ("engine", "period")
               << " ms" << std::endl;
     std::clog.flush();
     std::cout.flush();
@@ -209,7 +209,7 @@ class RobotMain : public frc::TimedRobot {
 public:
     RobotMain()
         : frc::TimedRobot (units::millisecond_t (
-            lua::config::get ("engine", "period").as<double>())) {
+            config::number ("engine", "period"))) {
         // bind instances to Lua
         Parameters::bind (&params);
         Shooter::bind (&shooter);

@@ -8,6 +8,12 @@ namespace config {
 /** Return a number (double) by category and symbol. */
 double number (std::string_view cat, std::string_view sym, double fallback = 0.0);
 
+/** Return an integer by category and symbol. sol will throw an exception when
+    a lua_Number doesn't fit inside a 32bit int.  This helper does a "safe" 
+    conversion.
+*/
+int integer (std::string_view cat, std::string_view sym, int fallback = 0);
+
 /** Returns the default gamepad skew factor. */
 double gamepad_skew_factor();
 
