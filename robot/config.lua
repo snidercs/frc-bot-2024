@@ -113,7 +113,7 @@ local trajectories = {
         start     = { 2.0, 2.0, 0.0 }, -- x, y, rotation
         waypoints = {},                -- ??? research needed
         stop      = { 2.5, 2.0, 0.0 }, -- x, y, rotation
-        config    = { 2.0, 2.0 },      -- max speed, max accel
+        config    = { 1.0, 1.0 },      -- max speed, max accel
     },
 
     ["Left (shoot)"] = {
@@ -122,7 +122,7 @@ local trajectories = {
         start     = { 2.0, 2.0, 0.0 }, -- x, y, rotation
         waypoints = {},                -- ??? research needed
         stop      = { 2.5, 2.0, 0.0 }, -- x, y, rotation
-        config    = { 2.0, 2.0 },      -- max speed, max accel
+        config    = { 1.0, 1.0 },      -- max speed, max accel
     },
 
     ["Middle"] = {
