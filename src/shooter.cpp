@@ -1,7 +1,6 @@
-#include "robot.hpp"
-#include "scripting.hpp"
 
-namespace cfg = lua::config;
+#include "config.hpp"
+#include "robot.hpp"
 
 #define DEBUG_SHOOTER 0 // change to 1 to enable debug logging.
 #if DEBUG_SHOOTER
@@ -13,9 +12,9 @@ namespace cfg = lua::config;
 
 // clang-format off
 Shooter::Shooter()
-    : intakeTimeMs { int(1000.0 * cfg::get ("shooter", "intake_time").as<lua_Number>()) },
-      warmTimeMs { int(1000.0 * cfg::get ("shooter", "warmup_time").as<lua_Number>()) },
-      shootTimeMs { int(1000.0 * cfg::get ("shooter", "shoot_time").as<lua_Number>()) }
+    : intakeTimeMs { int(1000.0 * config::number ("shooter", "intake_time")) },
+      warmTimeMs { int(1000.0 * config::number ("shooter", "warmup_time")) },
+      shootTimeMs { int(1000.0 * config::number ("shooter", "shoot_time")) }
 {
     reset();
 
@@ -29,12 +28,11 @@ Shooter::Shooter()
 
 void Shooter::reset() {
     _state = lastState = Idle;
-    periodMs           = static_cast<int> (
-        cfg::get ("engine", "period").as<lua_Number>());
+    periodMs           = config::integer ("engine", "period");
 
-    shootPower           = std::max (1.0, cfg::get ("shooter", "shoot_power").as<double>());
-    intakePrimaryPower   = -1.0 * std::max (1.0, cfg::get ("shooter", "intake_primary_power").as<double>());
-    intakeSecondaryPower = -1.0 * std::max (1.0, cfg::get ("shooter", "intake_secondary_power").as<double>());
+    shootPower           = std::max (1.0, config::number ("shooter", "shoot_power"));
+    intakePrimaryPower   = -1.0 * std::max (1.0, config::number ("shooter", "intake_primary_power"));
+    intakeSecondaryPower = -1.0 * std::max (1.0, config::number ("shooter", "intake_secondary_power"));
 
     // clang-format off
     SHOOTER_DBG("shootPower=" << shootPower 

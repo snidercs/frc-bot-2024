@@ -16,6 +16,10 @@ double number (std::string_view cat, std::string_view sym, double fallback) {
     return fallback;
 }
 
+int integer (std::string_view cat, std::string_view sym, int fallback) {
+    return static_cast<int> (number (cat, sym, (double) fallback));
+}
+
 double gamepad_skew_factor() {
     sol::table tbl = lua::state()["config"]["gamepad"];
     return tbl.get_or ("skew_factor", 1.0);
