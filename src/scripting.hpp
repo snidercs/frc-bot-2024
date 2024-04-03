@@ -51,27 +51,6 @@ bool bootstrap();
  */
 namespace config {
 
-#if 0
-// TODO: finish this: works for numeric values.
-/** Get a value by symbol from the 'general' category in config.lua 
-    @param symbol The key to lookup
-    @param fallback the fallback value in case of lookup failure
-    @tparam T the value type to return
-    @tparam S string type
-    @returns T the config value
-*/
-template<typename T, typename S>
-T get_or (S&& symbol, T&& fallback) {
-    sol::function f = state()["config"]["get"];
-    sol::unsafe_function_result res = f(std::forward<S> (symbol), 
-                                        std::forward<T> (fallback));
-    std::clog << sol::type_name (state(), res.get_type()) << std::endl;
-    std::clog << res.get<T>(0) << std::endl;
-
-    return fallback; //res.valid() ? res.get<T>(0) : fallback;
-}
-#endif
-
 /** Get a value from the 'general' settings. See `robot/config.lua` 
     @param symbol The symbol key to lookup.
     @returns the value or an invalid object.
