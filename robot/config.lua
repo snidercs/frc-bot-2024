@@ -22,7 +22,7 @@ local general = {
 
     -- Physical starting position (left, middle, right)
     -- This option is secondary to the Dashboard selection.
-    match_start_position = "Left"
+    match_start_position = "Middle (shoot)"
 }
 
 ---The Gamepad
@@ -74,7 +74,7 @@ local shooter = {
     warmup_time = 1.0,
 
     ---Time taken to shoot the note (seconds)
-    shoot_time = 2.0,
+    shoot_time = 0.80,
 
     ---Power while shooting (volts)
     shoot_power = 12.0,
@@ -116,14 +116,6 @@ local trajectories = {
         config    = { 1.0, 1.0 },      -- max speed, max accel
     },
 
-    ["Left (shoot)"] = {
-        shoot     = true,
-        reverse   = true,
-        start     = { 2.0, 2.0, 0.0 }, -- x, y, rotation
-        waypoints = {},                -- ??? research needed
-        stop      = { 2.5, 2.0, 0.0 }, -- x, y, rotation
-        config    = { 1.0, 1.0 },      -- max speed, max accel
-    },
 
     ["Middle"] = {
         shoot     = false,
