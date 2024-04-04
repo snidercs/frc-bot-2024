@@ -288,7 +288,7 @@ public:
             speeds.vx *= -1.0;
 
         const double speedAdjustment    = 0.5;
-        const double rotationAdjustment = 0.6;
+        const double rotationAdjustment = 0.3;
 
         if (elapsed <= trajectory.TotalTime()) {
             drivetrain.drive (speeds.vx * speedAdjustment, speeds.omega);
