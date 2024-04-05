@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/vendordeps/sdk/linux64/include/luajit-2.1/**",
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src/**",
+                "${workspaceRoot}/../allwpilib"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
@@ -18,7 +19,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/vendordeps/sdk/msvc/include/luajit-2.1/**",
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src/**",
+                "${workspaceRoot}/../allwpilib"
             ],
             "defines": [
                 "_DEBUG",
