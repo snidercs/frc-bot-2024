@@ -96,7 +96,7 @@ static std::string findLuaDir() {
 /** Instantiate the robot. This could return a bot in error state. Be sure to
     check with `Robot::have_error()` and `Robot::error()`.
 */
-static EnginePtr instantiateRobot (std::string_view botfile = "engine.bot") {
+static EnginePtr instantiateRobot (std::string_view botfile) {
     auto& L = lua::state();
     std::filesystem::path path (findLuaDir());
     path /= botfile;
@@ -365,9 +365,9 @@ private:
         lua::state().collect_garbage();
     }
 
-    // Load a bot file by name e.g. engine.bot or engine_test.bot
+    // Load a bot program by name e.g. teleop.bot or engine_test.bot
     // will throw a runtime error if the loaded engine is in error state.
-    void loadEngine (std::string_view bot = "engine.bot") {
+    void loadEngine (std::string_view bot) {
         auto newEngine = detail::instantiateRobot (bot);
         if (newEngine != nullptr) {
             if (newEngine->have_error()) {
