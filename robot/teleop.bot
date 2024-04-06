@@ -83,8 +83,8 @@ local function teleop_run()
     update_gamepad_state()
     update_speed()
 
-    if low_gear then
-        robot.drive(params.speed() * 0.5, params.rotation())
+    if low_gear == true then
+        robot.drive(params.speed() * 0.25, params.rotation())
     else
         robot.drive(params.speed(), params.rotation())
     end
