@@ -87,7 +87,7 @@ local function teleop_run()
         robot.drive(params.speed(), params.rotation())
     end
     if low_gear == true then
-        robot.drive(params.speed() * 0.25, params.rotation())
+        robot.drive(params.speed() * 0.5, params.rotation())
     end
     update_arms()
     update_shooter()
