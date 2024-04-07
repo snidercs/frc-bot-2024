@@ -78,6 +78,8 @@ void bind_gamepad (frc::XboxController* self) {
             return self->GetRawButtonReleased (button);
         };
 
+        M["pov"] = [self]() { return self->GetPOV(0); };
+        
         cxx["gamepad"] = M;
     } else {
         // clang-format off
@@ -129,7 +131,10 @@ void Shooter::bind (Shooter* self) {
         M["loading"]  = [self]() { return self->isLoading(); };
         M["ready"]    = [self]() { return self->isIdle(); };
         M["intake"]   = [self]() { self->intake(); };
-        M["shoot"]    = [self]() { self->shoot(); };
+        M["shoot"]    = [self](double amount) {
+            self->setShootLevel (amount);
+            self->shoot(); 
+        };
         M["stop"]     = [self]() { self->stop(); };
 
         cxx["shooter"] = M;

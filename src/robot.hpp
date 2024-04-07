@@ -242,6 +242,12 @@ public:
     /** Prepare motors to shoot if not already loading or shooting. */
     void shoot();
 
+    /** set a multiplier to apply to shoot output voltage. */
+    void setShootLevel (double level) { _shootLevel = level; }
+    
+    /** get the current shoot level */
+    constexpr double shootLevel() const noexcept { return _shootLevel; }
+
     /** Stop the motors. */
     void stop();
 
@@ -268,6 +274,7 @@ private:
     State _state { Idle };
     State lastState { Idle };
 
+    double _shootLevel { 1.0 };
     // see `config.lua`
     const int intakeTimeMs;
     const int warmTimeMs;

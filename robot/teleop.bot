@@ -1,22 +1,22 @@
 ---Main bot program.  Runs when in teleop mode.
 
-local gamepad = require('gamepad')
-local params  = require('params')
-local robot   = require('robot')
+local gamepad         = require('gamepad')
+local params          = require('params')
+local robot           = require('robot')
 
 -- Gear Change vars
-local low_gear = false
+local low_gear        = false
 
 -- Lifter state vars
-local has_gone_up = false
+local has_gone_up     = false
 
 -- Shooter state vars
-local shoot_pressed = false
-local shoot_released = false
-local shoot_down = false
-local intake_pressed = false
+local shoot_pressed   = false
+local shoot_released  = false
+local shoot_down      = false
+local intake_pressed  = false
 local intake_released = false
-local intake_down = false
+local intake_down     = false
 
 local function update_gamepad_state()
     shoot_pressed = gamepad.right_bumper_pressed()
@@ -64,8 +64,17 @@ local function update_shooter()
         return
     end
 
+    local pov = gamepad.pov()
     if shoot_down or shoot_pressed then
-        robot.shoot()
+        robot.shoot(1.0)
+    elseif pov == 0 then   -- dpad up
+        robot.shoot(0.80)
+    elseif pov == 90 then  -- dpad right
+        robot.shoot(0.60)
+    elseif pov == 180 then -- dpad down
+        robot.shoot(0.40)
+    elseif pov == 270 then -- dpad left
+        robot.shoot(0.20)
     end
 end
 
