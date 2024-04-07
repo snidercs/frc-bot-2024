@@ -29,7 +29,7 @@ Shooter::Shooter()
 void Shooter::reset() {
     _state = lastState = Idle;
     periodMs           = config::integer ("engine", "period");
-
+    _shootLevel = 1.0;
     shootPower           = std::max (1.0, config::number ("shooter", "shoot_power"));
     intakePrimaryPower   = -1.0 * std::max (1.0, config::number ("shooter", "intake_primary_power"));
     intakeSecondaryPower = -1.0 * std::max (1.0, config::number ("shooter", "intake_secondary_power"));
@@ -80,7 +80,8 @@ void Shooter::process() noexcept {
             break;
         }
         case Shooting: {
-            units::volt_t volts { shootPower };
+            const double level = std::max (0.2, std::min (1.0, _shootLevel));
+            units::volt_t volts { shootPower * level };
             for (auto* m : primaryMotors)
                 m->SetVoltage (volts);
 

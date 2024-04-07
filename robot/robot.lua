@@ -46,8 +46,9 @@ local function intake()
 end
 
 --- Shoots a note if not loading and not already shooting.
-local function shoot()
-    return shooter.shoot()
+local function shoot(level)
+    level = type(level) == 'number' and level or 1.0
+    return shooter.shoot(level)
 end
 
 ---Trys to stop the shooter motors regardless of what they're doing.
