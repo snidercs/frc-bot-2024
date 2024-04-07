@@ -11,6 +11,7 @@ local low_gear = false
 local has_gone_up = false
 
 -- Shooter state vars
+local shoot_threshold = 0.5
 local shoot_pressed = false
 local shoot_released = false
 local shoot_down = false
@@ -65,7 +66,11 @@ local function update_shooter()
     end
 
     if shoot_down or shoot_pressed then
-        robot.shoot()
+        robot.shoot (1.0)
+    elseif gamepad.left_trigger() > shoot_threshold then
+        robot.shoot (0.50)
+    elseif gamepad.right_trigger() > shoot_threshold then
+        robot.shoot (0.80)
     end
 end
 
