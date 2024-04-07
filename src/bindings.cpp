@@ -78,6 +78,8 @@ void bind_gamepad (frc::XboxController* self) {
             return self->GetRawButtonReleased (button);
         };
 
+        M["pov"] = [self]() { return self->GetPOV(0); };
+        
         cxx["gamepad"] = M;
     } else {
         // clang-format off

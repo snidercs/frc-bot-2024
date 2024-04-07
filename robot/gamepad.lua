@@ -47,19 +47,28 @@ function M.axis(index)
     return raw_axis(index)
 end
 
----Returns true if button 'A' is currently down.
+
+---Get the angle in degrees of a POV on the HID.
+---The POV angles start at 0 in the up direction, and increase clockwise
+---(e.g. right is 90, upper-left is 315).
+---@return integer angle of the POV in degrees, or -1 if the POV is not pressed.
+function M.pov()
+    return impl.pov()
+end
+
+---Returns true if button 'B' is currently down.
 ---@return boolean
 function M.A()
     return raw_button(M.BUTTON_A)
 end
 
----Returns true if button 'A' is currently down.
+---Returns true if button 'B' is currently down.
 ---@return boolean
 function M.B()
     return raw_button(M.BUTTON_B)
 end
 
----Returns true if button 'A' is currently down.
+---Returns true if button 'X' is currently down.
 ---@return boolean
 function M.X()
     return raw_button(M.BUTTON_X)
