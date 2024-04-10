@@ -324,10 +324,21 @@ public:
     void DisabledExit() override { collectGarbage(); }
 
     //==========================================================================
+    bool _canTest = true;
     void TestInit() override {
-        loadEngine (testProgram->get());
-        luaPrepare();
+        _canTest = true;
+        try {
+            loadEngine (testProgram->get());
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+            std::flush (std::cerr);
+            _canTest = false;
+        }
+
+        if (_canTest)
+            luaPrepare();
     }
+
     void TestPeriodic() override { luaPeriodic(); }
     void TestExit() override { luaExit(); }
 
