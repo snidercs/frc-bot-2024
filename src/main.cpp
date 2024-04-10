@@ -517,7 +517,7 @@ private:
         cs::UsbCamera camera = frc::CameraServer::StartAutomaticCapture (cameraName, 0);
         camera.SetExposureAuto();
         camera.SetWhiteBalanceAuto();
-        
+
         // Set the resolution
         camera.SetResolution (width, height);
         camera.SetFPS (fps);
