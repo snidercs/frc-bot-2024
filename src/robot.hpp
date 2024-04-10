@@ -244,7 +244,7 @@ public:
 
     /** set a multiplier to apply to shoot output voltage. */
     void setShootLevel (double level) { _shootLevel = level; }
-    
+
     /** get the current shoot level */
     constexpr double shootLevel() const noexcept { return _shootLevel; }
 
