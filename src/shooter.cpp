@@ -27,9 +27,9 @@ Shooter::Shooter()
 // clang-format on
 
 void Shooter::reset() {
-    _state = lastState = Idle;
-    periodMs           = config::integer ("engine", "period");
-    _shootLevel = 1.0;
+    _state = lastState   = Idle;
+    periodMs             = config::integer ("engine", "period");
+    _shootLevel          = 1.0;
     shootPower           = std::max (1.0, config::number ("shooter", "shoot_power"));
     intakePrimaryPower   = -1.0 * std::max (1.0, config::number ("shooter", "intake_primary_power"));
     intakeSecondaryPower = -1.0 * std::max (1.0, config::number ("shooter", "intake_secondary_power"));
