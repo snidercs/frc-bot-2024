@@ -48,10 +48,14 @@ public:
 
             self->M = pr;
 
-#define ASSIGN_F(name)                                    \
-    if (self->M[#name].get_type() == sol::type::function) \
-        self->f_##name = self->M[#name];
-            ASSIGN_F (init)
+            if (self->M["init"].get_type() == sol::type::function)
+                self->pf_init = self->M["init"];
+
+#define ASSIGN_F(name)                                      \
+    if (self->M[#name].get_type() == sol::type::function) { \
+        self->f_##name  = self->M[#name];                   \
+        self->pf_##name = self->M[#name];                   \
+    }
             ASSIGN_F (prepare)
             ASSIGN_F (run)
             ASSIGN_F (cleanup)
@@ -68,9 +72,22 @@ public:
     bool have_error() const noexcept { return ! _error.empty(); }
 
     bool init() {
-        if (f_init)
-            f_init();
-        return (bool) f_init;
+        if (! pf_init)
+            return true;
+
+        _error.clear();
+
+        try {
+            sol::protected_function_result res = pf_init();
+            if (! res.valid()) {
+                sol::error err = res;
+                _error         = err.what();
+            }
+        } catch (const std::exception& e) {
+            _error = e.what();
+        }
+
+        return ! have_error();
     }
 
 #define METHOD(name)    \
@@ -84,16 +101,40 @@ public:
     METHOD (cleanup)
 #undef METHOD
 
+#define PMETHOD(name)                                       \
+    bool p##name() {                                        \
+        if (! pf_##name)                                    \
+            return true;                                    \
+        try {                                               \
+            sol::protected_function_result res = pf_init(); \
+            if (! res.valid()) {                            \
+                sol::error err = res;                       \
+                _error         = err.what();                \
+            }                                               \
+        } catch (const std::exception& e) {                 \
+            _error = e.what();                              \
+        }                                                   \
+                                                            \
+        return ! have_error();                              \
+    }
+
+    PMETHOD (prepare)
+    PMETHOD (run)
+    PMETHOD (cleanup)
+#undef PMETHOD
+
 private:
     Engine (lua_State* state)
-        : L (state) {}
+        : L (state) {
+    }
     using Factory    = sol::protected_function;
     using LoadResult = sol::load_result;
     using Path       = std::filesystem::path;
     sol::state_view L;
     sol::table M;
     std::string _error;
-    sol::function f_init, f_prepare, f_run, f_cleanup;
+    sol::function f_prepare, f_run, f_cleanup;
+    sol::protected_function pf_init, pf_prepare, pf_run, pf_cleanup;
 };
 
 using EnginePtr = std::unique_ptr<Engine>;
