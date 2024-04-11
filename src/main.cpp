@@ -141,7 +141,7 @@ public:
 private:
     frc::SendableChooser<std::string> chooser;
     bool _valid { true };
-    const std::string defaultTest { "test_v1.bot" };
+    const std::string defaultTest { "teleop.bot" };
 };
 
 //==============================================================================
