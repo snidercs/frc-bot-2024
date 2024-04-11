@@ -1,19 +1,22 @@
 ---Main bot program.  Runs when in teleop mode.
 
-local gamepad = require('gamepad')
-local params  = require('params')
-local robot   = require('robot')
+local gamepad         = require('gamepad')
+local params          = require('params')
+local robot           = require('robot')
+
+-- Gear Change vars
+local low_gear        = false
 
 -- Lifter state vars
-local has_gone_up = false
+local has_gone_up     = false
 
 -- Shooter state vars
-local shoot_pressed = false
-local shoot_released = false
-local shoot_down = false
-local intake_pressed = false
+local shoot_pressed   = false
+local shoot_released  = false
+local shoot_down      = false
+local intake_pressed  = false
 local intake_released = false
-local intake_down = false
+local intake_down     = false
 
 local function update_gamepad_state()
     shoot_pressed = gamepad.right_bumper_pressed()
@@ -22,6 +25,14 @@ local function update_gamepad_state()
     intake_pressed = gamepad.left_bumper_pressed()
     intake_released = gamepad.left_bumper_released()
     intake_down = gamepad.left_bumper()
+end
+
+local function update_speed()
+    if gamepad.B() then
+        low_gear = true
+    elseif gamepad.X() then
+        low_gear = false
+    end
 end
 
 local function update_arms()
@@ -53,8 +64,17 @@ local function update_shooter()
         return
     end
 
+    local pov = gamepad.pov()
     if shoot_down or shoot_pressed then
-        robot.shoot()
+        robot.shoot(1.0)
+    elseif pov == 0 then   -- dpad up
+        robot.shoot(0.80)
+    elseif pov == 90 then  -- dpad right
+        robot.shoot(0.60)
+    elseif pov == 180 then -- dpad down
+        robot.shoot(0.40)
+    elseif pov == 270 then -- dpad left
+        robot.shoot(0.20)
     end
 end
 
@@ -65,22 +85,29 @@ local function init()
 end
 
 --------------------------------------------------------------------------------
-local function teleop_prepare()
+local function prepare()
 end
 
-local function teleop_run()
+local function run()
     update_gamepad_state()
-    robot.drive(params.speed() * (1.0 - params.brake()), params.rotation())
+    update_speed()
+
+    if low_gear == true then
+        robot.drive(params.speed() * 0.25, params.rotation())
+    else
+        robot.drive(params.speed(), params.rotation())
+    end
+
     update_arms()
     update_shooter()
 end
 
-local function teleop_cleanup()
+local function cleanup()
 end
 
 return {
     init = init,
-    prepare = teleop_prepare,
-    run = teleop_run,
-    cleanup = teleop_cleanup
+    prepare = prepare,
+    run = run,
+    cleanup = cleanup
 }
