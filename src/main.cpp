@@ -237,7 +237,8 @@ public:
         reloadTrajectory();
         collectGarbage();
 
-#ifndef RUNNING_FRC_TESTS
+// #ifndef RUNNING_FRC_TESTS
+#if 0
         std::thread vision (visionThread);
         vision.detach();
 #endif
