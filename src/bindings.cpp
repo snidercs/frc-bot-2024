@@ -23,6 +23,7 @@ sol::table cxx_table (sol::state& ls) {
     return tbl;
 }
 
+/** Erase bound functions from Lua tables */
 template <typename Ls>
 void clear_function_bindings (Ls& L, std::string_view mod,
                               function_list functions) {
@@ -95,6 +96,7 @@ void bind_gamepad (frc::XboxController* self) {
 
 using namespace lua;
 
+//=============================================================================
 bool Parameters::bind (Parameters* self) {
     auto& L  = state();
     auto cxx = detail::cxx_table (L);
@@ -119,6 +121,7 @@ bool Parameters::bind (Parameters* self) {
     return true;
 }
 
+//=============================================================================
 void Shooter::bind (Shooter* self) {
     auto& L  = lua::state();
     auto cxx = detail::cxx_table (L);
@@ -147,6 +150,7 @@ void Shooter::bind (Shooter* self) {
     }
 }
 
+//=============================================================================
 void Lifter::bind (Lifter* self) {
     auto& L  = lua::state();
     auto cxx = detail::cxx_table (L);
@@ -165,6 +169,7 @@ void Lifter::bind (Lifter* self) {
     }
 }
 
+//=============================================================================
 void Drivetrain::bind (Drivetrain* self) {
     auto& L  = lua::state();
     auto cxx = detail::cxx_table (L);
@@ -183,6 +188,8 @@ void Drivetrain::bind (Drivetrain* self) {
     }
 }
 
+//=============================================================================
+// experimental...
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/Rotation2d.h>
 namespace lua {

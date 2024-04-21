@@ -195,8 +195,13 @@ public:
     /** Bind to lua. See `bindings.cpp` */
     static void bind (Lifter*);
 
+    /** Move arms up. */
     void moveUp();
+
+    /** Move arms down. */
     void moveDown();
+
+    /** Stop arm motors. */
     void stop();
 
 private:

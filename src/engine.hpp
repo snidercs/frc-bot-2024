@@ -6,10 +6,15 @@
 #include "scripting.hpp"
 #include "sol/sol.hpp"
 
+/** Instantiate and run a Lua 'bot' file */
 class Engine final {
 public:
     ~Engine() {}
 
+    /** Create a new instance from a file
+        @param state The lua state to use
+        @param bot_file The file to load from
+    */
     static std::unique_ptr<Engine> instantiate (lua_State* state, std::string_view bot_file) {
         auto self = std::unique_ptr<Engine> (new Engine (state));
 
@@ -66,7 +71,10 @@ public:
         return self;
     }
 
+    /** Returns an error string if present. */
     const std::string error() const noexcept { return _error; }
+
+    /** Returns true if an error is present. */
     bool have_error() const noexcept { return ! _error.empty(); }
 
     /** Run the engine without error handling. */
