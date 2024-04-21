@@ -32,7 +32,6 @@
 #include "sol/table.hpp"
 
 #define SIM_CAMERA_DISABLED 1
-#define USE_LUA_ENGINE      1
 
 namespace lua {
 extern void bind_gamepad (frc::XboxController*);
@@ -142,7 +141,7 @@ public:
 private:
     frc::SendableChooser<std::string> chooser;
     bool _valid { true };
-    const std::string defaultTest { "test_v1.bot" };
+    const std::string defaultTest { "teleop.bot" };
 };
 
 //==============================================================================
@@ -306,18 +305,14 @@ public:
     }
 
     //==========================================================================
-#if USE_LUA_ENGINE
     void TeleopInit() override {
-        loadEngine ("teleop.bot");
+        protectedLuaCalls = false;
+        if (! safeLoadEngine ("teleop.bot"))
+            return;
         luaPrepare();
     }
     void TeleopPeriodic() override { luaPeriodic(); }
     void TeleopExit() override { luaExit(); }
-#else
-    void TeleopInit() override { cxxInit(); }
-    void TeleopPeriodic() override { cxxPeriodic(); }
-    void TeleopExit() override { cxxExit(); }
-#endif
 
     //==========================================================================
     void DisabledInit() override { collectGarbage(); }
@@ -326,9 +321,13 @@ public:
 
     //==========================================================================
     void TestInit() override {
-        loadEngine (testProgram->get());
+        protectedLuaCalls   = true;
+        luaErrorEncountered = false;
+        if (! safeLoadEngine (testProgram->get()))
+            return;
         luaPrepare();
     }
+
     void TestPeriodic() override { luaPeriodic(); }
     void TestExit() override { luaExit(); }
 
@@ -361,6 +360,8 @@ private:
     bool hasShot          = false; // Track auto bot shoot started
     bool hasStartedMoving = false; // track auto bot movement started
 
+    bool luaErrorEncountered = false;
+    bool protectedLuaCalls   = false;
     //==========================================================================
     void collectGarbage() {
         lua::state().collect_garbage();
@@ -382,6 +383,20 @@ private:
         } else {
             throw std::runtime_error ("Failed to instantiate Lua engine");
         }
+    }
+
+    bool safeLoadEngine (std::string_view bot) {
+        luaErrorEncountered = false;
+
+        try {
+            loadEngine (bot);
+        } catch (const std::exception& e) {
+            std::cerr << "[lua] exception: " << e.what() << std::endl;
+            std::flush (std::cerr);
+            luaErrorEncountered = true;
+        }
+
+        return ! luaErrorEncountered;
     }
 
     // reloads/resets the currently selected AutoMode info.
@@ -406,62 +421,47 @@ private:
     }
 
     //==========================================================================
-    void cxxInit() {
-        shooter.reset();
-        collectGarbage();
-    }
-
-    void cxxPeriodic() {
-        if (! checkControllerConnection()) {
-            driveDisabled();
+    void luaLogErrorIfPresent() {
+        if (! luaErrorEncountered)
             return;
-        }
-
-        processParameters();
-
-        drivetrain.driveNormalized (params.getSpeed(), params.getAngularSpeed());
-
-        if (params.getButtonValue (Parameters::ButtonY))
-            lifter.moveUp();
-        else if (params.getButtonValue (Parameters::ButtonA))
-            lifter.moveDown();
-        else
-            lifter.stop();
-
-        if (gamepad.GetLeftBumper()) {
-            shooter.intake();
-        } else if (gamepad.GetLeftBumperReleased()) {
-            shooter.stop();
-        } else if (gamepad.GetRightBumperPressed()) {
-            shooter.shoot();
-        }
-
-        shooter.process();
+        const auto msg = engine->have_error() ? engine->error() : std::string ("unknown Lua error");
+        std::cerr << "[lua] error: " << msg << std::endl;
     }
 
-    void cxxExit() {
-    }
-
-    //==========================================================================
     void luaPrepare() {
         shooter.reset();
-        engine->prepare();
+
+        if (! luaErrorEncountered) {
+            luaErrorEncountered = ! engine->prepare();
+            luaLogErrorIfPresent();
+        }
+
         collectGarbage();
     }
 
     void luaPeriodic() {
-        if (! checkControllerConnection()) {
+        if (! checkControllerConnection() || luaErrorEncountered) {
             driveDisabled();
-            return;
+        } else {
+            processParameters();
+
+            if (! protectedLuaCalls) {
+                engine->run();
+            } else if (! luaErrorEncountered) {
+                luaErrorEncountered = ! engine->safe_run();
+                luaLogErrorIfPresent();
+            }
         }
 
-        processParameters();
-        engine->run();
         shooter.process();
     }
 
     void luaExit() {
-        engine->cleanup();
+        if (! luaErrorEncountered) {
+            luaErrorEncountered = ! engine->cleanup();
+            luaLogErrorIfPresent();
+        }
+
         collectGarbage();
     }
 
@@ -518,7 +518,7 @@ private:
         cs::UsbCamera camera = frc::CameraServer::StartAutomaticCapture (cameraName, 0);
         camera.SetExposureAuto();
         camera.SetWhiteBalanceAuto();
-        
+
         // Set the resolution
         camera.SetResolution (width, height);
         camera.SetFPS (fps);
