@@ -9,5 +9,5 @@ if [ $# -eq 0 ]; then
 else
     # this is the docker command to run
     docker run -it -v $(pwd):/root -w /root \
-        snidercs/bot-2024 $@
+        snidercs/bot-2024 "$@"
 fi
