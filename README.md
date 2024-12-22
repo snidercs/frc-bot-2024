@@ -43,6 +43,12 @@ util/build-luajit-roborio.sh
 
 **macOS**
 
+Make sure you have an amd64 version of container
+```bash
+docker build . -t snidercs/bot-2024 --platform=linux/amd64
+```
+
+The Mac build script can produce `arm64` or `x86_64` binaries.  It will select the system default if not specified.
 ```bash
 util/build-luajit-macos.sh # Builds for both arm64 and x86_64
 
