@@ -118,7 +118,7 @@ String sdkSlugForTargetName (String name) {
         return "roborio"
     } else if (lname.contains ("windowsx86-64")) {
         return "msvc"
-    } else if (lname.contains ("darwin")) {
+    } else if (lname.contains ("darwin") || lname.contains('osx')) {
         return "macos"
     }
 
