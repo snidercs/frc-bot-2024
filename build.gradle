@@ -118,7 +118,7 @@ String sdkSlugForTargetName (String name) {
         return "roborio"
     } else if (lname.contains ("windowsx86-64")) {
         return "msvc"
-    } else if (lname.contains ("darwin")) {
+    } else if (lname.contains ("darwin") || lname.contains('osx')) {
         return "macos"
     }
 
@@ -148,6 +148,8 @@ tasks.withType(LinkExecutable).configureEach {
         linkerArgs.addAll '-L', sdkDir('roborio/lib'), '-lluajit-5.1'
     } else if (platform == 'windowsx86-64') {
         linkerArgs.addAll  sdkDir('msvc/lib/lua51.lib')
+    } else if (platform.contains ("darwin") || platform.contains('osx')) {
+         linkerArgs.addAll '-L', sdkDir('macos/lib'), '-lluajit-5.1'
     }
 }
 

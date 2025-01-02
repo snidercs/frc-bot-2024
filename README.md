@@ -43,14 +43,10 @@ util/build-luajit-roborio.sh
 
 **macOS**
 
-The Mac build script can produce `arm64` or `x86_64` binaries.  It will select the system default if not specified.
 ```bash
-# Choose one of these...
-util/build-luajit-macos.sh # Use system default
-util/build-luajit-macos.sh arm64 # force arm64 (M1/M2/..) build
-util/build-luajit-macos.sh x86_64 # force an x86_64 (intel) build
+util/build-luajit-macos.sh # Builds for both arm64 and x86_64
 
-# If docker is isntalled and running...
+# Docker is required for roboRio builds/deploys
 util/docker-run.sh util/build-luajit-roborio.sh
 ```
 
@@ -72,7 +68,7 @@ After LuaJIT is compiled, open a terminal and do:
 ```bash
 ./gradlew build
 ```
-
+This will make roboRio binaries to be deployed
 ### Firmware With Docker
 ```bash
 ./dockerbuild.sh
