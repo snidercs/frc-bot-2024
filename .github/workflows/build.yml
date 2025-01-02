@@ -11,9 +11,6 @@ jobs:
     # container: wpilib/roborio-cross-ubuntu:2024-22.04
     container:
       image: ghcr.io/snidercs/bot-2024:1.0
-      credentials:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_PASS }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
